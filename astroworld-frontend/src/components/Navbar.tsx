@@ -3,9 +3,19 @@ import { useState } from 'react'
 import type { NavbarProps } from '../types'
 import Astroworld from '../assets/images/ASTROWORLD_ONLYLOGO.png'
 
-function Navbar({scrollY}: NavbarProps) {
+interface ExtendedNavbarProps extends NavbarProps {
+  showLoginButton?: boolean;
+  isFullscreen?: boolean;
+}
+
+function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: ExtendedNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isScrolled = scrollY > 50
+
+  // Don't render navbar in fullscreen mode
+  if (isFullscreen) {
+    return null;
+  }
 
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -26,15 +36,17 @@ function Navbar({scrollY}: NavbarProps) {
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="relative font-space-mono text-white hover:text-space-blue transition-all duration-300 px-3 py-2 text-sm font-medium group"
+                  className="relative font-inter text-white hover:text-space-blue transition-all duration-300 px-3 py-2 text-sm font-medium group"
                 >
                   {item}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-space-blue transition-all duration-300 group-hover:w-full"></span>
                 </a>
               ))}
-              <button className="bg-space-gradient hover:bg-space-gradient-reverse hover:shadow-xl hover:shadow-space-violet/40 text-white px-6 py-2 rounded-full font-space-mono font-semibold text-sm transition-all duration-300 transform hover:scale-105 hover:rotate-1">
-                Login
-              </button>
+              {showLoginButton && (
+                <button className="bg-space-blue hover:bg-space-gradient-reverse hover:shadow-xl hover:shadow-space-violet/40 text-white px-6 py-2 rounded-full font-inter font-semibold text-sm transition-all duration-300 transform hover:scale-105 hover:rotate-1">
+                  Login
+                </button>
+              )}
             </div>
           </div>
 
@@ -65,9 +77,11 @@ function Navbar({scrollY}: NavbarProps) {
                 {item}
               </a>
             ))}
-            <button className="w-full mt-4 bg-space-gradient hover:bg-space-gradient-reverse text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300 transform hover:scale-105" onClick={() => setIsMobileMenuOpen(false)}>
-              Login
-            </button>
+            {showLoginButton && (
+              <button className="w-full mt-4 bg-space-gradient hover:bg-space-gradient-reverse text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300 transform hover:scale-105" onClick={() => setIsMobileMenuOpen(false)}>
+                Login
+              </button>
+            )}
           </div>
         </div>
       )}

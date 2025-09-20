@@ -1,11 +1,11 @@
 import type { ImmersiveBreakProps } from '../types'
 import ISS from '../assets/images/ISS.jpg'
-import Mars from '../assets/images/mars.jpg'
+import Space from '../assets/images/space.jpg'
 
 
 
 const ImmersiveBreak = ({ quote, author, backgroundType = 'iss' }: ImmersiveBreakProps) => {
-  const backgroundImage = backgroundType === 'iss' ? ISS : Mars
+  const backgroundImage = backgroundType === 'iss' ? ISS : Space
   
   return (
     <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">

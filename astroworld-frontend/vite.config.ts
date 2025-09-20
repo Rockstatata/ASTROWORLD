@@ -8,4 +8,14 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    proxy: {
+      // Proxy Stellarium i18n requests to avoid CORS issues
+      '/api/stellarium-i18n': {
+        target: 'https://stellarium.sfo2.cdn.digitaloceanspaces.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/stellarium-i18n/, '/i18n/v1'),
+      }
+    }
+  }
 })
