@@ -1,0 +1,11 @@
+// node modules ignore
+node_modules
+.DS_Store
+dist
+.env
+.vscode
+.idea
+*.log
+*.lock
+coverage
+npm-debug.log*
