@@ -1,7 +1,9 @@
 import React from 'react'
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import type { NavbarProps } from '../types'
 import Astroworld from '../assets/images/ASTROWORLD_ONLYLOGO.png'
+import {useAuth} from '../context/authContext'
 
 interface ExtendedNavbarProps extends NavbarProps {
   showLoginButton?: boolean;
@@ -11,7 +13,7 @@ interface ExtendedNavbarProps extends NavbarProps {
 function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: ExtendedNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const isScrolled = scrollY > 50
-
+  const { user, logout } = useAuth()
   // Don't render navbar in fullscreen mode
   if (isFullscreen) {
     return null;
@@ -35,18 +37,37 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
               {['Home', 'Explore', 'APOD', 'Events', 'Journal'].map((item) => (
                 <a
                   key={item}
-                  href={`#${item.toLowerCase()}`}
+                  href={`${item.toLowerCase()}`}
                   className="relative font-inter text-white hover:text-space-blue transition-all duration-300 px-3 py-2 text-sm font-medium group"
                 >
                   {item}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-space-blue transition-all duration-300 group-hover:w-full"></span>
                 </a>
               ))}
-              {showLoginButton && (
-                <button className="bg-space-blue hover:bg-space-gradient-reverse hover:shadow-xl hover:shadow-space-violet/40 text-white px-6 py-2 rounded-full font-inter font-semibold text-sm transition-all duration-300 transform hover:scale-105 hover:rotate-1">
-                  Login
-                </button>
+              <div className="flex items-center space-x-4">
+              {user ? (
+                <>
+                  <span className="text-white font-space-mono text-sm">
+                    {user.username}
+                  </span>
+                  <button 
+                    onClick={logout}
+                    className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-inter font-semibold text-sm transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : showLoginButton && (
+                <>
+                  <Link to="/login">
+                    <button className="bg-space-blue hover:bg-space-bright text-white px-6 py-2 rounded-full font-inter font-semibold text-sm transition-all duration-300">
+                      Login
+                    </button>
+                  </Link>
+                 
+                </>
               )}
+            </div>
             </div>
           </div>
 
@@ -77,10 +98,26 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
                 {item}
               </a>
             ))}
-            {showLoginButton && (
-              <button className="w-full mt-4 bg-space-gradient hover:bg-space-gradient-reverse text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300 transform hover:scale-105" onClick={() => setIsMobileMenuOpen(false)}>
-                Login
+            {user ? (
+              <button 
+                onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300"
+              >
+                Logout
               </button>
+            ) : showLoginButton && (
+              <div className="space-y-2 mt-4">
+                <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <button className="w-full bg-space-gradient hover:opacity-90 text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300">
+                    Login
+                  </button>
+                </Link>
+                <Link to="/register" onClick={() => setIsMobileMenuOpen(false)}>
+                  <button className="w-full bg-space-gradient hover:opacity-90 text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300">
+                    Register
+                  </button>
+                </Link>
+              </div>
             )}
           </div>
         </div>

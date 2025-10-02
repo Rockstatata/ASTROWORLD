@@ -1,12 +1,7 @@
-import { useEffect, useState } from 'react'
-import Navbar from './components/Navbar'
-import LandingPage from './pages/intro/LandingPage'
+import AllRoutes from './routes/AllRoutes'
 
 function App() {
-
-  return(
-    <LandingPage/>
-  )
+  return <AllRoutes />
 }
 
 export default App

@@ -1,7 +1,10 @@
 import type { HeroProps } from '../types'
+import { useNavigate } from 'react-router-dom'
 import Earth from '../assets/images/Earth.jpg'
 
 const Hero = ({ scrollY }: HeroProps) => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative h-screen flex items-center justify-center overflow-hidden">
       <div 
@@ -38,7 +41,10 @@ const Hero = ({ scrollY }: HeroProps) => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-          <button className="group bg-space-gradient hover:shadow-2xl hover:shadow-space-violet/30 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105">
+          <button 
+            onClick={() => navigate('/register')}
+            className="group bg-space-gradient hover:shadow-2xl hover:shadow-space-violet/30 text-white px-8 py-4 rounded-full font-semibold text-lg transition-all duration-300 transform hover:scale-105"
+          >
             <span className="flex items-center">
               Get Started
               <svg className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

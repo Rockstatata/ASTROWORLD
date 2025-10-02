@@ -1,11 +1,15 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../context/authContext'
 import Navbar from '../../components/Navbar'
-import Hero from '../../components/Hero'
-import Features from '../../components/Features'
-import ImmersiveBreak from '../../components/ImmersiveBreak'
+import Hero from '../../components/Landing/Hero'
+import Features from '../../components/Landing/Features'
+import ImmersiveBreak from '../../components/Landing/ImmersiveBreak'
 import Footer from '../../components/Footer'
 
 function LandingPage() {
+  const navigate = useNavigate()
+  const { user, loading } = useAuth()
   const [scrollY, setScrollY] = useState(0)
 
   useEffect(() => {
@@ -14,8 +18,29 @@ function LandingPage() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Redirect logged-in users to home
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/home', { replace: true })
+    }
+  }, [user, loading, navigate])
+
+  // Show loading while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    )
+  }
+
+  // Don't render if user is logged in (will redirect)
+  if (user) {
+    return null
+  }
+
   return (
-    <div className="min-h-screen bg-gray-900 text-white overflow-x-hidden">
+    <div className="min-h-screen text-white overflow-x-hidden">
       <Navbar scrollY={scrollY} />
       <Hero scrollY={scrollY} />
       <ImmersiveBreak 

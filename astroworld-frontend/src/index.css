@@ -1,7 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
 @import "tailwindcss";
 
+
 @theme {
+  /* Existing Core Colors (unchanged) */
   --color-space-deep: #00357a;
   --color-space-royal: #4a4695;
   --color-space-violet: #7d58ad;
@@ -13,13 +15,76 @@
   --color-space-blue-light: #697dcd;
   --color-space-blue-lighter: #94a5f8;
   --color-space-blue-lightest: #bfcfff;
+  /* Extended Shades (darker/lighter variants for depth and accessibility) */
+  --color-space-deep-dark: #001a3d;  /* Darker deep blue for shadows/highlights */
+  --color-space-royal-dark: #2a2b5a;  /* Darker royal for borders */
+  --color-space-violet-dark: #5a3d7a;  /* Darker violet for active states */
+  --color-space-magenta-dark: #8a3d8f;  /* Darker magenta for emphasis */
+  --color-space-pink-dark: #c14da1;  /* Darker pink for hover effects */
+  --color-space-bright-dark: #e14da1;  /* Darker bright for subtle glows */
+  --color-space-blue-lightest-light: #e6f2ff;  /* Lighter blue for light mode (if needed) */
+
+  /* Neutrals (for text, backgrounds, and balance in dark theme) */
+  --color-space-black: #000000;  /* Pure black for backgrounds (e.g., canvas, overlays) */
+  --color-space-gray-900: #111827;  /* Dark gray for cards (e.g., Features cards) */
+  --color-space-gray-800: #1f2937;  /* Medium-dark gray for navbars */
+  --color-space-gray-700: #374151;  /* Gray for inputs/buttons (e.g., login form) */
+  --color-space-gray-600: #4b5563;  /* Gray for borders (e.g., input borders) */
+  --color-space-gray-500: #6b7280;  /* Gray for subtitles (e.g., secondary text) */
+  --color-space-gray-400: #9ca3af;  /* Light gray for muted text (e.g., placeholders) */
+  --color-space-gray-300: #d1d5db;  /* Lighter gray for highlights */
+  --color-space-gray-200: #e5e7eb;  /* Very light gray for light accents */
+  --color-space-white: #ffffff;  /* White for primary text/headings */
+
+  /* Role-Specific Colors (based on your components and design) */
+  /* Text Colors */
+  --color-text-primary: var(--color-space-white);  /* Main headings (e.g., Hero title, Navbar links) */
+  --color-text-secondary: var(--color-space-gray-300);  /* Body text (e.g., Features descriptions) */
+  --color-text-subtitle: var(--color-space-gray-400);  /* Subtitles/captions (e.g., author in ImmersiveBreak) */
+  --color-text-muted: var(--color-space-gray-500);  /* Muted text (e.g., placeholders, footers) */
+  --color-text-accent: var(--color-space-blue-light);  /* Accent text (e.g., links, highlights) */
+
+  /* Button Colors */
+  --color-button-primary: var(--bg-space-gradient);  /* Primary buttons (e.g., "Get Started" in Hero) */
+  --color-button-primary-hover: var(--bg-space-gradient-reverse);  /* Hover state */
+  --color-button-secondary: var(--color-space-gray-700);  /* Secondary buttons (e.g., "Learn More") */
+  --color-button-secondary-hover: var(--color-space-violet);  /* Hover state */
+  --color-button-outline: transparent;  /* Outline buttons (e.g., borders with space-blue) */
+  --color-button-outline-border: var(--color-space-blue-light);  /* Border color */
+  --color-button-outline-hover: var(--color-space-blue-lightest);  /* Hover background */
+  --color-button-disabled: var(--color-space-gray-600);  /* Disabled state */
+
+  /* Background Colors */
+  --color-bg-primary: var(--color-space-black);  /* Main app background */
+  --color-bg-secondary: var(--color-space-gray-900);  /* Cards/overlays (e.g., selection info card) */
+  --color-bg-accent: var(--color-space-deep);  /* Accent backgrounds (e.g., navbar on scroll) */
+  --color-bg-overlay: rgba(0, 0, 0, 0.8);  /* Semi-transparent overlays (e.g., ImmersiveBreak gradients) */
+
+  /* Border/Accent Colors */
+  --color-border-primary: var(--color-space-violet);  /* Main borders (e.g., card borders) */
+  --color-border-secondary: var(--color-space-gray-600);  /* Subtle borders */
+  --color-border-accent: var(--color-space-bright);  /* Highlight borders (e.g., hover effects) */
+
+  /* Interactive States */
+  --color-hover: var(--color-space-magenta);  /* General hover (e.g., links, buttons) */
+  --color-focus: var(--color-space-pink);  /* Focus rings (e.g., inputs) */
+  --color-active: var(--color-space-royal);  /* Active states (e.g., pressed buttons) */
+  --color-error: #ef4444;  /* Error states (red, not in palette but added for completeness) */
+  --color-success: var(--color-space-blue-light);  /* Success states */
+
+  /* Special Effects (for animations/glows) */
+  --color-glow-primary: var(--color-space-bright);  /* Glow effects (e.g., Features icons) */
+  --color-glow-secondary: var(--color-space-violet);  /* Subtle glows */
+  --color-shadow: rgba(125, 88, 173, 0.3);  /* Shadows (e.g., button shadows) */
+
+/* ...existing code... */
+
+--bg-space-gradient: linear-gradient(135deg, #00357a 0%, #4a4695 25%, #7d58ad 50%, #af6ac1 75%, #e17cd3 100%);
+  --bg-space-gradient-reverse: linear-gradient(315deg, #00357a 0%, #4a4695 25%, #7d58ad 50%, #af6ac1 75%, #e17cd3 100%);
 
   --font-inter: 'Inter', sans-serif;
   --font-space-mono: 'Space Mono', monospace;
 
-  /* Background Images */
-  --bg-space-gradient: linear-gradient(135deg, #00357a 0%, #4a4695 25%, #7d58ad 50%, #af6ac1 75%, #e17cd3 100%);
-  --bg-space-gradient-reverse: linear-gradient(315deg, #00357a 0%, #4a4695 25%, #7d58ad 50%, #af6ac1 75%, #e17cd3 100%);
 }
 
 

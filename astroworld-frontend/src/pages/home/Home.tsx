@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { StellariumEngine } from '../../types/stellarium';
-import StelButton from '../../components/StelButton';
+import StelButton from '../../components/Home/StelButton';
 import Navbar from '../../components/Navbar';
 import { getTitle, getInfos } from '../../utils/stellarium';
 
@@ -85,6 +85,12 @@ const Home: React.FC = () => {
             if (typeof core.stars.mag_limit !== 'undefined') {
               core.stars.mag_limit = 6.0;
             }
+          }  
+
+          // Log constellation properties to check for images_visible
+          if (core.constellations) {
+            console.log('Constellation object properties:', Object.keys(core.constellations));
+            console.log('Constellation object:', core.constellations);
           }  
 
           // Force UI update when there is any change
@@ -185,69 +191,85 @@ const Home: React.FC = () => {
         })()}
       </main>
 
-      {/* Footer Controls */}
-      <footer className="fixed bottom-0 left-0 right-0 z-40 bg-transparent">
-        <div className="flex items-center justify-center space-x-4 py-4">
-          <StelButton
-            label="Constellations"
-            img="/static/imgs/symbols/btn-cst-lines.svg"
-            obj={stel?.core.constellations || null}
-            attr="lines_visible"
-          />
-          <StelButton
-            label="Atmosphere"
-            img="/static/imgs/symbols/btn-atmosphere.svg"
-            obj={stel?.core.atmosphere || null}
-            attr="visible"
-          />
-          <StelButton
-            label="Landscape"
-            img="/static/imgs/symbols/btn-landscape.svg"
-            obj={stel?.core.landscapes || null}
-            attr="visible"
-          />
-          <StelButton
-            label="Azimuthal Grid"
-            img="/static/imgs/symbols/btn-azimuthal-grid.svg"
-            obj={stel?.core.lines.azimuthal || null}
-            attr="visible"
-          />
-          <StelButton
-            label="Equatorial Grid"
-            img="/static/imgs/symbols/btn-equatorial-grid.svg"
-            obj={stel?.core.lines.equatorial || null}
-            attr="visible"
-          />
-          <StelButton
-            label="Nebulae"
-            img="/static/imgs/symbols/btn-nebulae.svg"
-            obj={stel?.core.dsos || null}
-            attr="visible"
-          />
-          <StelButton
-            label="DSS"
-            img="/static/imgs/symbols/btn-nebulae.svg"
-            obj={stel?.core.dss || null}
-            attr="visible"
-          />
-        </div>
-
-        {/* Fullscreen Button */}
-        {!isFullscreen && (
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={toggleFullscreen}
-              className="group relative bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-300 transform hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25 flex items-center space-x-2"
-              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
-            >
-              
-              <span className="hidden sm:inline transition-opacity duration-300 group-hover:opacity-100 opacity-80">
-                {isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
-              </span>
-            </button>
+      {/* Footer Controls - macOS Style Floating Menu Bar */}
+      {!isFullscreen && (
+        <footer className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
+          <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl px-6 py-3">
+            <div className="flex items-center justify-center space-x-2">
+              <StelButton
+                label="Constellations"
+                img="/static/imgs/symbols/btn-cst-lines.svg"
+                obj={stel?.core.constellations || null}
+                attr="lines_visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Constellation Art"
+                img="/static/imgs/symbols/btn-constellation-names.svg"
+                obj={stel?.core.constellations || null}
+                attr="images_visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Atmosphere"
+                img="/static/imgs/symbols/btn-atmosphere.svg"
+                obj={stel?.core.atmosphere || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Landscape"
+                img="/static/imgs/symbols/btn-landscape.svg"
+                obj={stel?.core.landscapes || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Azimuthal Grid"
+                img="/static/imgs/symbols/btn-azimuthal-grid.svg"
+                obj={stel?.core.lines.azimuthal || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Equatorial Grid"
+                img="/static/imgs/symbols/btn-equatorial-grid.svg"
+                obj={stel?.core.lines.equatorial || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="Nebulae"
+                img="/static/imgs/symbols/btn-nebulae.svg"
+                obj={stel?.core.dsos || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              <StelButton
+                label="DSS"
+                img="/static/imgs/symbols/btn-nebulae.svg"
+                obj={stel?.core.dss || null}
+                attr="visible"
+              />
+              <div className="w-px h-12 bg-gray-700/50" />
+              {/* Fullscreen Button */}
+              <button
+                onClick={toggleFullscreen}
+                className="group relative w-16 h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200"
+                title="Enter Fullscreen"
+              >
+                <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                </svg>
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
+                  Fullscreen
+                </div>
+              </button>
+            </div>
           </div>
-        )}
-      </footer>
+        </footer>
+      )}
     </div>
   );
 };
