@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import Moon from '../../assets/images/Moon.jpg'
+import Earth_Video from '../../assets/videos/Earth-Spin.mp4'
 
 const Features = () => {
   const [visibleCards, setVisibleCards] = useState<number[]>([])
@@ -33,7 +34,7 @@ const Features = () => {
     },
     {
       icon: "🤖",
-      title: "AI Astronomy Assistant",
+      title: "AI Astronomy Assistant - MURPH",
       description: "Chat with our intelligent AI trained on astronomy knowledge. Ask questions and get personalized guidance anytime."
     }
   ]
@@ -59,34 +60,17 @@ const Features = () => {
 
   return (
     <section className="relative py-24 px-4 overflow-hidden" ref={featuresRef}>
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `url(${Moon})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        {/* Dark overlay for content readability */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/90" />
-        
-        {/* Animated background particles */}
-        <div className="absolute inset-0 opacity-20">
-          {[...Array(40)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-0.5 h-0.5 bg-space-bright rounded-full animate-pulse"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${2 + Math.random() * 3}s`
-              }}
-            />
-          ))}
-        </div>
+      {/* Background Video */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto transform -translate-x-1/2 -translate-y-1/2 object-cover"
+        >
+          <source src={Earth_Video} type="video/mp4" />
+        </video>
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto">

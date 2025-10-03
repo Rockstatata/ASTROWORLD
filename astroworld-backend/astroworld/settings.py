@@ -11,6 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +45,7 @@ INSTALLED_APPS = [
      'rest_framework',
     'corsheaders',
     'users',
+    'nasa_api',
     'rest_framework_simplejwt.token_blacklist', 
 ]
 
@@ -55,6 +61,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'astroworld.urls'
+
+NASA_API_KEY = os.getenv('NASA_API_KEY')
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
@@ -75,8 +83,77 @@ SIMPLE_JWT = {
 
 AUTH_USER_MODEL = 'users.User'
 
-# Email backend (dev)
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Internationalization
+# https://docs.djangoproject.com/en/5.2/topics/i18n/
+
+LANGUAGE_CODE = 'en-us'
+
+TIME_ZONE = 'UTC'
+
+USE_I18N = True
+
+USE_TZ = True
+
+# Celery Configuration
+USE_CELERY = os.getenv('USE_CELERY', 'False').lower() == 'true'
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND', 'redis://localhost:6379/0')
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+if USE_CELERY:
+    try:
+        from celery.schedules import crontab
+        CELERY_BEAT_SCHEDULE = {
+            'sync-daily-nasa-data': {
+                'task': 'nasa_api.tasks.sync_daily_nasa_data',
+                'schedule': crontab(hour=2, minute=0),  # 2 AM daily
+            },
+            'sync-weekly-nasa-data': {
+                'task': 'nasa_api.tasks.sync_weekly_nasa_data',
+                'schedule': crontab(hour=3, minute=0, day_of_week=0),  # 3 AM Sundays
+            },
+            'send-neo-alerts': {
+                'task': 'nasa_api.tasks.send_neo_alerts',
+                'schedule': crontab(hour=9, minute=0),  # 9 AM daily
+            },
+            'cleanup-old-data': {
+                'task': 'nasa_api.tasks.cleanup_old_data',
+                'schedule': crontab(hour=4, minute=0, day_of_week=0),  # 4 AM Sundays
+            },
+        }
+    except ImportError:
+        pass  # Celery not installed
+
+# Email settings for notifications
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': 'nasa_api.log',
+        },
+    },
+    'loggers': {
+        'nasa_api': {
+            'handlers': ['file'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+    },
+}
 DEFAULT_FROM_EMAIL = 'no-reply@astroworld.local'
 FRONTEND_URL = 'http://localhost:5173'  # Add to env vars later
 
@@ -128,18 +205,6 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
@@ -149,3 +214,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Cache configuration (for API rate limiting)
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+    }
+}

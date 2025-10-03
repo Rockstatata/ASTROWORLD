@@ -34,7 +34,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              {['Home', 'Explore', 'APOD', 'Events', 'Journal'].map((item) => (
+              {['Home', 'Explore', 'SkyMap', 'Events', 'MurphAI'].map((item) => (
                 <a
                   key={item}
                   href={`${item.toLowerCase()}`}
@@ -88,10 +88,10 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gray-900/90 backdrop-blur-xl border-b border-space-violet/30 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {['Home', 'Explore', 'APOD', 'Events', 'Journal'].map((item) => (
+            {['Home', 'Explore', 'SkyMap', 'Events', 'MurphAI'].map((item) => (
               <a
                 key={item}
-                href={`#${item.toLowerCase()}`}
+                href={`${item.toLowerCase()}`}
                 className="text-white hover:text-space-blue block px-3 py-2 text-base font-space-mono font-medium transition-colors duration-300"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
