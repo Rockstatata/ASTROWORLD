@@ -23,4 +23,5 @@ urlpatterns = [
     path('', views.homepage, name='home'),
     path('users/', include('users.urls')),
     path('api/nasa/', include('nasa_api.urls')),
+    path('api/spaceflight/', include('spaceflightnews.urls'))
 ]

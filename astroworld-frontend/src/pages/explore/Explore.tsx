@@ -1,8 +1,10 @@
-import React from 'react'
+import Layout from '../../components/Layout'
 
 const Explore = () => {
   return (
-    <div>Explore</div>
+    <Layout>
+      <div>Explore</div>
+    </Layout>
   )
 }
 

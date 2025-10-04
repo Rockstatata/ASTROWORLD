@@ -9,6 +9,7 @@ import Skymap from '../pages/skymap/Skymap';
 import Explore from '../pages/explore/Explore';
 import Murph_AI from '../pages/murph_ai/Murph_AI';
 import Events from '../pages/events/Events';
+import News from '../pages/news/News';
 
 const router = createBrowserRouter([
   {
@@ -64,6 +65,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <Events />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/news',
+    element: (
+      <ProtectedRoute>
+        <News />
       </ProtectedRoute>
     ),
   },

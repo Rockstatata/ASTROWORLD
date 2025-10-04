@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { StellariumEngine } from '../../types/stellarium';
 import StelButton from '../../components/Skymap/StelButton';
-import Navbar from '../../components/Navbar';
+import Layout from '../../components/Layout';
 import { getTitle, getInfos } from '../../utils/stellarium';
 
 const Skymap: React.FC = () => {
   const [stel, setStel] = useState<StellariumEngine | null>(null);
-  const [scrollY, setScrollY] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineInitialized = useRef(false);
@@ -14,10 +13,6 @@ const Skymap: React.FC = () => {
   useEffect(() => {
     if (engineInitialized.current || !canvasRef.current) return;
     engineInitialized.current = true;
-
-    // Track scroll position for navbar
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
 
     // Load required scripts
     const loadScripts = async () => {
@@ -109,7 +104,9 @@ const Skymap: React.FC = () => {
     loadScripts().catch(console.error);
 
     // Cleanup
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      // Cleanup will be handled by Layout component
+    };
   }, []);
 
   // Fullscreen functionality
@@ -138,61 +135,11 @@ const Skymap: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white">
-      {/* Navbar */}
-      {!isFullscreen && <Navbar scrollY={scrollY} showLoginButton={false} isFullscreen={isFullscreen} />}
-
-      {/* Main Content */}
-      <main className="pt-16 h-screen relative">
-        <canvas
-          ref={canvasRef}
-          id="stel-canvas"
-          className="absolute inset-0 w-full h-full"
-        />
-
-        {/* Selection Info Card */}
-        {(() => {
-          const hasSelection = stel && stel.core.selection;
-
-          if (hasSelection) {
-            return (
-              <div
-                className="absolute top-20 left-4 w-96 bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg border border-white"
-                style={{ zIndex: 1000 }}
-              >
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">
-                    {getTitle(stel.core.selection)}
-                  </h3>
-                  <div className="space-y-2">
-                    {(() => {
-                      try {
-                        return getInfos(stel, stel.core.selection).map((info, index) => (
-                          <div key={index} className="grid grid-cols-3 gap-2">
-                            <div className="text-gray-300 text-sm">{info.key}</div>
-                            <div
-                              className="col-span-2 text-sm font-medium text-white"
-                              dangerouslySetInnerHTML={{ __html: info.value }}
-                            />
-                          </div>
-                        ));
-                      } catch (error) {
-                        console.error('Error getting infos:', error);
-                        return <div className="text-red-400">Error loading object info</div>;
-                      }
-                    })()}
-                  </div>
-                </div>
-              </div>
-            );
-          }
-
-          return null;
-        })()}
-      </main>
-
-      {/* Footer Controls - macOS Style Floating Menu Bar */}
-      {!isFullscreen && (
+    <Layout
+      showLoginButton={false}
+      isFullscreen={isFullscreen}
+      mainClassName="pt-16 h-screen relative"
+      footer={
         <footer className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
           <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl px-6 py-3">
             <div className="flex items-center justify-center space-x-2">
@@ -269,8 +216,54 @@ const Skymap: React.FC = () => {
             </div>
           </div>
         </footer>
-      )}
-    </div>
+      }
+    >
+        <canvas
+          ref={canvasRef}
+          id="stel-canvas"
+          className="absolute inset-0 w-full h-full"
+        />
+
+        {/* Selection Info Card */}
+        {(() => {
+          const hasSelection = stel && stel.core.selection;
+
+          if (hasSelection) {
+            return (
+              <div
+                className="absolute top-20 left-4 w-96 bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg border border-white"
+                style={{ zIndex: 1000 }}
+              >
+                <div className="p-4">
+                  <h3 className="text-lg font-semibold mb-3 text-white">
+                    {getTitle(stel.core.selection)}
+                  </h3>
+                  <div className="space-y-2">
+                    {(() => {
+                      try {
+                        return getInfos(stel, stel.core.selection).map((info, index) => (
+                          <div key={index} className="grid grid-cols-3 gap-2">
+                            <div className="text-gray-300 text-sm">{info.key}</div>
+                            <div
+                              className="col-span-2 text-sm font-medium text-white"
+                              dangerouslySetInnerHTML={{ __html: info.value }}
+                            />
+                          </div>
+                        ));
+                      } catch (error) {
+                        console.error('Error getting infos:', error);
+                        return <div className="text-red-400">Error loading object info</div>;
+                      }
+                    })()}
+                  </div>
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        })()}
+    </Layout>
   );
 };
 

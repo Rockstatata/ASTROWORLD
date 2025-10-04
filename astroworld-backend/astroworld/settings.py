@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'nasa_api',
+    'spaceflightnews',
     'rest_framework_simplejwt.token_blacklist', 
 ]
 
@@ -123,17 +124,33 @@ if USE_CELERY:
                 'task': 'nasa_api.tasks.cleanup_old_data',
                 'schedule': crontab(hour=4, minute=0, day_of_week=0),  # 4 AM Sundays
             },
+            # Spaceflight News tasks
+            'sync-daily-spaceflight-news': {
+                'task': 'spaceflightnews.tasks.sync_daily_spaceflight_news',
+                'schedule': crontab(hour=1, minute=30),  # 1:30 AM daily
+            },
+            'sync-weekly-spaceflight-news': {
+                'task': 'spaceflightnews.tasks.sync_weekly_spaceflight_news',
+                'schedule': crontab(hour=1, minute=0, day_of_week=1),  # 1 AM Mondays
+            },
         }
     except ImportError:
         pass  # Celery not installed
 
 # Email settings for notifications
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# Use console backend for development if EMAIL_HOST_USER is not set
+if os.getenv('EMAIL_HOST_USER') and os.getenv('EMAIL_HOST_USER') != 'your-email@gmail.com':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
+    EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
+    EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
+    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    print(f"SMTP Email configured for: {EMAIL_HOST_USER}")
+else:
+    # For development - emails will be printed to console
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    print("Using console email backend - emails will be printed to terminal")
 
 # Logging
 LOGGING = {
@@ -154,7 +171,7 @@ LOGGING = {
         },
     },
 }
-DEFAULT_FROM_EMAIL = 'no-reply@astroworld.local'
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@astroworld.dev')
 FRONTEND_URL = 'http://localhost:5173'  # Add to env vars later
 
 TEMPLATES = [
@@ -180,8 +197,12 @@ WSGI_APPLICATION = 'astroworld.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'astroworld',
+        'USER': 'postgres',
+        'PASSWORD': '3106',
+        'HOST': 'localhost',  # Or your PostgreSQL host
+        'PORT': '5432',
     }
 }
 

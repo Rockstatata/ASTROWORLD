@@ -21,10 +21,40 @@ class RegisterView(generics.CreateAPIView):
         self.send_verification_email(user)
 
     def send_verification_email(self, user):
-        token = default_token_generator.make_token(user)
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        verify_url = f"{settings.FRONTEND_URL}/verify-email/?uid={uid}&token={token}"
-        send_mail("Verify your ASTROWORLD account", f"Click to verify: {verify_url}", settings.DEFAULT_FROM_EMAIL, [user.email])
+        try:
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            verify_url = f"{settings.FRONTEND_URL}/verify-email/?uid={uid}&token={token}"
+            
+            # Check if we're using console backend
+            if settings.EMAIL_BACKEND == 'django.core.mail.backends.console.EmailBackend':
+                print(f"\n{'='*60}")
+                print(f"VERIFICATION EMAIL FOR: {user.email}")
+                print(f"Verification URL: {verify_url}")
+                print(f"{'='*60}\n")
+                # Auto-verify in development when using console backend
+                if settings.DEBUG:
+                    user.is_active = True
+                    user.email_verified = True
+                    user.save()
+                    print(f"Auto-verified user {user.email} (development mode)\n")
+            else:
+                send_mail(
+                    "Verify your ASTROWORLD account", 
+                    f"Click to verify: {verify_url}", 
+                    settings.DEFAULT_FROM_EMAIL, 
+                    [user.email],
+                    fail_silently=False
+                )
+                print(f"Verification email sent to {user.email}")
+        except Exception as e:
+            print(f"Failed to send verification email to {user.email}: {str(e)}")
+            # In development, we can continue without email verification
+            if settings.DEBUG:
+                user.is_active = True
+                user.email_verified = True
+                user.save()
+                print(f"Auto-verified user {user.email} due to email configuration issues")
 
 class VerifyEmailView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -54,7 +84,17 @@ class PasswordResetRequestView(APIView):
             token = default_token_generator.make_token(user)
             uid = urlsafe_base64_encode(force_bytes(user.pk))
             reset_url = f"{settings.FRONTEND_URL}/reset-password/?uid={uid}&token={token}"
-            send_mail("Password reset", f"Reset: {reset_url}", settings.DEFAULT_FROM_EMAIL, [user.email])
+            try:
+                send_mail(
+                    "Password reset", 
+                    f"Reset: {reset_url}", 
+                    settings.DEFAULT_FROM_EMAIL, 
+                    [user.email],
+                    fail_silently=False
+                )
+                print(f"Password reset email sent to {user.email}")
+            except Exception as e:
+                print(f"Failed to send password reset email to {user.email}: {str(e)}")
         except User.DoesNotExist:
             pass
         return Response({"detail": "If the email exists, a reset link was sent."})

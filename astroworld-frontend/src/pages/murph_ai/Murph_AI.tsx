@@ -1,8 +1,10 @@
-import React from 'react'
+import Layout from '../../components/Layout'
 
 const Murph_AI = () => {
   return (
-    <div>Murph_AI</div>
+    <Layout>
+      <div>Murph_AI</div>
+    </Layout>
   )
 }
 

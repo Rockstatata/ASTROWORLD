@@ -125,3 +125,64 @@ h1{
 body {
   font-family: var(--font-inter);
 }
+
+/* Utility Classes */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.space-violet {
+  --tw-bg-opacity: 1;
+  background-color: rgb(125 88 173 / var(--tw-bg-opacity));
+}
+
+.bg-space-violet {
+  --tw-bg-opacity: 1;
+  background-color: rgb(125 88 173 / var(--tw-bg-opacity));
+}
+
+.bg-space-violet\/80 {
+  background-color: rgb(125 88 173 / 0.8);
+}
+
+.text-space-violet {
+  --tw-text-opacity: 1;
+  color: rgb(125 88 173 / var(--tw-text-opacity));
+}
+
+.border-space-violet {
+  --tw-border-opacity: 1;
+  border-color: rgb(125 88 173 / var(--tw-border-opacity));
+}
+
+.space-dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.bg-space-dark {
+  --tw-bg-opacity: 1;
+  background-color: rgb(17 24 39 / var(--tw-bg-opacity));
+}
+
+.space-blue-light {
+  --tw-text-opacity: 1;
+  color: rgb(105 125 205 / var(--tw-text-opacity));
+}
+
+.text-space-blue-light {
+  --tw-text-opacity: 1;
+  color: rgb(105 125 205 / var(--tw-text-opacity));
+}
