@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'nasa_api',
+    'murphai',
     'spaceflightnews',
     'rest_framework_simplejwt.token_blacklist', 
 ]
@@ -64,6 +65,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'astroworld.urls'
 
 NASA_API_KEY = os.getenv('NASA_API_KEY')
+
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 
 CORS_ALLOWED_ORIGINS = ["http://localhost:5173"]
 
