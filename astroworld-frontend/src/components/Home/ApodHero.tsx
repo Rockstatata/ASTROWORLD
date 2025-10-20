@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { useApod } from '../../hooks/nasa/useApod';
 import { Link } from 'react-router-dom';
 import { Telescope, Sparkles } from 'lucide-react';
+import { FavoriteButton, SaveContentButton } from '../shared/ContentActions';
 
 const ApodHero: React.FC = () => {
   const { data, loading } = useApod();
@@ -89,7 +90,7 @@ const ApodHero: React.FC = () => {
           </Link>
         </motion.div>
 
-        {/* APOD Credit */}
+        {/* APOD Credit with Actions */}
         {!loading && data && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -98,11 +99,42 @@ const ApodHero: React.FC = () => {
             className="mt-12 max-w-2xl"
           >
             <div className="rounded-2xl border border-white/10 bg-black/30 backdrop-blur-md p-4">
-              <div className="text-xs text-purple-300 font-semibold mb-1">NASA APOD — {data.date}</div>
-              <div className="text-sm font-bold text-white mb-1">{data.title}</div>
-              {data.copyright && (
-                <div className="text-xs text-gray-400">© {data.copyright}</div>
-              )}
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <div className="text-xs text-purple-300 font-semibold mb-1">NASA APOD — {data.date}</div>
+                  <div className="text-sm font-bold text-white mb-1">{data.title}</div>
+                  {data.copyright && (
+                    <div className="text-xs text-gray-400">© {data.copyright}</div>
+                  )}
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex items-center gap-2">
+                  <FavoriteButton
+                    contentType="apod"
+                    contentId={data.date}
+                    title={data.title}
+                    metadata={{
+                      url: data.url,
+                      hdurl: data.hdurl,
+                      explanation: data.explanation,
+                      copyright: data.copyright,
+                    }}
+                    size="md"
+                  />
+                  <SaveContentButton
+                    contentType="apod"
+                    contentId={data.date}
+                    title={data.title}
+                    metadata={{
+                      url: data.url,
+                      hdurl: data.hdurl,
+                      explanation: data.explanation,
+                      copyright: data.copyright,
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

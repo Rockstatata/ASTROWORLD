@@ -10,6 +10,7 @@ import Explore from '../pages/explore/Explore';
 import Murph_AI from '../pages/murph_ai/Murph_AI';
 import Events from '../pages/events/Events';
 import News from '../pages/news/News';
+import Profile from '../pages/profile/Profile';
 
 const router = createBrowserRouter([
   {
@@ -73,6 +74,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <News />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <Profile />
       </ProtectedRoute>
     ),
   },

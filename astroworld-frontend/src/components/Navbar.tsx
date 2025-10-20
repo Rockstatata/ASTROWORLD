@@ -33,7 +33,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'MurphAI'].map((item) => (
+              {['Home', 'Explore', 'SkyMap', 'News', 'MurphAI'].map((item) => (
                 <a
                   key={item}
                   href={`${item.toLowerCase()}`}
@@ -46,9 +46,9 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
               <div className="flex items-center space-x-4">
               {user ? (
                 <>
-                  <span className="text-white font-space-mono text-sm">
+                  <Link to="/profile" className="text-white font-space-mono text-sm hover:text-space-blue transition-colors duration-300 cursor-pointer">
                     {user.username}
-                  </span>
+                  </Link>
                   <button 
                     onClick={logout}
                     className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-inter font-semibold text-sm transition-all duration-300"
@@ -98,12 +98,21 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
               </a>
             ))}
             {user ? (
-              <button 
-                onClick={() => { logout(); setIsMobileMenuOpen(false); }}
-                className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300"
-              >
-                Logout
-              </button>
+              <>
+                <Link 
+                  to="/profile" 
+                  className="text-white hover:text-space-blue block px-3 py-2 text-base font-space-mono font-medium transition-colors duration-300"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  {user.username}
+                </Link>
+                <button 
+                  onClick={() => { logout(); setIsMobileMenuOpen(false); }}
+                  className="w-full mt-4 bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full font-space-mono font-semibold transition-all duration-300"
+                >
+                  Logout
+                </button>
+              </>
             ) : showLoginButton && (
               <div className="space-y-2 mt-4">
                 <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>

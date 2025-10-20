@@ -1,14 +1,22 @@
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets, filters
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.decorators import action
 from django.contrib.auth import get_user_model
-from .serializers import RegisterSerializer, UserSerializer
+from .serializers import (
+    RegisterSerializer, UserSerializer, UserContentSerializer, UserContentListSerializer,
+    UserJournalSerializer, UserJournalListSerializer, UserCollectionSerializer,
+    UserCollectionListSerializer, UserSubscriptionSerializer, UserActivitySerializer,
+    UserProfileSerializer
+)
+from .models import UserContent, UserJournal, UserCollection, UserSubscription, UserActivity
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes, force_str
 from django.contrib.auth.tokens import default_token_generator
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.db.models import Q
 
 User = get_user_model()
 
@@ -138,3 +146,304 @@ class UserRetrieveUpdateView(generics.RetrieveUpdateAPIView):
 
     def get_object(self):
         return self.request.user
+
+
+# =====================================================
+# USER CONTENT CRUD VIEWSETS
+# =====================================================
+
+class UserContentViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing user's saved NASA content (APOD, Mars photos, EPIC, NEO, etc.)
+    
+    Endpoints:
+    - GET /api/users/content/ - List all saved content
+    - POST /api/users/content/ - Save new content
+    - GET /api/users/content/{id}/ - Get specific content
+    - PUT/PATCH /api/users/content/{id}/ - Update notes/tags
+    - DELETE /api/users/content/{id}/ - Remove saved content
+    
+    Filters:
+    - content_type: apod, mars_photo, epic, neo, exoplanet, space_weather, news, celestial, event
+    - is_favorite: true/false
+    - tags: comma-separated tags
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['notes', 'tags']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return UserContentListSerializer
+        return UserContentSerializer
+    
+    def get_queryset(self):
+        queryset = UserContent.objects.filter(user=self.request.user)
+        
+        # Filter by content type
+        content_type = self.request.query_params.get('content_type')
+        if content_type:
+            queryset = queryset.filter(content_type=content_type)
+        
+        # Filter by favorite
+        is_favorite = self.request.query_params.get('is_favorite')
+        if is_favorite is not None:
+            queryset = queryset.filter(is_favorite=is_favorite.lower() == 'true')
+        
+        # Filter by tags (comma-separated)
+        tags = self.request.query_params.get('tags')
+        if tags:
+            tag_list = [tag.strip() for tag in tags.split(',')]
+            for tag in tag_list:
+                queryset = queryset.filter(tags__contains=[tag])
+        
+        return queryset.select_related('user')
+    
+    @action(detail=False, methods=['get'])
+    def favorites(self, request):
+        """Get all favorited content"""
+        queryset = self.get_queryset().filter(is_favorite=True)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_favorite(self, request, pk=None):
+        """Toggle favorite status"""
+        content = self.get_object()
+        content.is_favorite = not content.is_favorite
+        content.save()
+        serializer = self.get_serializer(content)
+        return Response(serializer.data)
+
+
+class UserJournalViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing user journals, notes, observations, and AI conversations
+    
+    Endpoints:
+    - GET /api/users/journals/ - List all journals
+    - POST /api/users/journals/ - Create new journal entry
+    - GET /api/users/journals/{id}/ - Get specific journal
+    - PUT/PATCH /api/users/journals/{id}/ - Update journal
+    - DELETE /api/users/journals/{id}/ - Delete journal
+    
+    Filters:
+    - journal_type: note, observation, ai_conversation, discovery
+    - related_content: filter by related content ID
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['title', 'content']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return UserJournalListSerializer
+        return UserJournalSerializer
+    
+    def get_queryset(self):
+        queryset = UserJournal.objects.filter(user=self.request.user)
+        
+        # Filter by journal type
+        journal_type = self.request.query_params.get('journal_type')
+        if journal_type:
+            queryset = queryset.filter(journal_type=journal_type)
+        
+        # Filter by related content
+        related_content_id = self.request.query_params.get('related_content')
+        if related_content_id:
+            queryset = queryset.filter(related_content_id=related_content_id)
+        
+        return queryset.select_related('user', 'related_content')
+    
+    @action(detail=False, methods=['get'])
+    def observations(self, request):
+        """Get all observation journals with coordinates"""
+        queryset = self.get_queryset().filter(
+            journal_type='observation'
+        ).exclude(
+            Q(coordinates__isnull=True) | Q(coordinates={})
+        )
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def ai_conversations(self, request):
+        """Get all Murph AI conversation journals"""
+        queryset = self.get_queryset().filter(journal_type='ai_conversation')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class UserCollectionViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing user collections (playlists of saved content)
+    
+    Endpoints:
+    - GET /api/users/collections/ - List all collections
+    - POST /api/users/collections/ - Create new collection
+    - GET /api/users/collections/{id}/ - Get collection with items
+    - PUT/PATCH /api/users/collections/{id}/ - Update collection
+    - DELETE /api/users/collections/{id}/ - Delete collection
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.SearchFilter, filters.OrderingFilter]
+    search_fields = ['name', 'description']
+    ordering_fields = ['created_at', 'updated_at']
+    ordering = ['-created_at']
+    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return UserCollectionListSerializer
+        return UserCollectionSerializer
+    
+    def get_queryset(self):
+        return UserCollection.objects.filter(user=self.request.user).prefetch_related('items')
+    
+    @action(detail=True, methods=['post'])
+    def add_item(self, request, pk=None):
+        """Add item to collection"""
+        collection = self.get_object()
+        content_id = request.data.get('content_id')
+        
+        try:
+            content = UserContent.objects.get(id=content_id, user=request.user)
+            collection.items.add(content)
+            serializer = self.get_serializer(collection)
+            return Response(serializer.data)
+        except UserContent.DoesNotExist:
+            return Response(
+                {'error': 'Content not found or does not belong to user'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    @action(detail=True, methods=['post'])
+    def remove_item(self, request, pk=None):
+        """Remove item from collection"""
+        collection = self.get_object()
+        content_id = request.data.get('content_id')
+        
+        try:
+            content = UserContent.objects.get(id=content_id, user=request.user)
+            collection.items.remove(content)
+            serializer = self.get_serializer(collection)
+            return Response(serializer.data)
+        except UserContent.DoesNotExist:
+            return Response(
+                {'error': 'Content not found or does not belong to user'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+
+class UserSubscriptionViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for managing user subscriptions to events and notifications
+    
+    Endpoints:
+    - GET /api/users/subscriptions/ - List all subscriptions
+    - POST /api/users/subscriptions/ - Create new subscription
+    - GET /api/users/subscriptions/{id}/ - Get specific subscription
+    - PUT/PATCH /api/users/subscriptions/{id}/ - Update subscription settings
+    - DELETE /api/users/subscriptions/{id}/ - Remove subscription
+    """
+    serializer_class = UserSubscriptionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['created_at', 'event_date']
+    ordering = ['-created_at']
+    
+    def get_queryset(self):
+        queryset = UserSubscription.objects.filter(user=self.request.user)
+        
+        # Filter by active subscriptions
+        active_only = self.request.query_params.get('active_only')
+        if active_only and active_only.lower() == 'true':
+            queryset = queryset.filter(is_active=True)
+        
+        # Filter by notification type
+        notify_email = self.request.query_params.get('notify_email')
+        if notify_email is not None:
+            queryset = queryset.filter(notify_email=notify_email.lower() == 'true')
+        
+        notify_in_app = self.request.query_params.get('notify_in_app')
+        if notify_in_app is not None:
+            queryset = queryset.filter(notify_in_app=notify_in_app.lower() == 'true')
+        
+        return queryset.select_related('user')
+    
+    @action(detail=True, methods=['post'])
+    def toggle_active(self, request, pk=None):
+        """Toggle subscription active status"""
+        subscription = self.get_object()
+        subscription.is_active = not subscription.is_active
+        subscription.save()
+        serializer = self.get_serializer(subscription)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def upcoming(self, request):
+        """Get upcoming active subscriptions"""
+        from django.utils import timezone
+        queryset = self.get_queryset().filter(
+            is_active=True,
+            event_date__gte=timezone.now()
+        ).order_by('event_date')
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    ViewSet for viewing user activity log (read-only)
+    
+    Endpoints:
+    - GET /api/users/activities/ - List all activities
+    - GET /api/users/activities/{id}/ - Get specific activity
+    """
+    serializer_class = UserActivitySerializer
+    permission_classes = [permissions.IsAuthenticated]
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['timestamp']
+    ordering = ['-timestamp']
+    
+    def get_queryset(self):
+        queryset = UserActivity.objects.filter(user=self.request.user)
+        
+        # Filter by activity type
+        activity_type = self.request.query_params.get('activity_type')
+        if activity_type:
+            queryset = queryset.filter(activity_type=activity_type)
+        
+        # Limit results for performance
+        limit = self.request.query_params.get('limit')
+        if limit:
+            try:
+                queryset = queryset[:int(limit)]
+            except ValueError:
+                pass
+        
+        return queryset.select_related('user', 'content')
+    
+    @action(detail=False, methods=['get'])
+    def recent(self, request):
+        """Get recent activities (last 50)"""
+        queryset = self.get_queryset()[:50]
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+
+class UserProfileView(APIView):
+    """
+    Get comprehensive user profile with all aggregated stats
+    
+    Endpoint:
+    - GET /api/users/profile/ - Get user profile with stats
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        serializer = UserProfileSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
