@@ -8,11 +8,20 @@
 ## 🚀 Features
 
 ### 🌠 Core Astronomy Features
-- **Dynamic Sky Maps**: Explore stars, planets, exoplanets, and asteroids with an interactive sky map.  
+- **Dynamic Sky Maps**: Explore stars, planets, exoplanets, and asteroids with an interactive sky map powered by Stellarium Web Engine.  
+- **NASA-Powered Home**: Real-time data from multiple NASA APIs including APOD, space weather alerts, asteroid tracking, Earth & Mars imagery, and exoplanet statistics.
 - **Exoplanet Database**: Browse exoplanets with filters like distance, mass, radius, and habitability.  
-- **Asteroid & NEO Tracking**: Track near-Earth objects and get real-time updates.  
+- **Asteroid & NEO Tracking**: Track near-Earth objects with live NASA NeoWs data and hazard indicators.  
 - **Astronomical Event Calendar**: Stay informed about eclipses, meteor showers, and planetary alignments.  
-- **APOD (Astronomy Picture of the Day)**: Daily NASA images with descriptions; favorite and save them.  
+- **APOD (Astronomy Picture of the Day)**: Daily NASA images with descriptions as cinematic hero banners.  
+
+### 🛰️ NASA API Integrations (NEW!)
+- **Space Weather Alerts (DONKI)**: Real-time solar flares, coronal mass ejections, and space weather notifications
+- **Near-Earth Objects (NeoWs)**: Daily asteroid tracking with velocity, size, and miss distance data
+- **Earth from Space (EPIC)**: Latest imagery from DSCOVR satellite 1 million miles away
+- **Mars Rover Photos**: Recent photos from Curiosity rover with full metadata
+- **Exoplanet Archive**: Live count of confirmed exoplanets from NASA/Caltech database
+- **Animated Starry Background**: Canvas-based starfield with twinkling stars and shooting stars  
 
 ### 👤 User Features
 - **Research Journal / Observation Logs**: Keep detailed logs of your astronomical observations, attach images, and link them to celestial objects.  
@@ -38,10 +47,14 @@
 - **APIs**: OpenAI, NASA Open APIs (APOD, NEO, Exoplanet Archive), Spaceflight News API  
 
 ### Frontend
-- **Framework**: React (Vite)  
-- **UI**: Tailwind CSS  
-- **Data Fetching**: Axios / React Query  
-- **Visualization**: Aladin Lite for sky maps, Recharts/D3.js for dashboards  
+- **Framework**: React 19 (Vite)  
+- **UI**: Tailwind CSS 4.x with custom design system
+- **Animations**: Framer Motion for smooth transitions and effects
+- **3D Sky Rendering**: Stellarium Web Engine (WebAssembly + WebGL)
+- **State Management**: TanStack Query (React Query) for data fetching
+- **Data Fetching**: Axios with custom hooks
+- **Routing**: React Router v7
+- **Icons**: Lucide React  
 
 ### Deployment / Dev Tools
 - Git for version control  
@@ -94,8 +107,15 @@ python manage.py runserver
 ```bash
 cd ../frontend/astroworld-frontend
 npm install
+
+# Create .env file with NASA API key
+cp .env.example .env
+# Edit .env and add: VITE_NASA_API_KEY=your_nasa_api_key
+
 npm run dev
 ```
+
+**Get your free NASA API key**: Visit [https://api.nasa.gov/](https://api.nasa.gov/)
 
 Frontend will run at `http://localhost:5173` and backend API at `http://localhost:8000/api`.
 
@@ -116,13 +136,20 @@ celery -A astroworld beat -l info
 
 ## 🔑 Environment Variables
 
+### Backend (.env in astroworld-backend/)
 * `SECRET_KEY` → Django secret key
 * `DATABASE_URL` → PostgreSQL URL
 * `REDIS_URL` → Redis URL for Celery
-* `OPENAI_API_KEY` → OpenAI API key
-* `NASA_API_KEY` → NASA API key
+* `OPENAI_API_KEY` → OpenAI API key (for Murph AI)
+* `NASA_API_KEY` → NASA API key (backend)
 * `NEWSAPI_KEY` → News API key
 * `FRONTEND_URL` → React frontend URL
+
+### Frontend (.env in astroworld-frontend/)
+* `VITE_NASA_API_KEY` → NASA API key for client-side requests
+* `VITE_API_URL` → Backend API URL (default: http://localhost:8000/api)
+
+**See [NASA_INTEGRATION.md](astroworld-frontend/NASA_INTEGRATION.md) for detailed NASA API setup.**
 
 ---
 

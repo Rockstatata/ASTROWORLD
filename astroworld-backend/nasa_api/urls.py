@@ -1,6 +1,7 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from . import views_extended  # Import extended views
 
 app_name = 'nasa_api'
 
@@ -67,4 +68,32 @@ urlpatterns = [
     path('sync/', views.sync_nasa_data, name='sync-nasa-data'),
     path('dashboard/', views.get_dashboard_data, name='dashboard-data'),
     path('status/', views.get_api_status, name='api-status'),
+    
+    # ======= EXTENDED NASA APIs (New) =======
+    
+    # NASA Image and Video Library
+    path('images/search/', views_extended.nasa_image_search, name='images-search'),
+    path('images/popular/', views_extended.nasa_image_popular, name='images-popular'),
+    path('images/asset/<str:nasa_id>/', views_extended.nasa_image_asset, name='images-asset'),
+    path('images/metadata/<str:nasa_id>/', views_extended.nasa_image_metadata, name='images-metadata'),
+    
+    # TLE Satellite Tracking
+    path('tle/search/', views_extended.tle_search, name='tle-search'),
+    path('tle/<int:satellite_id>/', views_extended.tle_by_id, name='tle-by-id'),
+    path('tle/popular/', views_extended.tle_popular, name='tle-popular'),
+    
+    # GIBS (Global Imagery Browse Services)
+    path('gibs/layers/', views_extended.gibs_layers, name='gibs-layers'),
+    path('gibs/latest/<str:layer_id>/', views_extended.gibs_latest, name='gibs-latest'),
+    path('gibs/tile-url/', views_extended.gibs_tile_url, name='gibs-tile-url'),
+    path('gibs/wms-url/', views_extended.gibs_wms_url, name='gibs-wms-url'),
+    path('gibs/imagery/', views_extended.gibs_imagery, name='gibs-imagery'),
+    
+    # Backend-proxied NASA API endpoints (no API key needed on frontend)
+    path('proxy/apod/', views_extended.nasa_apod, name='proxy-apod'),
+    path('proxy/neo/', views_extended.nasa_neo_feed, name='proxy-neo'),
+    path('proxy/mars/', views_extended.nasa_mars_photos, name='proxy-mars'),
+    path('proxy/epic/', views_extended.nasa_epic, name='proxy-epic'),
+    path('proxy/donki/', views_extended.nasa_donki, name='proxy-donki'),
+    path('proxy/exoplanets/count/', views_extended.nasa_exoplanets_count, name='proxy-exoplanets-count'),
 ]

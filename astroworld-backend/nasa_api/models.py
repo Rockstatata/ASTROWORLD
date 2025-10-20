@@ -182,3 +182,65 @@ class APIUsageLog(models.Model):
     response_time = models.FloatField()
     status_code = models.IntegerField()
     error_message = models.TextField(blank=True)
+
+# NASA Image and Video Library
+class NASAMediaItem(BaseNASAModel):
+    MEDIA_TYPE_CHOICES = [
+        ('image', 'Image'),
+        ('video', 'Video'),
+        ('audio', 'Audio'),
+    ]
+    
+    title = models.CharField(max_length=500)
+    description = models.TextField(blank=True)
+    media_type = models.CharField(max_length=10, choices=MEDIA_TYPE_CHOICES)
+    center = models.CharField(max_length=100, blank=True)  # NASA center (e.g., JPL, GSFC)
+    date_created = models.DateTimeField(null=True, blank=True)
+    keywords = models.JSONField(default=list)
+    photographer = models.CharField(max_length=255, blank=True)
+    location = models.CharField(max_length=255, blank=True)
+    
+    # Asset URLs
+    preview_url = models.URLField(blank=True)
+    thumbnail_url = models.URLField(blank=True)
+    original_url = models.URLField(blank=True)
+    
+    # Additional metadata
+    description_508 = models.TextField(blank=True)  # Accessibility description
+    secondary_creator = models.CharField(max_length=255, blank=True)
+    album = models.JSONField(default=list)
+    
+    class Meta:
+        verbose_name = "NASA Media Item"
+        verbose_name_plural = "NASA Media Items"
+        ordering = ['-date_created']
+
+# Satellite TLE (Two-Line Element) Data
+class Satellite(models.Model):
+    SATELLITE_TYPE_CHOICES = [
+        ('LEO', 'Low Earth Orbit'),
+        ('MEO', 'Medium Earth Orbit'),
+        ('GEO', 'Geostationary Orbit'),
+        ('HEO', 'Highly Elliptical Orbit'),
+        ('DEEP', 'Deep Space'),
+    ]
+    
+    satellite_id = models.IntegerField(unique=True)  # NORAD Catalog Number
+    name = models.CharField(max_length=255)
+    int_designator = models.CharField(max_length=20, blank=True)  # International designator
+    orbit_type = models.CharField(max_length=10, choices=SATELLITE_TYPE_CHOICES, blank=True)
+    launch_date = models.DateField(null=True, blank=True)
+    decay_date = models.DateField(null=True, blank=True)
+    
+    # Latest TLE data
+    tle_line1 = models.CharField(max_length=100)
+    tle_line2 = models.CharField(max_length=100)
+    tle_date = models.DateTimeField()
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        verbose_name = "Satellite"
+        verbose_name_plural = "Satellites"
+        ordering = ['name']

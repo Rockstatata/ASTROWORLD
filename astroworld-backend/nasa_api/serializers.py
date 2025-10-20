@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     APOD, NearEarthObject, NEOCloseApproach, MarsRover, MarsRoverPhoto,
     EPICImage, Exoplanet, SpaceWeatherEvent, NaturalEvent, NaturalEventGeometry,
-    UserSavedItem, UserTrackedObject
+    UserSavedItem, UserTrackedObject, NASAMediaItem, Satellite
 )
 
 class APODSerializer(serializers.ModelSerializer):
@@ -272,3 +272,19 @@ class UserTrackedObjectSerializer(serializers.ModelSerializer):
                 return None
         # Add more object types as needed
         return None
+
+
+# New serializers for extended NASA APIs
+
+class NASAMediaItemSerializer(serializers.ModelSerializer):
+    """Serializer for NASA Image and Video Library items"""
+    class Meta:
+        model = NASAMediaItem
+        fields = '__all__'
+
+
+class SatelliteSerializer(serializers.ModelSerializer):
+    """Serializer for satellite TLE data"""
+    class Meta:
+        model = Satellite
+        fields = '__all__'

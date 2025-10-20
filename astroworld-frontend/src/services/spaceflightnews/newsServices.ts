@@ -12,6 +12,18 @@ export interface NewsAuthor {
   };
 }
 
+export interface NewsLaunch {
+  id: string;
+  name: string;
+  mission?: string;
+}
+
+export interface NewsEvent {
+  id: string;
+  name: string;
+  type?: string;
+}
+
 export interface SpaceflightNews {
   id: number;
   nasa_id: string;
@@ -24,8 +36,8 @@ export interface SpaceflightNews {
   summary: string;
   published_at: string;
   featured: boolean;
-  launches: any[];
-  events: any[];
+  launches: NewsLaunch[];
+  events: NewsEvent[];
   article_type: 'article' | 'blog' | 'report';
   created_at: string;
   updated_at: string;
@@ -52,26 +64,26 @@ export const newsAPI = {
 
   // Spaceflight News endpoints
   getNews: (filters: NewsFilters = {}): Promise<{ data: { results: SpaceflightNews[], count: number } }> =>
-    axios.get('/api/spaceflight/news/', { params: filters }),
+    axios.get('/spaceflight/news/', { params: filters }),
 
   getNewsById: (nasa_id: string): Promise<{ data: SpaceflightNews }> =>
-    axios.get(`/api/spaceflight/news/${nasa_id}/`),
+    axios.get(`/spaceflight/news/${nasa_id}/`),
 
   getLatestNews: (limit: number = 10, type?: string): Promise<{ data: SpaceflightNews[] }> =>
-    axios.get('/api/spaceflight/news/latest/', { params: { limit, type } }),
+    axios.get('/spaceflight/news/latest/', { params: { limit, type } }),
 
   getFeaturedNews: (): Promise<{ data: SpaceflightNews[] }> =>
-    axios.get('/api/spaceflight/news/featured/'),
+    axios.get('/spaceflight/news/featured/'),
 
   getNewsSites: (): Promise<{ data: string[] }> =>
-    axios.get('/api/spaceflight/news/sites/'),
+    axios.get('/spaceflight/news/sites/'),
 
   getUserNewsPreferences: (): Promise<{ data: UserNewsPreference }> =>
-    axios.get('/api/spaceflight/news/preferences/'),
+    axios.get('/spaceflight/news/preferences/'),
 
   updateNewsPreferences: (preferences: Partial<UserNewsPreference>): Promise<{ data: UserNewsPreference }> =>
-    axios.put('/api/spaceflight/news/preferences/', preferences),
+    axios.put('/spaceflight/news/preferences/', preferences),
 
-  syncSpaceflightNews: (daysBack?: number, types?: string[]): Promise<{ data: { message: string, results: any } }> =>
-    axios.post('/api/spaceflight/news/sync/', { days_back: daysBack, types }),
+  syncSpaceflightNews: (daysBack?: number, types?: string[]): Promise<{ data: { message: string, results: SpaceflightNews[] } }> =>
+    axios.post('/spaceflight/news/sync/', { days_back: daysBack, types }),
 };
