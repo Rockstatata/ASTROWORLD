@@ -221,6 +221,8 @@ export const useRecentActivities = () => {
 export const USER_PROFILE_KEYS = {
   all: ['user-profile'] as const,
   detail: () => [...USER_PROFILE_KEYS.all, 'detail'] as const,
+  public: () => [...USER_PROFILE_KEYS.all, 'public'] as const,
+  publicDetail: (userId: number) => [...USER_PROFILE_KEYS.public(), userId] as const,
 };
 
 // =====================================================
@@ -236,6 +238,37 @@ export const useUserProfile = () => {
     queryFn: async () => {
       const response = await userInteractionsAPI.profile.get();
       return response.data;
+    },
+  });
+};
+
+/**
+ * Hook to fetch public profile of any user
+ */
+export const usePublicProfile = (userId: number) => {
+  return useQuery({
+    queryKey: USER_PROFILE_KEYS.publicDetail(userId),
+    queryFn: async () => {
+      const response = await userInteractionsAPI.profile.getPublic(userId);
+      return response.data;
+    },
+    enabled: !!userId,
+  });
+};
+
+/**
+ * Hook to update user profile
+ */
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: { full_name?: string; bio?: string; profile_picture?: string }) => {
+      const response = await userInteractionsAPI.profile.update(data);
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: USER_PROFILE_KEYS.detail() });
     },
   });
 };

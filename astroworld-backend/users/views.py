@@ -7,7 +7,7 @@ from .serializers import (
     RegisterSerializer, UserSerializer, UserContentSerializer, UserContentListSerializer,
     UserJournalSerializer, UserJournalListSerializer, UserCollectionSerializer,
     UserCollectionListSerializer, UserSubscriptionSerializer, UserActivitySerializer,
-    UserProfileSerializer
+    UserProfileSerializer, PublicUserSerializer
 )
 from .models import UserContent, UserJournal, UserCollection, UserSubscription, UserActivity
 from django.core.mail import send_mail
@@ -425,7 +425,7 @@ class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
             except ValueError:
                 pass
         
-        return queryset.select_related('user', 'content')
+        return queryset.select_related('user')
     
     @action(detail=False, methods=['get'])
     def recent(self, request):
@@ -437,13 +437,192 @@ class UserActivityViewSet(viewsets.ReadOnlyModelViewSet):
 
 class UserProfileView(APIView):
     """
-    Get comprehensive user profile with all aggregated stats
+    Get and update comprehensive user profile with all aggregated stats
     
-    Endpoint:
+    Endpoints:
     - GET /api/users/profile/ - Get user profile with stats
+    - PATCH /api/users/profile/ - Update user profile
     """
     permission_classes = [permissions.IsAuthenticated]
     
     def get(self, request):
         serializer = UserProfileSerializer(request.user, context={'request': request})
+        return Response(serializer.data)
+    
+    def patch(self, request):
+        """Update user profile"""
+        user = request.user
+        allowed_fields = ['full_name', 'bio', 'profile_picture']
+        
+        # Update only allowed fields
+        for field in allowed_fields:
+            if field in request.data:
+                setattr(user, field, request.data[field])
+        
+        user.save()
+        serializer = UserProfileSerializer(user, context={'request': request})
+        return Response(serializer.data)
+
+
+class PublicProfileView(APIView):
+    """
+    Get public profile information for any user
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, user_id):
+        """Get public profile for a specific user"""
+        try:
+            user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = PublicUserSerializer(user, context={'request': request})
+        return Response(serializer.data)
+
+
+# =====================================================
+# MESSAGING VIEWS
+# =====================================================
+
+class MessageThreadListView(APIView):
+    """
+    List all message threads for the current user
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request):
+        from .models import MessageThread
+        from .serializers import MessageThreadSerializer
+        
+        user = request.user
+        threads = MessageThread.objects.filter(
+            Q(user1=user) | Q(user2=user)
+        ).select_related('user1', 'user2', 'last_message').order_by('-last_activity')
+        
+        serializer = MessageThreadSerializer(threads, many=True, context={'request': request})
+        return Response(serializer.data)
+
+
+class MessageThreadDetailView(APIView):
+    """
+    Get messages in a specific thread
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, thread_id):
+        from .models import MessageThread, UserMessage
+        from .serializers import UserMessageSerializer, MessageThreadSerializer
+        
+        user = request.user
+        
+        try:
+            thread = MessageThread.objects.get(
+                id=thread_id
+            )
+            # Check if user is part of this thread
+            if thread.user1 != user and thread.user2 != user:
+                return Response({'error': 'Thread not found'}, status=status.HTTP_404_NOT_FOUND)
+        except MessageThread.DoesNotExist:
+            return Response({'error': 'Thread not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get messages in this thread
+        messages = UserMessage.objects.filter(
+            Q(sender=thread.user1, recipient=thread.user2) |
+            Q(sender=thread.user2, recipient=thread.user1)
+        ).order_by('created_at')
+        
+        # Mark messages as read for current user
+        unread_messages = messages.filter(recipient=user, is_read=False)
+        for message in unread_messages:
+            message.mark_as_read()
+        
+        # Reset unread count for current user
+        thread.reset_unread_count(user)
+        
+        message_serializer = UserMessageSerializer(messages, many=True)
+        thread_serializer = MessageThreadSerializer(thread, context={'request': request})
+        
+        return Response({
+            'thread': thread_serializer.data,
+            'messages': message_serializer.data
+        })
+
+
+class SendMessageView(APIView):
+    """
+    Send a message to another user
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def post(self, request):
+        from .models import MessageThread, UserMessage
+        from .serializers import UserMessageSerializer
+        
+        sender = request.user
+        recipient_id = request.data.get('recipient_id')
+        message_content = request.data.get('message', '').strip()
+        
+        if not recipient_id or not message_content:
+            return Response(
+                {'error': 'recipient_id and message are required'}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            recipient = User.objects.get(id=recipient_id)
+        except User.DoesNotExist:
+            return Response({'error': 'Recipient not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        if sender == recipient:
+            return Response({'error': 'Cannot send message to yourself'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Get or create thread
+        thread, created = MessageThread.get_or_create_thread(sender, recipient)
+        
+        # Create message
+        message = UserMessage.objects.create(
+            sender=sender,
+            recipient=recipient,
+            message=message_content
+        )
+        
+        # Update thread
+        thread.last_message = message
+        thread.increment_unread_count(recipient)
+        thread.save()
+        
+        serializer = UserMessageSerializer(message)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class UserMessagesView(APIView):
+    """
+    Get messages between current user and another user
+    """
+    permission_classes = [permissions.IsAuthenticated]
+    
+    def get(self, request, user_id):
+        from .models import UserMessage
+        from .serializers import UserMessageSerializer
+        
+        current_user = request.user
+        
+        try:
+            other_user = User.objects.get(id=user_id)
+        except User.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+        
+        # Get messages between these two users
+        messages = UserMessage.objects.filter(
+            Q(sender=current_user, recipient=other_user) |
+            Q(sender=other_user, recipient=current_user)
+        ).order_by('created_at')
+        
+        # Mark messages from other user as read
+        unread_messages = messages.filter(sender=other_user, recipient=current_user, is_read=False)
+        for message in unread_messages:
+            message.mark_as_read()
+        
+        serializer = UserMessageSerializer(messages, many=True)
         return Response(serializer.data)

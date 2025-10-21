@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { useParams } from 'react-router-dom';
 import {
   Bookmark,
   BookOpen,
@@ -14,10 +15,15 @@ import {
   Plus,
   Edit,
   Trash2,
-  ExternalLink
+  ExternalLink,
+  Users,
+  UserPlus,
+  Camera,
+  Save,
+  X
 } from 'lucide-react';
 import Layout from '../../components/Layout';
-import { useUserProfile } from '../../hooks/useUserInteractions';
+import { useUserProfile, useUpdateProfile, usePublicProfile } from '../../hooks/useUserInteractions';
 import { useUserContent } from '../../hooks/useUserContent';
 import { useUserJournals } from '../../hooks/useUserJournals';
 import { useUserCollections } from '../../hooks/useUserCollections';
@@ -26,28 +32,114 @@ import { useDeleteContent } from '../../hooks/useUserContent';
 import { useDeleteJournal } from '../../hooks/useUserJournals';
 import { useDeleteCollection } from '../../hooks/useUserCollections';
 import { useDeleteSubscription } from '../../hooks/useUserInteractions';
+import { useFollowing, useFollowers, useMySavedPapers } from '../../hooks/useExplore';
 import type { ContentType } from '../../services/userInteractions';
+import type { PublicUser } from '../../types/explore';
+import UserCard from '../../components/explore/UserCard';
+import PaperListCard from '../../components/explore/PaperListCard';
 
-type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity';
+type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers';
 
 const Profile: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('saved');
+  const { userId } = useParams<{ userId?: string }>();
+  const [activeTab, setActiveTab] = useState<TabType>(userId ? 'journals' : 'saved');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<ContentType | 'all'>('all');
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedProfile, setEditedProfile] = useState({
+    full_name: '',
+    bio: '',
+    profile_picture: ''
+  });
 
-  // Fetch data
+  // Always call hooks (React rules)
   const { data: profile, isLoading: profileLoading } = useUserProfile();
+  const { data: publicProfile, isLoading: publicProfileLoading } = usePublicProfile(
+    userId ? parseInt(userId) : 0
+  );
   const { data: savedContent, isLoading: contentLoading } = useUserContent();
   const { data: journals, isLoading: journalsLoading } = useUserJournals();
   const { data: collections, isLoading: collectionsLoading } = useUserCollections();
   const { data: subscriptions, isLoading: subscriptionsLoading } = useUserSubscriptions();
   const { data: activities, isLoading: activitiesLoading } = useRecentActivities();
+  const { data: following, isLoading: followingLoading } = useFollowing();
+  const { data: followers, isLoading: followersLoading } = useFollowers();
+  const { data: savedPapers, isLoading: papersLoading } = useMySavedPapers();
 
   // Delete mutations
   const deleteContent = useDeleteContent();
   const deleteJournal = useDeleteJournal();
   const deleteCollection = useDeleteCollection();
   const deleteSubscription = useDeleteSubscription();
+
+  // Update profile mutation
+  const updateProfile = useUpdateProfile();
+
+  // Initialize edit form when profile loads
+  React.useEffect(() => {
+    if (profile) {
+      setEditedProfile({
+        full_name: profile.full_name || '',
+        bio: profile.bio || '',
+        profile_picture: profile.profile_picture || ''
+      });
+    }
+  }, [profile]);
+
+  // Determine if viewing own profile or another user's profile
+  const isOwnProfile = !userId;
+  
+  // Use appropriate profile data
+  const currentProfile = isOwnProfile ? profile : publicProfile;
+  const currentProfileLoading = isOwnProfile ? profileLoading : publicProfileLoading;
+
+  // For public profiles, only show limited tabs
+  const getTabsForProfile = () => {
+    if (isOwnProfile) {
+      return [
+        { id: 'saved' as TabType, label: 'Saved Content', icon: Bookmark, count: profile?.saved_content_count },
+        { id: 'papers' as TabType, label: 'Research Papers', icon: BookOpen, count: savedPapers?.count || 0 },
+        { id: 'journals' as TabType, label: 'Journals', icon: BookOpen, count: profile?.journals_count },
+        { id: 'collections' as TabType, label: 'Collections', icon: FolderOpen, count: profile?.collections_count },
+        { id: 'following' as TabType, label: 'Following', icon: UserPlus, count: following?.length || 0 },
+        { id: 'followers' as TabType, label: 'Followers', icon: Users, count: followers?.length || 0 },
+        { id: 'subscriptions' as TabType, label: 'Subscriptions', icon: Bell, count: profile?.subscriptions_count },
+        { id: 'activity' as TabType, label: 'Activity', icon: Activity, count: activities?.length },
+      ];
+    } else {
+      // Public profile - only show public information
+      return [
+        { id: 'journals' as TabType, label: 'Public Journals', icon: BookOpen, count: publicProfile?.public_journals_count },
+        { id: 'collections' as TabType, label: 'Public Collections', icon: FolderOpen, count: publicProfile?.public_collections_count },
+      ];
+    }
+  };
+
+  if (currentProfileLoading) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-purple-500 mx-auto mb-4"></div>
+            <p className="text-gray-400">Loading profile...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  if (!isOwnProfile && !currentProfile) {
+    return (
+      <Layout>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <p className="text-gray-400 text-lg">User not found</p>
+            <p className="text-gray-500 text-sm mt-2">This user profile doesn't exist or is private.</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   // Filter content based on search and type
   const filteredContent = savedContent?.filter((item) => {
@@ -62,13 +154,7 @@ const Profile: React.FC = () => {
     item.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const tabs = [
-    { id: 'saved' as TabType, label: 'Saved Content', icon: Bookmark, count: profile?.saved_content_count },
-    { id: 'journals' as TabType, label: 'Journals', icon: BookOpen, count: profile?.journals_count },
-    { id: 'collections' as TabType, label: 'Collections', icon: FolderOpen, count: profile?.collections_count },
-    { id: 'subscriptions' as TabType, label: 'Subscriptions', icon: Bell, count: profile?.subscriptions_count },
-    { id: 'activity' as TabType, label: 'Activity', icon: Activity, count: activities?.length },
-  ];
+  const tabs = getTabsForProfile();
 
   const contentTypes: { value: ContentType | 'all'; label: string }[] = [
     { value: 'all', label: 'All Types' },
@@ -109,8 +195,12 @@ const Profile: React.FC = () => {
             <div className="flex items-center gap-6">
               {/* Avatar */}
               <div className="relative">
-                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-3xl font-bold">
-                  {profile?.username?.charAt(0).toUpperCase()}
+                <div className="h-24 w-24 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
+                  {currentProfile?.profile_picture ? (
+                    <img src={currentProfile.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    currentProfile?.username?.charAt(0).toUpperCase()
+                  )}
                 </div>
                 <div className="absolute -bottom-2 -right-2 bg-green-500 rounded-full p-2">
                   <Star className="h-4 w-4 text-white" fill="currentColor" />
@@ -120,15 +210,15 @@ const Profile: React.FC = () => {
               {/* User Info */}
               <div>
                 <h1 className="text-3xl font-bold text-white mb-2">
-                  {profile?.full_name || profile?.username}
+                  {currentProfile?.full_name || currentProfile?.username}
                 </h1>
-                <p className="text-gray-400 mb-1">@{profile?.username}</p>
-                {profile?.bio && (
-                  <p className="text-gray-300 max-w-2xl">{profile.bio}</p>
+                <p className="text-gray-400 mb-1">@{currentProfile?.username}</p>
+                {currentProfile?.bio && (
+                  <p className="text-gray-300 max-w-2xl">{currentProfile.bio}</p>
                 )}
                 <div className="flex items-center gap-2 mt-2 text-sm text-gray-400">
                   <Calendar className="h-4 w-4" />
-                  <span>Joined {new Date(profile?.date_joined || '').toLocaleDateString('en-US', { 
+                  <span>Joined {new Date(currentProfile?.date_joined || '').toLocaleDateString('en-US', { 
                     month: 'long', 
                     year: 'numeric' 
                   })}</span>
@@ -136,11 +226,16 @@ const Profile: React.FC = () => {
               </div>
             </div>
 
-            {/* Edit Button */}
-            <button className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-2">
-              <Edit className="h-4 w-4" />
-              Edit Profile
-            </button>
+            {/* Edit Button - only show for own profile */}
+            {isOwnProfile && (
+              <button 
+                onClick={() => setIsEditingProfile(true)}
+                className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white border border-white/20 transition-all flex items-center gap-2"
+              >
+                <Edit className="h-4 w-4" />
+                Edit Profile
+              </button>
+            )}
           </div>
 
           {/* Stats */}
@@ -154,8 +249,12 @@ const Profile: React.FC = () => {
                   <Bookmark className="h-5 w-5 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{profile?.saved_content_count || 0}</p>
-                  <p className="text-xs text-gray-400">Saved Items</p>
+                  <p className="text-2xl font-bold text-white">
+                    {isOwnProfile ? (profile?.saved_content_count || 0) : '—'}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {isOwnProfile ? 'Saved Items' : 'Private'}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -169,8 +268,12 @@ const Profile: React.FC = () => {
                   <BookOpen className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{profile?.journals_count || 0}</p>
-                  <p className="text-xs text-gray-400">Journals</p>
+                  <p className="text-2xl font-bold text-white">
+                    {isOwnProfile ? (profile?.journals_count || 0) : (publicProfile?.public_journals_count || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {isOwnProfile ? 'Journals' : 'Public Journals'}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -181,11 +284,19 @@ const Profile: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-500/20 rounded-lg">
-                  <FolderOpen className="h-5 w-5 text-green-400" />
+                  {isOwnProfile ? (
+                    <FolderOpen className="h-5 w-5 text-green-400" />
+                  ) : (
+                    <Users className="h-5 w-5 text-green-400" />
+                  )}
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{profile?.collections_count || 0}</p>
-                  <p className="text-xs text-gray-400">Collections</p>
+                  <p className="text-2xl font-bold text-white">
+                    {isOwnProfile ? (profile?.collections_count || 0) : (publicProfile?.followers_count || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {isOwnProfile ? 'Collections' : 'Followers'}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -196,11 +307,19 @@ const Profile: React.FC = () => {
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-orange-500/20 rounded-lg">
-                  <TrendingUp className="h-5 w-5 text-orange-400" />
+                  {isOwnProfile ? (
+                    <TrendingUp className="h-5 w-5 text-orange-400" />
+                  ) : (
+                    <UserPlus className="h-5 w-5 text-orange-400" />
+                  )}
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-white">{activities?.length || 0}</p>
-                  <p className="text-xs text-gray-400">Activities</p>
+                  <p className="text-2xl font-bold text-white">
+                    {isOwnProfile ? (activities?.length || 0) : (publicProfile?.following_count || 0)}
+                  </p>
+                  <p className="text-xs text-gray-400">
+                    {isOwnProfile ? 'Activities' : 'Following'}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -233,7 +352,7 @@ const Profile: React.FC = () => {
         </div>
 
         {/* Search and Filter Bar */}
-        {(activeTab === 'saved' || activeTab === 'journals') && (
+        {(activeTab === 'saved' || activeTab === 'journals') && isOwnProfile && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -275,8 +394,8 @@ const Profile: React.FC = () => {
 
         {/* Tab Content */}
         <div className="min-h-[400px]">
-          {/* Saved Content Tab */}
-          {activeTab === 'saved' && (
+          {/* Saved Content Tab - only for own profile */}
+          {activeTab === 'saved' && isOwnProfile && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {contentLoading ? (
                 <div className="col-span-full text-center py-12">
@@ -553,8 +672,8 @@ const Profile: React.FC = () => {
             </div>
           )}
 
-          {/* Subscriptions Tab */}
-          {activeTab === 'subscriptions' && (
+          {/* Subscriptions Tab - only for own profile */}
+          {activeTab === 'subscriptions' && isOwnProfile && (
             <div className="space-y-4">
               {subscriptionsLoading ? (
                 <div className="text-center py-12">
@@ -636,8 +755,92 @@ const Profile: React.FC = () => {
             </div>
           )}
 
-          {/* Activity Tab */}
-          {activeTab === 'activity' && (
+          {/* Research Papers Tab - only for own profile */}
+          {activeTab === 'papers' && isOwnProfile && (
+            <div className="space-y-4">
+              {papersLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : savedPapers && savedPapers.results && savedPapers.results.length > 0 ? (
+                savedPapers.results.map((userPaper, index) => (
+                  <motion.div
+                    key={userPaper.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <PaperListCard paper={userPaper.paper} showActions={false} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <BookOpen className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">No saved papers yet</p>
+                  <p className="text-gray-500 text-sm mt-2">Save research papers from the Explore page!</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Following Tab */}
+          {activeTab === 'following' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {followingLoading ? (
+                <div className="col-span-full text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : following && following.length > 0 ? (
+                following.map((follow, index) => (
+                  <motion.div
+                    key={follow.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <UserCard user={follow.following_profile} showFollowButton={true} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <UserPlus className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">Not following anyone yet</p>
+                  <p className="text-gray-500 text-sm mt-2">Discover researchers in the Explore page!</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Followers Tab */}
+          {activeTab === 'followers' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {followersLoading ? (
+                <div className="col-span-full text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : followers && followers.length > 0 ? (
+                followers.map((follow, index) => (
+                  <motion.div
+                    key={follow.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <UserCard user={follow.follower_profile} showFollowButton={true} />
+                  </motion.div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-12">
+                  <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">No followers yet</p>
+                  <p className="text-gray-500 text-sm mt-2">Share your cosmic discoveries to attract followers!</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Activity Tab - only for own profile */}
+          {activeTab === 'activity' && isOwnProfile && (
             <div className="space-y-3">
               {activitiesLoading ? (
                 <div className="text-center py-12">
@@ -681,7 +884,148 @@ const Profile: React.FC = () => {
           )}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditingProfile && (
+        <EditProfileModal
+          profile={editedProfile}
+          onClose={() => setIsEditingProfile(false)}
+          onSave={(data) => {
+            updateProfile.mutate(data);
+            setIsEditingProfile(false);
+          }}
+          isLoading={updateProfile.isPending}
+        />
+      )}
     </Layout>
+  );
+};
+
+// Edit Profile Modal Component
+const EditProfileModal: React.FC<{
+  profile: { full_name: string; bio: string; profile_picture: string };
+  onClose: () => void;
+  onSave: (data: { full_name?: string; bio?: string; profile_picture?: string }) => void;
+  isLoading?: boolean;
+}> = ({ profile, onClose, onSave, isLoading }) => {
+  const [formData, setFormData] = React.useState(profile);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(formData);
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-white/10 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+            <Edit className="h-6 w-6" />
+            Edit Profile
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5 text-gray-400" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Profile Picture */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Profile Picture URL
+            </label>
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="h-20 w-20 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white text-2xl font-bold overflow-hidden">
+                  {formData.profile_picture ? (
+                    <img src={formData.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                    formData.full_name?.charAt(0).toUpperCase() || '?'
+                  )}
+                </div>
+                <button 
+                  type="button"
+                  className="absolute bottom-0 right-0 p-1 bg-purple-500 rounded-full hover:bg-purple-600 transition-colors"
+                >
+                  <Camera className="h-3 w-3 text-white" />
+                </button>
+              </div>
+              <input
+                type="text"
+                value={formData.profile_picture}
+                onChange={(e) => setFormData({ ...formData, profile_picture: e.target.value })}
+                placeholder="Enter image URL"
+                className="flex-1 px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+              />
+            </div>
+          </div>
+
+          {/* Full Name */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={formData.full_name}
+              onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+              placeholder="Enter your full name"
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+          </div>
+
+          {/* Bio */}
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-2">
+              Bio
+            </label>
+            <textarea
+              value={formData.bio}
+              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+              placeholder="Tell us about yourself..."
+              rows={4}
+              className="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+            />
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4 pt-4 border-t border-white/10">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 text-white transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="flex-1 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-medium transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? (
+                <>
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="h-4 w-4" />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
   );
 };
 

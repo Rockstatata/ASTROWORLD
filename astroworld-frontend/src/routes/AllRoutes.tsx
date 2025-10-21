@@ -11,6 +11,8 @@ import Murph_AI from '../pages/murph_ai/Murph_AI';
 import Events from '../pages/events/Events';
 import News from '../pages/news/News';
 import Profile from '../pages/profile/Profile';
+import MessagingPage from '../pages/messaging/MessagingPage';
+import DirectMessaging from '../pages/messaging/DirectMessaging';
 
 const router = createBrowserRouter([
   {
@@ -78,7 +80,31 @@ const router = createBrowserRouter([
     ),
   },
   {
+    path: '/messages',
+    element: (
+      <ProtectedRoute>
+        <MessagingPage />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/messages/chat',
+    element: (
+      <ProtectedRoute>
+        <DirectMessaging />
+      </ProtectedRoute>
+    ),
+  },
+  {
     path: '/profile',
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/profile/:userId',
     element: (
       <ProtectedRoute>
         <Profile />

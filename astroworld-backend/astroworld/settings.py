@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'nasa_api',
     'murphai',
     'spaceflightnews',
+    'research_papers',
     'rest_framework_simplejwt.token_blacklist', 
 ]
 
@@ -135,6 +136,15 @@ if USE_CELERY:
             'sync-weekly-spaceflight-news': {
                 'task': 'spaceflightnews.tasks.sync_weekly_spaceflight_news',
                 'schedule': crontab(hour=1, minute=0, day_of_week=1),  # 1 AM Mondays
+            },
+            # Research Papers tasks
+            'sync-daily-research-papers': {
+                'task': 'research_papers.tasks.sync_daily_research_papers',
+                'schedule': crontab(hour=5, minute=0),  # 5 AM daily
+            },
+            'sync-weekly-research-papers': {
+                'task': 'research_papers.tasks.sync_weekly_research_papers',
+                'schedule': crontab(hour=5, minute=30, day_of_week=0),  # 5:30 AM Sundays
             },
         }
     except ImportError:

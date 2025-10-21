@@ -33,15 +33,23 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              {['Home', 'Explore', 'SkyMap', 'News', 'MurphAI'].map((item) => (
-                <a
-                  key={item}
-                  href={`${item.toLowerCase()}`}
+              {[
+                { name: 'Home', path: '/home' },
+                { name: 'Explore', path: '/explore' },
+                { name: 'SkyMap', path: '/skymap' },
+                { name: 'Events', path: '/events' },
+                { name: 'News', path: '/news' },
+                { name: 'Messages', path: '/messages' },
+                { name: 'MurphAI', path: '/murphai' }
+              ].map(({ name, path }) => (
+                <Link
+                  key={name}
+                  to={path}
                   className="relative font-inter text-white hover:text-space-blue transition-all duration-300 px-3 py-2 text-sm font-medium group"
                 >
-                  {item}
+                  {name}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-space-blue transition-all duration-300 group-hover:w-full"></span>
-                </a>
+                </Link>
               ))}
               <div className="flex items-center space-x-4">
               {user ? (
@@ -87,7 +95,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gray-900/90 backdrop-blur-xl border-b border-space-violet/30 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'MurphAI'].map((item) => (
+            {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'Messages', 'MurphAI'].map((item) => (
               <a
                 key={item}
                 href={`${item.toLowerCase()}`}

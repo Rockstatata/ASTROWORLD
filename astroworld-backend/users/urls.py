@@ -14,7 +14,22 @@ from users.views import (
     UserCollectionViewSet,
     UserSubscriptionViewSet,
     UserActivityViewSet,
-    UserProfileView
+    UserProfileView,
+    PublicProfileView,
+    # Messaging views
+    MessageThreadListView,
+    MessageThreadDetailView,
+    SendMessageView,
+    UserMessagesView
+)
+from users.explore_views import (
+    ExploreUsersViewSet,
+    ExplorePapersViewSet,
+    ExploreJournalsViewSet,
+    UserPaperViewSet,
+    FollowViewSet,
+    LikeViewSet,
+    CommentViewSet
 )
 from . import views
 
@@ -27,6 +42,16 @@ router.register(r'journals', UserJournalViewSet, basename='journal')
 router.register(r'collections', UserCollectionViewSet, basename='collection')
 router.register(r'subscriptions', UserSubscriptionViewSet, basename='subscription')
 router.register(r'activities', UserActivityViewSet, basename='activity')
+
+# Explore router
+explore_router = DefaultRouter()
+explore_router.register(r'users', ExploreUsersViewSet, basename='explore-users')
+explore_router.register(r'papers', ExplorePapersViewSet, basename='explore-papers')
+explore_router.register(r'journals', ExploreJournalsViewSet, basename='explore-journals')
+explore_router.register(r'my-papers', UserPaperViewSet, basename='my-papers')
+explore_router.register(r'follow', FollowViewSet, basename='follow')
+explore_router.register(r'likes', LikeViewSet, basename='likes')
+explore_router.register(r'comments', CommentViewSet, basename='comments')
 
 urlpatterns = [
     # Authentication endpoints
@@ -41,7 +66,17 @@ urlpatterns = [
     
     # User profile with stats
     path('profile/', UserProfileView.as_view(), name='profile'),
+    path('profile/<int:user_id>/', PublicProfileView.as_view(), name='public-profile'),
+    
+    # Messaging endpoints
+    path('messages/threads/', MessageThreadListView.as_view(), name='message-threads'),
+    path('messages/threads/<int:thread_id>/', MessageThreadDetailView.as_view(), name='message-thread-detail'),
+    path('messages/send/', SendMessageView.as_view(), name='send-message'),
+    path('messages/with/<int:user_id>/', UserMessagesView.as_view(), name='user-messages'),
     
     # User interaction endpoints (CRUD for content, journals, collections, etc.)
     path('', include(router.urls)),
+    
+    # Explore endpoints
+    path('explore/', include(explore_router.urls)),
 ]

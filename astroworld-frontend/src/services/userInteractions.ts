@@ -363,5 +363,11 @@ export const userInteractionsAPI = {
   profile: {
     get: () =>
       axios.get<UserProfile>('/users/profile/'),
+    
+    getPublic: (userId: number) =>
+      axios.get<import('../types/explore').PublicUser>(`/users/profile/${userId}/`),
+    
+    update: (data: { full_name?: string; bio?: string; profile_picture?: string }) =>
+      axios.patch<UserProfile>('/users/profile/', data),
   },
 };

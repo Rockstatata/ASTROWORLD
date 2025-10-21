@@ -3,12 +3,50 @@ import type { StellariumEngine } from '../../types/stellarium';
 import StelButton from '../../components/Skymap/StelButton';
 import Layout from '../../components/Layout';
 import { getTitle, getInfos } from '../../utils/stellarium';
+import { useSaveContent } from '../../hooks/useUserContent';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 
 const Skymap: React.FC = () => {
   const [stel, setStel] = useState<StellariumEngine | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [savedObjectId, setSavedObjectId] = useState<string | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineInitialized = useRef(false);
+  const saveContent = useSaveContent();
+
+  const handleSaveObject = async () => {
+    if (!stel?.core.selection) return;
+    
+    try {
+      const objectTitle = getTitle(stel.core.selection);
+      const objectInfos = getInfos(stel, stel.core.selection);
+      
+      // Create a description from object infos
+      const description = objectInfos
+        .map(info => `${info.key}: ${info.value.replace(/<[^>]*>/g, '')}`)
+        .join('\n');
+      
+      // Use object designation as content_id
+      const designations = stel.core.selection.designations?.() || [];
+      const contentId = designations[0] || objectTitle || 'unknown';
+      
+      await saveContent.mutateAsync({
+        content_type: 'celestial',
+        content_id: contentId,
+        title: objectTitle,
+        notes: `Saved from Skymap on ${new Date().toLocaleDateString()}`,
+        tags: ['skymap', 'celestial'],
+        metadata: {
+          description: description,
+          object_info: objectInfos
+        }
+      });
+      
+      setSavedObjectId(contentId);
+    } catch (error) {
+      console.error('Failed to save celestial object:', error);
+    }
+  };
 
   useEffect(() => {
     if (engineInitialized.current || !canvasRef.current) return;
@@ -235,9 +273,20 @@ const Skymap: React.FC = () => {
                 style={{ zIndex: 1000 }}
               >
                 <div className="p-4">
-                  <h3 className="text-lg font-semibold mb-3 text-white">
-                    {getTitle(stel.core.selection)}
-                  </h3>
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="text-lg font-semibold text-white">
+                      {getTitle(stel.core.selection)}
+                    </h3>
+                    <button
+                      onClick={handleSaveObject}
+                      disabled={saveContent.isPending}
+                      className="flex items-center gap-2 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white rounded-lg transition-colors"
+                      title="Save this celestial object"
+                    >
+                      {savedObjectId ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                      {saveContent.isPending ? 'Saving...' : savedObjectId ? 'Saved' : 'Save'}
+                    </button>
+                  </div>
                   <div className="space-y-2">
                     {(() => {
                       try {
