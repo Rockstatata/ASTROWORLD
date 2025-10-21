@@ -545,25 +545,61 @@ class SpaceEventService:
         return events
     
     def _get_curated_events_2025(self) -> List[Dict]:
-        """Get curated space events for 2025"""
+        """Get comprehensive curated space events for 2025"""
         from datetime import datetime
+        from django.utils import timezone
         
         events = [
+            # Solar Eclipses
             {
                 'nasa_id': 'eclipse_total_2025_03_29',
                 'title': 'Total Solar Eclipse',
                 'description': 'A spectacular total solar eclipse will be visible across parts of the Atlantic, Europe, Asia, and Africa. The path of totality will pass through the Faroe Islands, northwestern Spain, Algeria, Tunisia, Libya, Egypt, Saudi Arabia, Iran, Afghanistan, Pakistan, India, and China.',
                 'event_type': 'ECLIPSE_SOLAR',
-                'event_date': datetime(2025, 3, 29, 10, 0),
-                'end_date': datetime(2025, 3, 29, 14, 30),
+                'event_date': timezone.make_aware(datetime(2025, 3, 29, 10, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 3, 29, 14, 30)),
                 'visibility': 'PARTIAL',
                 'location': 'Atlantic, Europe, Asia, Africa',
                 'coordinates': [29.0, 45.0],
-                'peak_time': datetime(2025, 3, 29, 12, 15),
+                'peak_time': timezone.make_aware(datetime(2025, 3, 29, 12, 15)),
                 'duration_minutes': 270,
-                'image_url': 'https://images.nasa.gov/eclipse-2025-preview.jpg',
+                'image_url': 'https://eclipse.gsfc.nasa.gov/SEpath/SEpath2025.html',
                 'source_url': 'https://eclipse.gsfc.nasa.gov/SEpath/SEpath2025.html',
                 'source_name': 'NASA Eclipse Website',
+                'is_featured': True
+            },
+            
+            # Lunar Eclipses
+            {
+                'nasa_id': 'eclipse_lunar_2025_09_07',
+                'title': 'Total Lunar Eclipse',
+                'description': 'A total lunar eclipse will be visible from Europe, Africa, Asia, and Australia. The Moon will turn a reddish color during totality.',
+                'event_type': 'ECLIPSE_LUNAR',
+                'event_date': timezone.make_aware(datetime(2025, 9, 7, 18, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 9, 7, 22, 30)),
+                'visibility': 'PARTIAL',
+                'location': 'Europe, Africa, Asia, Australia',
+                'peak_time': timezone.make_aware(datetime(2025, 9, 7, 20, 15)),
+                'duration_minutes': 270,
+                'source_url': 'https://eclipse.gsfc.nasa.gov/LEpath/LEpath2025.html',
+                'source_name': 'NASA Eclipse Website',
+                'is_featured': True
+            },
+            
+            # Supermoons
+            {
+                'nasa_id': 'supermoon_2025_10_07',
+                'title': 'Supermoon - Hunter\'s Moon',
+                'description': 'The October 2025 supermoon, known as the Hunter\'s Moon, will appear 14% larger and 30% brighter than usual.',
+                'event_type': 'SUPERMOON',
+                'event_date': timezone.make_aware(datetime(2025, 10, 7, 20, 48)),
+                'visibility': 'GLOBAL',
+                'location': 'Worldwide',
+                'magnitude': -12.7,
+                'peak_time': timezone.make_aware(datetime(2025, 10, 7, 21, 0)),
+                'duration_minutes': 720,
+                'source_url': 'https://moon.nasa.gov/news/supermoon/',
+                'source_name': 'NASA Moon Info',
                 'is_featured': True
             },
             {
@@ -571,15 +607,76 @@ class SpaceEventService:
                 'title': 'Supermoon - Beaver Moon',
                 'description': 'The November 2025 supermoon, traditionally called the Beaver Moon, will appear larger and brighter than usual as it reaches its closest approach to Earth.',
                 'event_type': 'SUPERMOON',
-                'event_date': datetime(2025, 11, 5, 18, 30),
+                'event_date': timezone.make_aware(datetime(2025, 11, 5, 18, 30)),
                 'visibility': 'GLOBAL',
                 'location': 'Worldwide',
                 'magnitude': -12.7,
-                'peak_time': datetime(2025, 11, 5, 21, 0),
+                'peak_time': timezone.make_aware(datetime(2025, 11, 5, 21, 0)),
                 'duration_minutes': 720,
-                'image_url': 'https://images.nasa.gov/supermoon-preview.jpg',
-                'source_url': 'https://moon.nasa.gov/news/196/super-blue-blood-moon-coming-jan-31/',
+                'source_url': 'https://moon.nasa.gov/news/supermoon/',
                 'source_name': 'NASA Moon Info',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'supermoon_2025_12_04',
+                'title': 'Supermoon - Cold Moon',
+                'description': 'The final supermoon of 2025, the Cold Moon will appear especially bright during the winter season.',
+                'event_type': 'SUPERMOON',
+                'event_date': timezone.make_aware(datetime(2025, 12, 4, 23, 14)),
+                'visibility': 'GLOBAL',
+                'location': 'Worldwide',
+                'magnitude': -12.6,
+                'peak_time': timezone.make_aware(datetime(2025, 12, 4, 23, 30)),
+                'duration_minutes': 720,
+                'source_url': 'https://moon.nasa.gov/news/supermoon/',
+                'source_name': 'NASA Moon Info',
+                'is_featured': True
+            },
+            
+            # Meteor Showers
+            {
+                'nasa_id': 'quadrantids_2025_01_04',
+                'title': 'Quadrantids Meteor Shower Peak',
+                'description': 'The Quadrantids are one of the best annual meteor showers, producing up to 120 meteors per hour at their peak.',
+                'event_type': 'METEOR_SHOWER',
+                'event_date': timezone.make_aware(datetime(2025, 1, 4, 3, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 1, 4, 7, 0)),
+                'visibility': 'NORTHERN_HEMISPHERE',
+                'location': 'Best viewed from Northern Hemisphere',
+                'peak_time': timezone.make_aware(datetime(2025, 1, 4, 5, 0)),
+                'duration_minutes': 240,
+                'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/quadrantids/',
+                'source_name': 'NASA Solar System',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'lyrids_2025_04_22',
+                'title': 'Lyrids Meteor Shower Peak',
+                'description': 'The Lyrids are a medium-strength shower, usually producing about 20 meteors per hour at their peak.',
+                'event_type': 'METEOR_SHOWER',
+                'event_date': timezone.make_aware(datetime(2025, 4, 22, 22, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 4, 23, 6, 0)),
+                'visibility': 'GLOBAL',
+                'location': 'Best viewed after midnight',
+                'peak_time': timezone.make_aware(datetime(2025, 4, 23, 2, 0)),
+                'duration_minutes': 480,
+                'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/lyrids/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'perseids_2025_08_12',
+                'title': 'Perseids Meteor Shower Peak',
+                'description': 'The Perseids are one of the most popular meteor showers, producing up to 60 meteors per hour. They radiate from Perseus constellation.',
+                'event_type': 'METEOR_SHOWER',
+                'event_date': timezone.make_aware(datetime(2025, 8, 12, 21, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 8, 13, 5, 0)),
+                'visibility': 'NORTHERN_HEMISPHERE',
+                'location': 'Best viewed from Northern Hemisphere',
+                'peak_time': timezone.make_aware(datetime(2025, 8, 13, 2, 0)),
+                'duration_minutes': 480,
+                'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/perseids/',
+                'source_name': 'NASA Solar System',
                 'is_featured': True
             },
             {
@@ -587,54 +684,172 @@ class SpaceEventService:
                 'title': 'Geminids Meteor Shower Peak',
                 'description': 'The Geminids meteor shower, one of the year\'s most reliable and prolific meteor showers, reaches its peak. Expect up to 120 meteors per hour under dark skies.',
                 'event_type': 'METEOR_SHOWER',
-                'event_date': datetime(2025, 12, 14, 2, 0),
-                'end_date': datetime(2025, 12, 14, 6, 0),
+                'event_date': timezone.make_aware(datetime(2025, 12, 14, 2, 0)),
+                'end_date': timezone.make_aware(datetime(2025, 12, 14, 6, 0)),
                 'visibility': 'GLOBAL',
                 'location': 'Best viewed from Northern Hemisphere',
-                'peak_time': datetime(2025, 12, 14, 4, 0),
+                'peak_time': timezone.make_aware(datetime(2025, 12, 14, 4, 0)),
                 'duration_minutes': 240,
-                'image_url': 'https://images.nasa.gov/geminids-preview.jpg',
                 'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/geminids/in-depth/',
                 'source_name': 'NASA Solar System',
                 'is_featured': True
+            },
+            
+            # Planetary Conjunctions
+            {
+                'nasa_id': 'venus_jupiter_2025_02_12',
+                'title': 'Venus-Jupiter Close Conjunction',
+                'description': 'Venus and Jupiter approach within 0.3 degrees of each other in the evening sky, creating a spectacular double-star appearance.',
+                'event_type': 'CONJUNCTION',
+                'event_date': timezone.make_aware(datetime(2025, 2, 12, 19, 0)),
+                'visibility': 'GLOBAL',
+                'location': 'Western sky after sunset',
+                'magnitude': -4.5,
+                'peak_time': timezone.make_aware(datetime(2025, 2, 12, 20, 0)),
+                'duration_minutes': 180,
+                'source_url': 'https://solarsystem.nasa.gov/news/planetary-conjunctions/',
+                'source_name': 'NASA Solar System',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'mars_jupiter_2025_05_20',
+                'title': 'Mars-Jupiter Conjunction',
+                'description': 'Mars and Jupiter will appear close together in the pre-dawn sky, separated by less than 0.6 degrees.',
+                'event_type': 'CONJUNCTION',
+                'event_date': timezone.make_aware(datetime(2025, 5, 20, 4, 30)),
+                'visibility': 'GLOBAL',
+                'location': 'Eastern sky before sunrise',
+                'magnitude': -2.0,
+                'peak_time': timezone.make_aware(datetime(2025, 5, 20, 5, 0)),
+                'duration_minutes': 120,
+                'source_url': 'https://solarsystem.nasa.gov/news/planetary-conjunctions/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'venus_jupiter_conjunction_2025_08_12',
+                'title': 'Venus-Jupiter Grand Conjunction',
+                'description': 'Venus and Jupiter will appear extremely close together in the evening sky, creating a spectacular celestial show. The two brightest planets will be separated by less than 1 degree.',
+                'event_type': 'CONJUNCTION',
+                'event_date': timezone.make_aware(datetime(2025, 8, 12, 20, 30)),
+                'visibility': 'GLOBAL',
+                'location': 'Western sky after sunset',
+                'magnitude': -4.5,
+                'peak_time': timezone.make_aware(datetime(2025, 8, 12, 21, 0)),
+                'duration_minutes': 180,
+                'source_url': 'https://solarsystem.nasa.gov/news/planetary-conjunctions/',
+                'source_name': 'NASA Solar System',
+                'is_featured': True
+            },
+            
+            # Equinoxes and Solstices
+            {
+                'nasa_id': 'spring_equinox_2025_03_20',
+                'title': 'Spring Equinox (Vernal Equinox)',
+                'description': 'The spring equinox marks the beginning of spring in the Northern Hemisphere when day and night are nearly equal in length.',
+                'event_type': 'EQUINOX',
+                'event_date': timezone.make_aware(datetime(2025, 3, 20, 9, 1)),
+                'visibility': 'GLOBAL',
+                'location': 'Global phenomenon',
+                'source_url': 'https://solarsystem.nasa.gov/news/equinox/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'summer_solstice_2025_06_20',
+                'title': 'Summer Solstice',
+                'description': 'The summer solstice marks the longest day of the year in the Northern Hemisphere when the Sun reaches its northernmost position.',
+                'event_type': 'SOLSTICE',
+                'event_date': timezone.make_aware(datetime(2025, 6, 20, 20, 42)),
+                'visibility': 'NORTHERN_HEMISPHERE',
+                'location': 'Northern Hemisphere',
+                'source_url': 'https://solarsystem.nasa.gov/news/solstice/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'autumn_equinox_2025_09_22',
+                'title': 'Autumn Equinox (Fall Equinox)',
+                'description': 'The autumn equinox marks the beginning of fall in the Northern Hemisphere when day and night are nearly equal in length.',
+                'event_type': 'EQUINOX',
+                'event_date': timezone.make_aware(datetime(2025, 9, 22, 18, 19)),
+                'visibility': 'GLOBAL',
+                'location': 'Global phenomenon',
+                'source_url': 'https://solarsystem.nasa.gov/news/equinox/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
             },
             {
                 'nasa_id': 'winter_solstice_2025_12_21',
                 'title': 'Winter Solstice',
                 'description': 'The winter solstice marks the shortest day and longest night of the year in the Northern Hemisphere. This astronomical event occurs when the Sun reaches its southernmost position in the sky.',
                 'event_type': 'SOLSTICE',
-                'event_date': datetime(2025, 12, 21, 15, 3),
+                'event_date': timezone.make_aware(datetime(2025, 12, 21, 15, 3)),
                 'visibility': 'NORTHERN_HEMISPHERE',
                 'location': 'Northern Hemisphere',
                 'source_url': 'https://solarsystem.nasa.gov/news/1571/the-first-day-of-winter/',
                 'source_name': 'NASA Solar System',
                 'is_featured': False
             },
+            
+            # Comet Appearances
             {
-                'nasa_id': 'venus_jupiter_conjunction_2025_08_12',
-                'title': 'Venus-Jupiter Conjunction',
-                'description': 'Venus and Jupiter will appear extremely close together in the evening sky, creating a spectacular celestial show. The two brightest planets will be separated by less than 1 degree.',
-                'event_type': 'CONJUNCTION',
-                'event_date': datetime(2025, 8, 12, 20, 30),
-                'visibility': 'GLOBAL',
-                'location': 'Western sky after sunset',
-                'magnitude': -4.5,
-                'peak_time': datetime(2025, 8, 12, 21, 0),
-                'duration_minutes': 180,
-                'image_url': 'https://images.nasa.gov/conjunction-preview.jpg',
-                'source_url': 'https://solarsystem.nasa.gov/news/planetary-conjunctions/',
+                'nasa_id': 'comet_12p_pons_brooks_2025',
+                'title': 'Comet 12P/Pons-Brooks Perihelion',
+                'description': 'Comet 12P/Pons-Brooks reaches its closest approach to the Sun and becomes visible to the naked eye in the evening sky.',
+                'event_type': 'COMET',
+                'event_date': timezone.make_aware(datetime(2025, 4, 21, 12, 0)),
+                'visibility': 'NORTHERN_HEMISPHERE',
+                'location': 'Northern Hemisphere evening sky',
+                'magnitude': 4.5,
+                'peak_time': timezone.make_aware(datetime(2025, 4, 21, 20, 0)),
+                'duration_minutes': 240,
+                'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/comets/',
                 'source_name': 'NASA Solar System',
                 'is_featured': True
+            },
+            
+            # Planetary Events
+            {
+                'nasa_id': 'venus_greatest_elongation_2025_01_10',
+                'title': 'Venus at Greatest Eastern Elongation',
+                'description': 'Venus reaches its greatest angular distance from the Sun in the evening sky, making it the best time for evening viewing.',
+                'event_type': 'CONJUNCTION',
+                'event_date': timezone.make_aware(datetime(2025, 1, 10, 18, 0)),
+                'visibility': 'GLOBAL',
+                'location': 'Western sky after sunset',
+                'magnitude': -4.6,
+                'peak_time': timezone.make_aware(datetime(2025, 1, 10, 19, 0)),
+                'duration_minutes': 180,
+                'source_url': 'https://solarsystem.nasa.gov/planets/venus/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'mercury_greatest_elongation_2025_03_14',  
+                'title': 'Mercury at Greatest Western Elongation',
+                'description': 'Mercury reaches its greatest angular distance from the Sun in the morning sky, providing the best viewing opportunity.',
+                'event_type': 'CONJUNCTION',
+                'event_date': timezone.make_aware(datetime(2025, 3, 14, 5, 30)),
+                'visibility': 'GLOBAL',
+                'location': 'Eastern sky before sunrise',
+                'magnitude': -0.1,
+                'peak_time': timezone.make_aware(datetime(2025, 3, 14, 6, 0)),
+                'duration_minutes': 60,
+                'source_url': 'https://solarsystem.nasa.gov/planets/mercury/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
             }
         ]
         
         return events
     
     def sync_space_events(self) -> int:
-        """Sync space events to database"""
+        """Sync space events to database from multiple sources"""
         from .models import SpaceEvent
         synced_count = 0
         
+        # Sync curated astronomical events
         events_data = self.fetch_astronomical_events()
         
         for event_data in events_data:
@@ -654,7 +869,374 @@ class SpaceEventService:
                 event.save()
                 logger.info(f"Updated space event: {event.title}")
         
+        # Sync from Launch Library 2 (real launch data)
+        try:
+            launch_library_service = LaunchLibraryService()
+            launch_events = launch_library_service.sync_launches_to_space_events(limit=50)
+            space_events = launch_library_service.sync_events_to_space_events(limit=25)
+            synced_count += launch_events + space_events
+            logger.info(f"Synced {launch_events} launches and {space_events} space events from Launch Library")
+        except Exception as e:
+            logger.error(f"Error syncing from Launch Library: {e}")
+        
         return synced_count
+
+
+class LaunchLibraryService:
+    """Service for The Space Devs Launch Library 2 API"""
+    
+    BASE_URL = "https://ll.thespacedevs.com/2.2.0"
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'AstroWorld/1.0 (contact@astroworld.com)'
+        })
+    
+    def _make_request(self, endpoint: str, params: dict = None) -> dict:
+        """Make a request to Launch Library API"""
+        try:
+            url = f"{self.BASE_URL}{endpoint}"
+            response = self.session.get(url, params=params or {})
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Launch Library API request failed for {endpoint}: {e}")
+            return {}
+    
+    def fetch_upcoming_launches(self, limit: int = 50) -> List[Dict]:
+        """Fetch upcoming launches"""
+        params = {
+            'limit': limit,
+            'ordering': 'net',
+            'mode': 'detailed'
+        }
+        data = self._make_request("/launch/upcoming/", params)
+        return data.get('results', [])
+    
+    def fetch_recent_launches(self, limit: int = 50) -> List[Dict]:
+        """Fetch recent launches"""
+        params = {
+            'limit': limit,
+            'ordering': '-net',
+            'mode': 'detailed'
+        }
+        data = self._make_request("/launch/previous/", params)
+        return data.get('results', [])
+    
+    def fetch_events(self, limit: int = 50) -> List[Dict]:
+        """Fetch space events (dockings, spacewalks, etc.)"""
+        params = {
+            'limit': limit,
+            'ordering': 'date',
+            'mode': 'detailed'
+        }
+        data = self._make_request("/event/upcoming/", params)
+        return data.get('results', [])
+    
+    def fetch_astronauts(self, limit: int = 20) -> List[Dict]:
+        """Fetch astronaut information"""
+        params = {
+            'limit': limit,
+            'ordering': '-flights_count',
+            'mode': 'detailed'
+        }
+        data = self._make_request("/astronaut/", params)
+        return data.get('results', [])
+    
+    def fetch_launch_by_id(self, launch_id: str) -> Dict:
+        """Fetch specific launch by ID"""
+        return self._make_request(f"/launch/{launch_id}/")
+    
+    def fetch_agencies(self, limit: int = 50) -> List[Dict]:
+        """Fetch space agencies"""
+        params = {
+            'limit': limit,
+            'ordering': '-total_launch_count',
+            'mode': 'detailed'
+        }
+        data = self._make_request("/agencies/", params)
+        return data.get('results', [])
+    
+    def sync_launches_to_space_events(self, limit: int = 100) -> int:
+        """Sync Launch Library launches to SpaceEvent model"""
+        from .models import SpaceEvent
+        from django.utils import timezone
+        
+        synced_count = 0
+        
+        # Fetch both upcoming and recent launches
+        upcoming_launches = self.fetch_upcoming_launches(limit//2)
+        recent_launches = self.fetch_recent_launches(limit//2)
+        
+        all_launches = upcoming_launches + recent_launches
+        
+        for launch_data in all_launches:
+            try:
+                # Parse launch data
+                launch_date = None
+                if launch_data.get('net'):
+                    launch_date = timezone.datetime.fromisoformat(
+                        launch_data['net'].replace('Z', '+00:00')
+                    )
+                
+                # Determine event type based on mission
+                event_type = 'LAUNCH'
+                mission_type = launch_data.get('mission', {}).get('type', '')
+                if 'crew' in mission_type.lower():
+                    event_type = 'MISSION'
+                
+                # Create space event
+                event_data = {
+                    'nasa_id': f"ll2_launch_{launch_data.get('id')}",
+                    'title': f"{launch_data.get('name', 'Unknown Mission')}",
+                    'description': launch_data.get('mission', {}).get('description', '') or 
+                                 f"Launch by {launch_data.get('launch_service_provider', {}).get('name', 'Unknown')}",
+                    'event_type': event_type,
+                    'event_date': launch_date,
+                    'visibility': 'GLOBAL',
+                    'location': launch_data.get('pad', {}).get('location', {}).get('name', 'Unknown Location'),
+                    'coordinates': [
+                        launch_data.get('pad', {}).get('latitude'),
+                        launch_data.get('pad', {}).get('longitude')
+                    ] if launch_data.get('pad', {}).get('latitude') else None,
+                    'image_url': launch_data.get('image', ''),
+                    'source_url': launch_data.get('url', ''),
+                    'source_name': 'The Space Devs - Launch Library',
+                    'is_featured': launch_data.get('status', {}).get('id') in [1, 2, 8],  # Go, Success, TBD
+                }
+                
+                event, created = SpaceEvent.objects.get_or_create(
+                    nasa_id=event_data['nasa_id'],
+                    defaults=event_data
+                )
+                
+                if created:
+                    synced_count += 1
+                    logger.info(f"Created space event from launch: {event.title}")
+                else:
+                    # Update existing event
+                    for key, value in event_data.items():
+                        if key != 'nasa_id' and value is not None:
+                            setattr(event, key, value)
+                    event.save()
+                    logger.info(f"Updated space event from launch: {event.title}")
+                
+            except Exception as e:
+                logger.error(f"Error syncing launch {launch_data.get('id')}: {e}")
+        
+        return synced_count
+    
+    def sync_events_to_space_events(self, limit: int = 50) -> int:
+        """Sync Launch Library events (dockings, spacewalks) to SpaceEvent model"""
+        from .models import SpaceEvent
+        from django.utils import timezone
+        
+        synced_count = 0
+        events_data = self.fetch_events(limit)
+        
+        for event_data in events_data:
+            try:
+                # Parse event data
+                event_date = None
+                if event_data.get('date'):
+                    event_date = timezone.datetime.fromisoformat(
+                        event_data['date'].replace('Z', '+00:00')
+                    )
+                
+                # Determine event type
+                event_type = 'OTHER'
+                event_name = event_data.get('name', '').lower()
+                if 'docking' in event_name:
+                    event_type = 'MISSION'
+                elif 'spacewalk' in event_name or 'eva' in event_name:
+                    event_type = 'MISSION'
+                elif 'landing' in event_name:
+                    event_type = 'MISSION'
+                
+                space_event_data = {
+                    'nasa_id': f"ll2_event_{event_data.get('id')}",
+                    'title': event_data.get('name', 'Space Event'),
+                    'description': event_data.get('description', ''),
+                    'event_type': event_type,
+                    'event_date': event_date,
+                    'visibility': 'GLOBAL',
+                    'location': event_data.get('location', 'Space'),
+                    'image_url': event_data.get('feature_image', ''),
+                    'source_url': event_data.get('url', ''),
+                    'source_name': 'The Space Devs - Launch Library',
+                    'is_featured': event_data.get('type', {}).get('id') in [1, 2, 3],  # Important events
+                }
+                
+                event, created = SpaceEvent.objects.get_or_create(
+                    nasa_id=space_event_data['nasa_id'],
+                    defaults=space_event_data
+                )
+                
+                if created:
+                    synced_count += 1
+                    logger.info(f"Created space event: {event.title}")
+                else:
+                    # Update existing event
+                    for key, value in space_event_data.items():
+                        if key != 'nasa_id' and value is not None:
+                            setattr(event, key, value)
+                    event.save()
+                    logger.info(f"Updated space event: {event.title}")
+                
+            except Exception as e:
+                logger.error(f"Error syncing event {event_data.get('id')}: {e}")
+        
+        return synced_count
+
+
+class EnhancedSpaceflightNewsService:
+    """Enhanced service for Spaceflight News API"""
+    
+    BASE_URL = "https://api.spaceflightnewsapi.net/v4"
+    
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'AstroWorld/1.0 (contact@astroworld.com)'
+        })
+    
+    def _make_request(self, endpoint: str, params: dict = None) -> dict:
+        """Make a request to Spaceflight News API"""
+        try:
+            url = f"{self.BASE_URL}{endpoint}"
+            response = self.session.get(url, params=params or {})
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Spaceflight News API request failed for {endpoint}: {e}")
+            return {}
+    
+    def fetch_articles(self, limit: int = 50, offset: int = 0) -> List[Dict]:
+        """Fetch news articles"""
+        params = {
+            'limit': limit,
+            'offset': offset,
+            'ordering': '-published_at'
+        }
+        data = self._make_request("/articles/", params)
+        return data.get('results', [])
+    
+    def fetch_blogs(self, limit: int = 50, offset: int = 0) -> List[Dict]:
+        """Fetch blog posts"""
+        params = {
+            'limit': limit,
+            'offset': offset,
+            'ordering': '-published_at'
+        }
+        data = self._make_request("/blogs/", params)
+        return data.get('results', [])
+    
+    def fetch_reports(self, limit: int = 50, offset: int = 0) -> List[Dict]:
+        """Fetch reports"""
+        params = {
+            'limit': limit,
+            'offset': offset,
+            'ordering': '-published_at'
+        }
+        data = self._make_request("/reports/", params)
+        return data.get('results', [])
+    
+    def sync_news_content(self, limit: int = 100) -> dict:
+        """Sync all news content from Spaceflight News API"""
+        from spaceflightnews.models import SpaceflightNews
+        from django.utils import timezone
+        
+        results = {'articles': 0, 'blogs': 0, 'reports': 0}
+        
+        # Sync articles
+        articles = self.fetch_articles(limit//3)
+        for article_data in articles:
+            try:
+                published_at = None
+                if article_data.get('published_at'):
+                    published_at = timezone.datetime.fromisoformat(
+                        article_data['published_at'].replace('Z', '+00:00')
+                    )
+                
+                article, created = SpaceflightNews.objects.get_or_create(
+                    nasa_id=str(article_data.get('id')),
+                    defaults={
+                        'title': article_data.get('title', ''),
+                        'url': article_data.get('url', ''),
+                        'image_url': article_data.get('image_url', ''),
+                        'news_site': article_data.get('news_site', ''),
+                        'summary': article_data.get('summary', ''),
+                        'published_at': published_at,
+                        'article_type': 'article'
+                    }
+                )
+                
+                if created:
+                    results['articles'] += 1
+                    
+            except Exception as e:
+                logger.error(f"Error syncing article {article_data.get('id')}: {e}")
+        
+        # Sync blogs
+        blogs = self.fetch_blogs(limit//3)
+        for blog_data in blogs:
+            try:
+                published_at = None
+                if blog_data.get('published_at'):
+                    published_at = timezone.datetime.fromisoformat(
+                        blog_data['published_at'].replace('Z', '+00:00')
+                    )
+                
+                blog, created = SpaceflightNews.objects.get_or_create(
+                    nasa_id=str(blog_data.get('id')),
+                    defaults={
+                        'title': blog_data.get('title', ''),
+                        'url': blog_data.get('url', ''),
+                        'image_url': blog_data.get('image_url', ''),
+                        'news_site': blog_data.get('news_site', ''),
+                        'summary': blog_data.get('summary', ''),
+                        'published_at': published_at,
+                        'article_type': 'blog'
+                    }
+                )
+                
+                if created:
+                    results['blogs'] += 1
+                    
+            except Exception as e:
+                logger.error(f"Error syncing blog {blog_data.get('id')}: {e}")
+        
+        # Sync reports
+        reports = self.fetch_reports(limit//3)
+        for report_data in reports:
+            try:
+                published_at = None
+                if report_data.get('published_at'):
+                    published_at = timezone.datetime.fromisoformat(
+                        report_data['published_at'].replace('Z', '+00:00')
+                    )
+                
+                report, created = SpaceflightNews.objects.get_or_create(
+                    nasa_id=str(report_data.get('id')),
+                    defaults={
+                        'title': report_data.get('title', ''),
+                        'url': report_data.get('url', ''),
+                        'image_url': report_data.get('image_url', ''),
+                        'news_site': report_data.get('news_site', ''),
+                        'summary': report_data.get('summary', ''),
+                        'published_at': published_at,
+                        'article_type': 'report'
+                    }
+                )
+                
+                if created:
+                    results['reports'] += 1
+                    
+            except Exception as e:
+                logger.error(f"Error syncing report {report_data.get('id')}: {e}")
+        
+        return results
 
 
 # Initialize service instances
@@ -666,6 +1248,8 @@ exoplanet_service = ExoplanetService()
 space_weather_service = SpaceWeatherService()
 natural_event_service = NaturalEventService()
 space_event_service = SpaceEventService()
+launch_library_service = LaunchLibraryService()
+enhanced_spaceflight_news_service = EnhancedSpaceflightNewsService()
 
 
 class NASAImageLibraryService:

@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'nasa_api',
+    'spacex_api',
     'murphai',
     'spaceflightnews',
     'research_papers',

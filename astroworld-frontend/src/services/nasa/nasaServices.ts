@@ -3,6 +3,23 @@ import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+// Create axios instance with auth header support
+const nasaAPIInstance = axios.create({
+  baseURL: API_URL,
+});
+
+// Add auth interceptor to NASA API instance
+nasaAPIInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
 // NASA API interfaces
 export interface APOD {
   id: number;
@@ -306,108 +323,108 @@ export interface NASAImageFilters {
 export const nasaAPI = {
   // APOD endpoints
   getAPOD: (date?: string): Promise<{ data: APOD }> =>
-    axios.get(`/nasa/apod/${date ? date + '/' : 'latest/'}`),
+    nasaAPIInstance.get(`/nasa/apod/${date ? date + '/' : 'latest/'}`),
 
   getAPODRange: (startDate?: string, endDate?: string): Promise<{ data: APOD[] }> =>
-    axios.get('/nasa/apod/range/', { params: { start_date: startDate, end_date: endDate } }),
+    nasaAPIInstance.get('/nasa/apod/range/', { params: { start_date: startDate, end_date: endDate } }),
 
   getRandomAPOD: (count: number = 1): Promise<{ data: APOD[] }> =>
-    axios.get('/nasa/apod/random/', { params: { count } }),
+    nasaAPIInstance.get('/nasa/apod/random/', { params: { count } }),
 
   // Near Earth Objects
   getNearEarthObjects: (filters: NEOFilters = {}): Promise<{ data: { results: NearEarthObject[], count: number } }> =>
-    axios.get('/nasa/neo/', { params: filters }),
+    nasaAPIInstance.get('/nasa/neo/', { params: filters }),
 
   getNEOById: (nasa_id: string): Promise<{ data: NearEarthObject }> =>
-    axios.get(`/nasa/neo/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/neo/${nasa_id}/`),
 
   getUpcomingNEOs: (days: number = 7): Promise<{ data: NearEarthObject[] }> =>
-    axios.get('/nasa/neo/upcoming/', { params: { days } }),
+    nasaAPIInstance.get('/nasa/neo/upcoming/', { params: { days } }),
 
   getHazardousNEOs: (): Promise<{ data: NearEarthObject[] }> =>
-    axios.get('/nasa/neo/hazardous/'),
+    nasaAPIInstance.get('/nasa/neo/hazardous/'),
 
   // Mars Rover Photos
   getMarsPhotos: (filters: MarsPhotosFilters = {}): Promise<{ data: { results: MarsRoverPhoto[], count: number } }> =>
-    axios.get('/nasa/mars-photos/', { params: filters }),
+    nasaAPIInstance.get('/nasa/mars-photos/', { params: filters }),
 
   getMarsPhotoById: (nasa_id: string): Promise<{ data: MarsRoverPhoto }> =>
-    axios.get(`/nasa/mars-photos/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/mars-photos/${nasa_id}/`),
 
   getRoverManifest: (rover: string): Promise<{ data: any }> =>
-    axios.get(`/nasa/mars-rovers/${rover}/`),
+    nasaAPIInstance.get(`/nasa/mars-rovers/${rover}/`),
 
   getLatestMarsPhotos: (rover?: string): Promise<{ data: MarsRoverPhoto[] }> =>
-    axios.get('/nasa/mars-photos/latest/', { params: { rover } }),
+    nasaAPIInstance.get('/nasa/mars-photos/latest/', { params: { rover } }),
 
   // EPIC Images
   getEPICImages: (date?: string): Promise<{ data: { results: EPICImage[], count: number } }> =>
-    axios.get('/nasa/epic/', { params: { date } }),
+    nasaAPIInstance.get('/nasa/epic/', { params: { date } }),
 
   getEPICImageById: (nasa_id: string): Promise<{ data: EPICImage }> =>
-    axios.get(`/nasa/epic/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/epic/${nasa_id}/`),
 
   getLatestEPIC: (): Promise<{ data: EPICImage[] }> =>
-    axios.get('/nasa/epic/latest/'),
+    nasaAPIInstance.get('/nasa/epic/latest/'),
 
   // Exoplanets
   getExoplanets: (filters: ExoplanetFilters = {}): Promise<{ data: { results: Exoplanet[], count: number } }> =>
-    axios.get('/nasa/exoplanets/', { params: filters }),
+    nasaAPIInstance.get('/nasa/exoplanets/', { params: filters }),
 
   getExoplanetById: (nasa_id: string): Promise<{ data: Exoplanet }> =>
-    axios.get(`/nasa/exoplanets/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/exoplanets/${nasa_id}/`),
 
   searchExoplanets: (query: string): Promise<{ data: Exoplanet[] }> =>
-    axios.get('/nasa/exoplanets/search/', { params: { q: query } }),
+    nasaAPIInstance.get('/nasa/exoplanets/search/', { params: { q: query } }),
 
   getHabitableExoplanets: (): Promise<{ data: Exoplanet[] }> =>
-    axios.get('/nasa/exoplanets/habitable/'),
+    nasaAPIInstance.get('/nasa/exoplanets/habitable/'),
 
   // Space Weather Events
   getSpaceWeatherEvents: (filters: SpaceWeatherFilters = {}): Promise<{ data: { results: SpaceWeatherEvent[], count: number } }> =>
-    axios.get('/nasa/space-weather/', { params: filters }),
+    nasaAPIInstance.get('/nasa/space-weather/', { params: filters }),
 
   getSpaceWeatherById: (nasa_id: string): Promise<{ data: SpaceWeatherEvent }> =>
-    axios.get(`/nasa/space-weather/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/space-weather/${nasa_id}/`),
 
   getRecentSpaceWeather: (days: number = 30): Promise<{ data: SpaceWeatherEvent[] }> =>
-    axios.get('/nasa/space-weather/recent/', { params: { days } }),
+    nasaAPIInstance.get('/nasa/space-weather/recent/', { params: { days } }),
 
   // Natural Events
   getNaturalEvents: (filters: NaturalEventFilters = {}): Promise<{ data: { results: NaturalEvent[], count: number } }> =>
-    axios.get('/nasa/natural-events/', { params: filters }),
+    nasaAPIInstance.get('/nasa/natural-events/', { params: filters }),
 
   getNaturalEventById: (nasa_id: string): Promise<{ data: NaturalEvent }> =>
-    axios.get(`/nasa/natural-events/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/natural-events/${nasa_id}/`),
 
   getActiveEvents: (): Promise<{ data: NaturalEvent[] }> =>
-    axios.get('/nasa/natural-events/active/'),
+    nasaAPIInstance.get('/nasa/natural-events/active/'),
 
   getEventsByCategory: (category: string): Promise<{ data: NaturalEvent[] }> =>
-    axios.get(`/nasa/natural-events/category/${category}/`),
+    nasaAPIInstance.get(`/nasa/natural-events/category/${category}/`),
 
   // Space Events
   getSpaceEvents: (filters: SpaceEventFilters = {}): Promise<{ data: { results: SpaceEvent[], count: number } }> =>
-    axios.get('/nasa/space-events/', { params: filters }),
+    nasaAPIInstance.get('/nasa/space-events/', { params: filters }),
 
   getSpaceEventById: (nasa_id: string): Promise<{ data: SpaceEvent }> =>
-    axios.get(`/nasa/space-events/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/space-events/${nasa_id}/`),
 
   getFeaturedSpaceEvents: (): Promise<{ data: SpaceEvent[] }> =>
-    axios.get('/nasa/space-events/featured/'),
+    nasaAPIInstance.get('/nasa/space-events/featured/'),
 
   getUpcomingSpaceEvents: (): Promise<{ data: SpaceEvent[] }> =>
-    axios.get('/nasa/space-events/upcoming/'),
+    nasaAPIInstance.get('/nasa/space-events/upcoming/'),
 
   getSpaceEventsByType: (eventType: string): Promise<{ data: SpaceEvent[] }> =>
-    axios.get(`/nasa/space-events/type/${eventType}/`),
+    nasaAPIInstance.get(`/nasa/space-events/type/${eventType}/`),
 
   // User Favorites & Tracking
   getUserFavorites: (): Promise<{ data: UserSavedItem[] }> =>
-    axios.get('/nasa/user/favorites/'),
+    nasaAPIInstance.get('/nasa/user/favorites/'),
 
   addToFavorites: (itemType: string, itemId: string, notes?: string, tags?: string[]): Promise<{ data: UserSavedItem }> =>
-    axios.post('/nasa/saved/', { 
+    nasaAPIInstance.post('/nasa/saved/', { 
       item_type: itemType, 
       item_id: itemId, 
       notes: notes || '', 
@@ -415,68 +432,68 @@ export const nasaAPI = {
     }),
 
   removeFromFavorites: (id: number): Promise<void> =>
-    axios.delete(`/nasa/saved/${id}/`),
+    nasaAPIInstance.delete(`/nasa/saved/${id}/`),
 
   updateFavorite: (id: number, notes?: string, tags?: string[]): Promise<{ data: UserSavedItem }> =>
-    axios.patch(`/nasa/saved/${id}/`, { notes, tags }),
+    nasaAPIInstance.patch(`/nasa/saved/${id}/`, { notes, tags }),
 
   toggleFavorite: (itemType: string, itemId: string): Promise<{ data: { favorited: boolean } }> =>
-    axios.post('/nasa/user/favorites/toggle/', { item_type: itemType, item_id: itemId }),
+    nasaAPIInstance.post('/nasa/user/favorites/toggle/', { item_type: itemType, item_id: itemId }),
 
   // User Tracking
   getUserTracking: (): Promise<{ data: UserTrackedObject[] }> =>
-    axios.get('/nasa/user/tracking/'),
+    nasaAPIInstance.get('/nasa/user/tracking/'),
 
   addToTracking: (objectType: string, objectId: string): Promise<{ data: UserTrackedObject }> =>
-    axios.post('/nasa/tracked/', { object_type: objectType, object_id: objectId }),
+    nasaAPIInstance.post('/nasa/tracked/', { object_type: objectType, object_id: objectId }),
 
   removeFromTracking: (id: number): Promise<void> =>
-    axios.delete(`/nasa/tracked/${id}/`),
+    nasaAPIInstance.delete(`/nasa/tracked/${id}/`),
 
   toggleTracking: (objectType: string, objectId: string): Promise<{ data: { tracking: boolean } }> =>
-    axios.post('/nasa/user/tracking/toggle/', { object_type: objectType, object_id: objectId }),
+    nasaAPIInstance.post('/nasa/user/tracking/toggle/', { object_type: objectType, object_id: objectId }),
 
   updateTrackingNotifications: (id: number, enabled: boolean): Promise<{ data: UserTrackedObject }> =>
-    axios.patch(`/nasa/tracked/${id}/`, { notification_enabled: enabled }),
+    nasaAPIInstance.patch(`/nasa/tracked/${id}/`, { notification_enabled: enabled }),
 
   // Analytics & Stats
   getUserStats: (): Promise<{ data: any }> =>
-    axios.get('/nasa/user/stats/'),
+    nasaAPIInstance.get('/nasa/user/stats/'),
 
   getPopularContent: (contentType?: string): Promise<{ data: any[] }> =>
-    axios.get('/nasa/popular/', { params: { type: contentType } }),
+    nasaAPIInstance.get('/nasa/popular/', { params: { type: contentType } }),
 
   // Search across all NASA data
   searchAll: (query: string, types?: string[]): Promise<{ data: any }> =>
-    axios.get('/nasa/search/', { params: { q: query, types: types?.join(',') } }),
+    nasaAPIInstance.get('/nasa/search/', { params: { q: query, types: types?.join(',') } }),
 
   // Sync data manually
   syncData: (dataType?: string): Promise<{ data: { message: string } }> =>
-    axios.post('/nasa/sync/', { type: dataType }),
+    nasaAPIInstance.post('/nasa/sync/', { type: dataType }),
 
   // Get API status and limits
   getAPIStatus: (): Promise<{ data: any }> =>
-    axios.get('/nasa/status/'),
+    nasaAPIInstance.get('/nasa/status/'),
 
   // NASA Image Library endpoints
   searchImages: (filters: NASAImageFilters): Promise<{ data: NASAImageSearchResult }> =>
-    axios.get('/nasa/images/search/', { params: filters }),
+    nasaAPIInstance.get('/nasa/images/search/', { params: filters }),
 
   getPopularImages: (limit: number = 20): Promise<{ data: NASAImageSearchResult }> =>
-    axios.get('/nasa/images/popular/', { params: { limit } }),
+    nasaAPIInstance.get('/nasa/images/popular/', { params: { limit } }),
 
   getImageAsset: (nasa_id: string): Promise<{ data: any }> =>
-    axios.get(`/nasa/images/asset/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/images/asset/${nasa_id}/`),
 
   getImageMetadata: (nasa_id: string): Promise<{ data: any }> =>
-    axios.get(`/nasa/images/metadata/${nasa_id}/`),
+    nasaAPIInstance.get(`/nasa/images/metadata/${nasa_id}/`),
 
   // GIBS (Global Imagery Browse Services) endpoints
   getGIBSCapabilities: (): Promise<{ data: any }> =>
-    axios.get('/nasa/gibs/capabilities/'),
+    nasaAPIInstance.get('/nasa/gibs/capabilities/'),
 
   getGIBSImagery: (date?: string, layer?: string, bbox?: string): Promise<{ data: any }> =>
-    axios.get('/nasa/gibs/imagery/', { params: { date, layer, bbox } }),
+    nasaAPIInstance.get('/nasa/gibs/imagery/', { params: { date, layer, bbox } }),
 };
 
 export default nasaAPI;

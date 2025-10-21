@@ -17,6 +17,7 @@ import GIBSImageryMap from "../../components/Home/GIBSImageryMap";
 import EventsShowcase from "../../components/Home/EventsShowcase";
 import ProfileSummary from "../../components/Home/ProfileSummary";
 import Footer from "../../components/Home/Footer";
+import { SpaceXStatsCard } from "../../components/spacex";
 
 const Home: React.FC = () => {
   return (
@@ -56,6 +57,13 @@ const Home: React.FC = () => {
 
           {/* NASA Exoplanet Statistics */}
           <ExoplanetStat />
+
+          {/* SpaceX Statistics */}
+          <section className="py-20 px-6">
+            <div className="max-w-4xl mx-auto">
+              <SpaceXStatsCard />
+            </div>
+          </section>
 
           {/* NASA Image Gallery */}
           

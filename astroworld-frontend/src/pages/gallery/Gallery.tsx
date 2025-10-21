@@ -60,14 +60,21 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
     setCurrentPage(1);
   }, [effectiveQuery, setCurrentPage]);
 
-  const handleFavorite = (item: NASAMediaItem) => {
+  const handleFavorite = async (item: NASAMediaItem) => {
     const data = item.data[0];
-    saveFavorite.mutate({
-      nasa_id: data.nasa_id,
-      title: data.title,
-      notes: data.description || '',
-      tags: data.keywords || []
-    });
+    try {
+      await saveFavorite.mutateAsync({
+        nasa_id: data.nasa_id,
+        title: data.title,
+        notes: data.description || '',
+        tags: data.keywords || []
+      });
+      // Show success message
+      console.log('Image saved to favorites successfully!');
+    } catch (error) {
+      console.error('Failed to save image:', error);
+      // You could show an error toast here
+    }
   };
 
   if (isLoading) {
@@ -149,9 +156,10 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                         e.stopPropagation();
                         handleFavorite(item);
                       }}
-                      className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100"
+                      disabled={saveFavorite.isPending}
+                      className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
                     >
-                      <Heart className="h-4 w-4 text-white" />
+                      <Heart className={`h-4 w-4 ${saveFavorite.isPending ? 'text-yellow-400' : 'text-white hover:text-red-400'}`} />
                     </button>
                   </div>
 
@@ -225,9 +233,10 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                             e.stopPropagation();
                             handleFavorite(item);
                           }}
-                          className="p-2 hover:bg-white/10 rounded-lg transition-all ml-4"
+                          disabled={saveFavorite.isPending}
+                          className="p-2 hover:bg-white/10 rounded-lg transition-all ml-4 disabled:opacity-50"
                         >
-                          <Heart className="h-5 w-5 text-gray-400 hover:text-white" />
+                          <Heart className={`h-5 w-5 ${saveFavorite.isPending ? 'text-yellow-400' : 'text-gray-400 hover:text-red-400'}`} />
                         </button>
                       </div>
                       
@@ -327,28 +336,29 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto"
             onClick={() => setSelectedImage(null)}
           >
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="max-w-4xl max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden"
+              className="w-full max-w-4xl max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden my-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col max-h-[90vh]">
                 {/* Header */}
-                <div className="flex items-center justify-between p-4 border-b border-gray-700">
+                <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                   <h3 className="text-xl font-bold text-white truncate">
                     {selectedImage.data[0].title}
                   </h3>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleFavorite(selectedImage)}
-                      className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+                      disabled={saveFavorite.isPending}
+                      className="p-2 hover:bg-gray-700 rounded-lg transition-colors disabled:opacity-50"
                     >
-                      <Heart className="h-5 w-5 text-white" />
+                      <Heart className={`h-5 w-5 ${saveFavorite.isPending ? 'text-yellow-400' : 'text-white hover:text-red-400'}`} />
                     </button>
                     <button
                       onClick={() => setSelectedImage(null)}
@@ -359,9 +369,9 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                   </div>
                 </div>
 
-                {/* Content */}
-                <div className="flex-1 overflow-auto">
-                  <div className="aspect-video relative">
+                {/* Content - Scrollable */}
+                <div className="flex-1 overflow-y-auto">
+                  <div className="max-h-[50vh] relative bg-black">
                     <img
                       src={selectedImage.links?.[0]?.href}
                       alt={selectedImage.data[0].title}
@@ -370,7 +380,7 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                   </div>
                   
                   <div className="p-6">
-                    <p className="text-gray-300 mb-4">
+                    <p className="text-gray-300 mb-4 leading-relaxed">
                       {selectedImage.data[0].description}
                     </p>
                     
