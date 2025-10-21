@@ -13,6 +13,7 @@ import News from '../pages/news/News';
 import Profile from '../pages/profile/Profile';
 import MessagingPage from '../pages/messaging/MessagingPage';
 import DirectMessaging from '../pages/messaging/DirectMessaging';
+import Gallery from '../pages/gallery/Gallery';
 
 const router = createBrowserRouter([
   {
@@ -76,6 +77,14 @@ const router = createBrowserRouter([
     element: (
       <ProtectedRoute>
         <News />
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/gallery',
+    element: (
+      <ProtectedRoute>
+        <Gallery />
       </ProtectedRoute>
     ),
   },

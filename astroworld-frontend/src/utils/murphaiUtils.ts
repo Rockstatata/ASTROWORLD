@@ -15,7 +15,7 @@ export const fmtTime = (iso: string): string =>
   new Date(iso).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
 export const apiPostChat = async (prompt: string, conversationId?: string) => {
-  const response = await axios.post('/api/murphai/chat/', { 
+  const response = await axios.post('/murphai/chat/', { 
     prompt,
     conversation_id: conversationId 
   });
@@ -24,7 +24,7 @@ export const apiPostChat = async (prompt: string, conversationId?: string) => {
 };
 
 export const apiStreamChat = async (prompt: string, onToken: (token: string) => void) => {
-  const response = await fetch(`http://localhost:8000/api/murphai/stream/?prompt=${encodeURIComponent(prompt)}`, {
+  const response = await fetch(`http://localhost:8000/murphai/stream/?prompt=${encodeURIComponent(prompt)}`, {
     method: 'GET',
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
@@ -59,7 +59,7 @@ export const apiStreamChat = async (prompt: string, onToken: (token: string) => 
 };
 
 export const createConversation = async (conversationId: string, title: string = 'New Chat') => {
-  const response = await axios.post('/api/murphai/conversations/', { 
+  const response = await axios.post('/murphai/conversations/', { 
     conversation_id: conversationId,
     title 
   });
@@ -67,21 +67,21 @@ export const createConversation = async (conversationId: string, title: string =
 };
 
 export const deleteConversation = async (conversationId: string) => {
-  const response = await axios.delete(`/api/murphai/conversations/${conversationId}/`);
+  const response = await axios.delete(`/murphai/conversations/${conversationId}/`);
   return response.data;
 };
 
 export const clearConversation = async (conversationId: string) => {
-  const response = await axios.delete(`/api/murphai/conversations/${conversationId}/clear/`);
+  const response = await axios.delete(`/murphai/conversations/${conversationId}/clear/`);
   return response.data;
 };
 
 export const clearAllConversations = async () => {
-  const response = await axios.delete('/api/murphai/conversations/clear-all/');
+  const response = await axios.delete('/murphai/conversations/clear-all/');
   return response.data;
 };
 
 export const renameConversation = async (conversationId: string, newTitle: string) => {
-  const response = await axios.patch(`/api/murphai/conversations/${conversationId}/rename/`, { title: newTitle });
+  const response = await axios.patch(`/murphai/conversations/${conversationId}/rename/`, { title: newTitle });
   return response.data;
 };

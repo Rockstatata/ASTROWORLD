@@ -20,7 +20,9 @@ import {
   UserPlus,
   Camera,
   Save,
-  X
+  X,
+  MessageCircle,
+  Image
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
@@ -34,12 +36,15 @@ import { useDeleteJournal } from '../../hooks/useUserJournals';
 import { useDeleteCollection } from '../../hooks/useUserCollections';
 import { useDeleteSubscription } from '../../hooks/useUserInteractions';
 import { useFollowing, useFollowers, useMySavedPapers } from '../../hooks/useExplore';
+import { useMessageThreads } from '../../hooks/useMessaging';
+import { useUserFavorites } from '../../hooks/useNASAData';
+import type { UserSavedItem } from '../../services/nasa/nasaServices';
 import type { ContentType } from '../../services/userInteractions';
 import type { PublicUser } from '../../types/explore';
 import UserCard from '../../components/explore/UserCard';
 import PaperListCard from '../../components/explore/PaperListCard';
 
-type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers';
+type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
@@ -66,6 +71,8 @@ const Profile: React.FC = () => {
   const { data: following, isLoading: followingLoading } = useFollowing();
   const { data: followers, isLoading: followersLoading } = useFollowers();
   const { data: savedPapers, isLoading: papersLoading } = useMySavedPapers();
+  const { data: messageThreads, isLoading: messagesLoading } = useMessageThreads();
+  const { data: userFavorites, isLoading: favoritesLoading } = useUserFavorites();
 
   // Delete mutations
   const deleteContent = useDeleteContent();
@@ -100,8 +107,10 @@ const Profile: React.FC = () => {
       return [
         { id: 'saved' as TabType, label: 'Saved Content', icon: Bookmark, count: profile?.saved_content_count },
         { id: 'papers' as TabType, label: 'Research Papers', icon: BookOpen, count: savedPapers?.count || 0 },
+        { id: 'images' as TabType, label: 'Saved Images', icon: Image, count: undefined },
         { id: 'journals' as TabType, label: 'Journals', icon: BookOpen, count: profile?.journals_count },
         { id: 'collections' as TabType, label: 'Collections', icon: FolderOpen, count: profile?.collections_count },
+        { id: 'messages' as TabType, label: 'Messages', icon: MessageCircle, count: undefined },
         { id: 'following' as TabType, label: 'Following', icon: UserPlus, count: following?.length || 0 },
         { id: 'followers' as TabType, label: 'Followers', icon: Users, count: followers?.length || 0 },
         { id: 'subscriptions' as TabType, label: 'Subscriptions', icon: Bell, count: profile?.subscriptions_count },
@@ -840,6 +849,213 @@ const Profile: React.FC = () => {
                   <Users className="h-16 w-16 text-gray-600 mx-auto mb-4" />
                   <p className="text-gray-400 text-lg">No followers yet</p>
                   <p className="text-gray-500 text-sm mt-2">Share your cosmic discoveries to attract followers!</p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Saved Images Tab - only for own profile */}
+          {activeTab === 'images' && isOwnProfile && (
+            <div className="space-y-6">
+              {favoritesLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : userFavorites && userFavorites.data && userFavorites.data.length > 0 ? (
+                <div>
+                  {/* Filter by image types */}
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold text-white mb-4">Your Saved NASA Images</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {['all', 'nasa_image', 'apod', 'mars_photo', 'epic'].map((type) => (
+                        <button
+                          key={type}
+                          className="px-4 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all"
+                        >
+                          {type === 'all' ? 'All Images' : 
+                           type === 'nasa_image' ? 'NASA Library' :
+                           type === 'apod' ? 'APOD' :
+                           type === 'mars_photo' ? 'Mars Photos' :
+                           type === 'epic' ? 'EPIC Earth' : type}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Images Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {userFavorites.data
+                      .filter((item: UserSavedItem) => ['nasa_image', 'apod', 'mars_photo', 'epic'].includes(item.item_type))
+                      .map((favorite: UserSavedItem, index: number) => (
+                        <motion.div
+                          key={favorite.id}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="group cursor-pointer"
+                        >
+                          <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm rounded-xl border border-white/10 overflow-hidden hover:border-purple-500/50 transition-all duration-300 hover:scale-105">
+                            {/* Image placeholder - we'll need to enhance this with actual image data */}
+                            <div className="aspect-square bg-gradient-to-br from-gray-800 to-gray-900 relative overflow-hidden">
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <Camera className="h-12 w-12 text-gray-500" />
+                              </div>
+                              
+                              {/* Type Badge */}
+                              <div className="absolute top-3 left-3">
+                                <span className="px-2 py-1 rounded bg-purple-500/80 text-white text-xs font-bold">
+                                  {favorite.item_type === 'nasa_image' ? 'NASA' :
+                                   favorite.item_type === 'apod' ? 'APOD' :
+                                   favorite.item_type === 'mars_photo' ? 'MARS' :
+                                   favorite.item_type === 'epic' ? 'EPIC' : favorite.item_type}
+                                </span>
+                              </div>
+
+                              {/* Remove Button */}
+                              <button className="absolute top-3 right-3 p-2 bg-red-500/80 hover:bg-red-500 rounded-full transition-all opacity-0 group-hover:opacity-100">
+                                <Trash2 className="h-4 w-4 text-white" />
+                              </button>
+                            </div>
+
+                            {/* Content */}
+                            <div className="p-4">
+                              <div className="flex items-center justify-between mb-2">
+                                <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-medium">
+                                  {favorite.item_type.replace('_', ' ').toUpperCase()}
+                                </span>
+                                <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+                              </div>
+                              
+                              <h4 className="text-white font-bold line-clamp-2 mb-2">
+                                Saved Image {favorite.id}
+                              </h4>
+                              
+                              {favorite.notes && (
+                                <p className="text-gray-400 text-sm line-clamp-2 mb-3">
+                                  {favorite.notes}
+                                </p>
+                              )}
+                              
+                              {favorite.tags && favorite.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mb-3">
+                                  {favorite.tags.slice(0, 3).map((tag: string, i: number) => (
+                                    <span key={i} className="px-2 py-1 rounded bg-white/10 text-gray-300 text-xs">
+                                      #{tag}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                              
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-500">
+                                  {new Date(favorite.saved_at).toLocaleDateString()}
+                                </span>
+                                <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-purple-400 transition-colors" />
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Camera className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">No saved images yet</p>
+                  <p className="text-gray-500 text-sm mt-2">
+                    Visit the Gallery to save your favorite NASA images!
+                  </p>
+                  <button 
+                    onClick={() => window.location.href = '/gallery'}
+                    className="mt-4 px-6 py-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-medium transition-all flex items-center gap-2 mx-auto"
+                  >
+                    <Camera className="h-5 w-5" />
+                    Explore Gallery
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Messages Tab - only for own profile */}
+          {activeTab === 'messages' && isOwnProfile && (
+            <div className="space-y-4">
+              {messagesLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : messageThreads && messageThreads.length > 0 ? (
+                messageThreads.map((thread, index) => (
+                  <motion.div
+                    key={thread.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-gradient-to-r from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-xl border border-white/10 p-6 hover:border-blue-500/50 transition-all group cursor-pointer"
+                    onClick={() => window.location.href = `/messages?user=${thread.other_user.id}&username=${thread.other_user.username}&fullName=${encodeURIComponent(thread.other_user.full_name || '')}&bio=${encodeURIComponent(thread.other_user.bio || '')}&profilePicture=${encodeURIComponent(thread.other_user.profile_picture || '')}`}
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="h-12 w-12 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold overflow-hidden flex-shrink-0">
+                        {thread.other_user.profile_picture ? (
+                          <img 
+                            src={thread.other_user.profile_picture} 
+                            alt={thread.other_user.username} 
+                            className="w-full h-full object-cover" 
+                          />
+                        ) : (
+                          thread.other_user.full_name?.charAt(0).toUpperCase() || thread.other_user.username.charAt(0).toUpperCase()
+                        )}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="text-lg font-bold text-white truncate">
+                            {thread.other_user.full_name || thread.other_user.username}
+                          </h3>
+                          <span className="text-xs text-gray-500 flex-shrink-0">
+                            {new Date(thread.last_activity).toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        
+                        <p className="text-gray-400 text-sm mb-1">@{thread.other_user.username}</p>
+                        
+                        {thread.last_message && (
+                          <p className="text-gray-300 text-sm line-clamp-2">
+                            <span className="text-gray-500">
+                              {thread.last_message.sender.id === profile?.id ? 'You: ' : ''}
+                            </span>
+                            {thread.last_message.message}
+                          </p>
+                        )}
+                        
+                        <div className="flex items-center justify-between mt-3">
+                          <div className="flex items-center gap-2">
+                            {thread.unread_count > 0 && (
+                              <span className="px-2 py-1 rounded-full bg-purple-500 text-white text-xs font-bold">
+                                {thread.unread_count}
+                              </span>
+                            )}
+                            <span className="text-xs text-gray-500">
+                              Conversation
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <ExternalLink className="h-4 w-4 text-gray-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <MessageCircle className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">No conversations yet</p>
+                  <p className="text-gray-500 text-sm mt-2">Connect with fellow space explorers in the Explore page!</p>
                 </div>
               )}
             </div>

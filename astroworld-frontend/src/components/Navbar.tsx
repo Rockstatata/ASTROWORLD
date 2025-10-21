@@ -39,7 +39,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
                 { name: 'SkyMap', path: '/skymap' },
                 { name: 'Events', path: '/events' },
                 { name: 'News', path: '/news' },
-                { name: 'Messages', path: '/messages' },
+                { name: 'Gallery', path: '/gallery' },
                 { name: 'MurphAI', path: '/murphai' }
               ].map(({ name, path }) => (
                 <Link
@@ -95,7 +95,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
       {isMobileMenuOpen && (
         <div className="md:hidden bg-gray-900/90 backdrop-blur-xl border-b border-space-violet/30 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'Messages', 'MurphAI'].map((item) => (
+            {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'Gallery', 'MurphAI'].map((item) => (
               <a
                 key={item}
                 href={`${item.toLowerCase()}`}

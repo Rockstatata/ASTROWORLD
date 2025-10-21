@@ -252,6 +252,56 @@ export interface SpaceEventFilters {
   page?: number;
 }
 
+// NASA Image Library interfaces
+export interface NASAMediaItem {
+  nasa_id: string;
+  href: string;
+  data: Array<{
+    nasa_id: string;
+    title: string;
+    description?: string;
+    description_508?: string;
+    keywords?: string[];
+    media_type: 'image' | 'video' | 'audio';
+    center?: string;
+    date_created?: string;
+    photographer?: string;
+    location?: string;
+    secondary_creator?: string;
+    album?: string[];
+  }>;
+  links?: Array<{
+    href: string;
+    rel: string;
+    render?: string;
+  }>;
+}
+
+export interface NASAImageSearchResult {
+  collection: {
+    version: string;
+    href: string;
+    items: NASAMediaItem[];
+    metadata?: {
+      total_hits: number;
+    };
+    links?: Array<{
+      rel: string;
+      href: string;
+      prompt?: string;
+    }>;
+  };
+}
+
+export interface NASAImageFilters {
+  q: string;
+  media_type?: 'image' | 'video' | 'audio';
+  year_start?: string;
+  year_end?: string;
+  page?: number;
+  page_size?: number;
+}
+
 // Main NASA API service
 export const nasaAPI = {
   // APOD endpoints
@@ -407,6 +457,26 @@ export const nasaAPI = {
   // Get API status and limits
   getAPIStatus: (): Promise<{ data: any }> =>
     axios.get('/nasa/status/'),
+
+  // NASA Image Library endpoints
+  searchImages: (filters: NASAImageFilters): Promise<{ data: NASAImageSearchResult }> =>
+    axios.get('/nasa/images/search/', { params: filters }),
+
+  getPopularImages: (limit: number = 20): Promise<{ data: NASAImageSearchResult }> =>
+    axios.get('/nasa/images/popular/', { params: { limit } }),
+
+  getImageAsset: (nasa_id: string): Promise<{ data: any }> =>
+    axios.get(`/nasa/images/asset/${nasa_id}/`),
+
+  getImageMetadata: (nasa_id: string): Promise<{ data: any }> =>
+    axios.get(`/nasa/images/metadata/${nasa_id}/`),
+
+  // GIBS (Global Imagery Browse Services) endpoints
+  getGIBSCapabilities: (): Promise<{ data: any }> =>
+    axios.get('/nasa/gibs/capabilities/'),
+
+  getGIBSImagery: (date?: string, layer?: string, bbox?: string): Promise<{ data: any }> =>
+    axios.get('/nasa/gibs/imagery/', { params: { date, layer, bbox } }),
 };
 
 export default nasaAPI;
