@@ -74,7 +74,27 @@ class UserContentSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         # Automatically set user from request context
-        validated_data['user'] = self.context['request'].user
+        user = self.context['request'].user
+        content_type = validated_data.get('content_type')
+        content_id = validated_data.get('content_id')
+        
+        # Check if this content is already saved by the user
+        existing = UserContent.objects.filter(
+            user=user,
+            content_type=content_type,
+            content_id=content_id
+        ).first()
+        
+        if existing:
+            # Update existing record with new data if provided
+            for key, value in validated_data.items():
+                if key not in ['user', 'content_type', 'content_id'] and value is not None:
+                    setattr(existing, key, value)
+            existing.save()
+            return existing
+        
+        # Create new record
+        validated_data['user'] = user
         return super().create(validated_data)
 
 

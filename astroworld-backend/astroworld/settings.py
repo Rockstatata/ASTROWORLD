@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'murphai',
     'spaceflightnews',
     'research_papers',
+    'skymap',
     'rest_framework_simplejwt.token_blacklist', 
 ]
 

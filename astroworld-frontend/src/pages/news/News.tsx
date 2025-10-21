@@ -3,7 +3,7 @@ import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
 import NewsCard from '../../components/News/NewsCard';
 import { useNews, useNewsSites, useFeaturedNews } from '../../hooks/useNewsData';
-import { useFavoriteMutation } from '../../hooks/useNASAData';
+import { useSaveContent } from '../../hooks/useUserContent';
 import type { NewsFilters } from '../../services/spaceflightnews/newsServices';
 
 const News = () => {
@@ -13,16 +13,31 @@ const News = () => {
   const { data: newsData, isLoading, error } = useNews(filters);
   const { data: featuredData, isLoading: featuredLoading } = useFeaturedNews();
   const { data: newsSites } = useNewsSites();
-  const favoriteMutation = useFavoriteMutation();
+  const saveContent = useSaveContent();
 
   const handleFilterChange = (newFilters: Partial<NewsFilters>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
   const handleSaveNews = (newsId: string) => {
-    favoriteMutation.mutate({
-      itemType: 'news',
-      itemId: newsId,
+    // Find the news item to get its details
+    const newsItems = Array.isArray(displayData?.data) ? displayData.data : displayData?.data.results || [];
+    const newsItem = newsItems.find((item) => item.nasa_id === newsId);
+    if (!newsItem) return;
+
+    saveContent.mutate({
+      content_type: 'news',
+      content_id: newsId,
+      title: newsItem.title,
+      notes: newsItem.summary,
+      metadata: {
+        url: newsItem.url,
+        news_site: newsItem.news_site,
+        published_at: newsItem.published_at,
+        authors: newsItem.authors,
+        article_type: newsItem.article_type,
+        featured: newsItem.featured,
+      },
     });
   };
 
@@ -87,7 +102,7 @@ const News = () => {
                   </label>
                   <select
                     value={filters.type || ''}
-                    onChange={(e) => handleFilterChange({ type: e.target.value as any || undefined })}
+                    onChange={(e) => handleFilterChange({ type: e.target.value as 'article' | 'blog' | 'report' || undefined })}
                     className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                   >
                     <option value="">All Types</option>

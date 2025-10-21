@@ -27,24 +27,23 @@ import {
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
 import { useUserProfile, useUpdateProfile, usePublicProfile } from '../../hooks/useUserInteractions';
-import { useUserContent } from '../../hooks/useUserContent';
+
 import { useUserJournals } from '../../hooks/useUserJournals';
 import { useUserCollections } from '../../hooks/useUserCollections';
 import { useUserSubscriptions, useRecentActivities } from '../../hooks/useUserInteractions';
-import { useDeleteContent } from '../../hooks/useUserContent';
+
 import { useDeleteJournal } from '../../hooks/useUserJournals';
 import { useDeleteCollection } from '../../hooks/useUserCollections';
 import { useDeleteSubscription } from '../../hooks/useUserInteractions';
 import { useFollowing, useFollowers, useMySavedPapers } from '../../hooks/useExplore';
 import { useMessageThreads } from '../../hooks/useMessaging';
-import { useUserFavorites } from '../../hooks/useNASAData';
-import type { UserSavedItem } from '../../services/nasa/nasaServices';
+import { useUserContent, useDeleteContent, useUpdateContent } from '../../hooks/useUserContent';
+import { useSkyMarkers, useDeleteMarker, type SkyMarker } from '../../hooks/useSkymap';
 import type { ContentType } from '../../services/userInteractions';
-import type { PublicUser } from '../../types/explore';
 import UserCard from '../../components/explore/UserCard';
 import PaperListCard from '../../components/explore/PaperListCard';
 
-type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images';
+type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images' | 'skymap';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
@@ -72,13 +71,14 @@ const Profile: React.FC = () => {
   const { data: followers, isLoading: followersLoading } = useFollowers();
   const { data: savedPapers, isLoading: papersLoading } = useMySavedPapers();
   const { data: messageThreads, isLoading: messagesLoading } = useMessageThreads();
-  const { data: userFavorites, isLoading: favoritesLoading } = useUserFavorites();
+  const { data: skyMarkers, isLoading: skyMarkersLoading } = useSkyMarkers();
 
   // Delete mutations
   const deleteContent = useDeleteContent();
   const deleteJournal = useDeleteJournal();
   const deleteCollection = useDeleteCollection();
   const deleteSubscription = useDeleteSubscription();
+  const deleteMarker = useDeleteMarker();
 
   // Update profile mutation
   const updateProfile = useUpdateProfile();
@@ -107,6 +107,7 @@ const Profile: React.FC = () => {
       return [
         { id: 'saved' as TabType, label: 'Saved Content', icon: Bookmark, count: profile?.saved_content_count },
         { id: 'papers' as TabType, label: 'Research Papers', icon: BookOpen, count: savedPapers?.count || 0 },
+        { id: 'skymap' as TabType, label: 'Sky Markers', icon: Star, count: skyMarkers?.length || 0 },
         { id: 'images' as TabType, label: 'Saved Images', icon: Image, count: undefined },
         { id: 'journals' as TabType, label: 'Journals', icon: BookOpen, count: profile?.journals_count },
         { id: 'collections' as TabType, label: 'Collections', icon: FolderOpen, count: profile?.collections_count },
@@ -857,23 +858,22 @@ const Profile: React.FC = () => {
           {/* Saved Images Tab - only for own profile */}
           {activeTab === 'images' && isOwnProfile && (
             <div className="space-y-6">
-              {favoritesLoading ? (
+              {contentLoading ? (
                 <div className="text-center py-12">
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
-              ) : userFavorites && userFavorites.data && userFavorites.data.length > 0 ? (
+              ) : savedContent && savedContent.length > 0 ? (
                 <div>
                   {/* Filter by image types */}
                   <div className="mb-6">
                     <h3 className="text-xl font-bold text-white mb-4">Your Saved NASA Images</h3>
                     <div className="flex flex-wrap gap-2">
-                      {['all', 'nasa_image', 'apod', 'mars_photo', 'epic'].map((type) => (
+                      {['all', 'apod', 'mars_photo', 'epic'].map((type) => (
                         <button
                           key={type}
                           className="px-4 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all"
                         >
                           {type === 'all' ? 'All Images' : 
-                           type === 'nasa_image' ? 'NASA Library' :
                            type === 'apod' ? 'APOD' :
                            type === 'mars_photo' ? 'Mars Photos' :
                            type === 'epic' ? 'EPIC Earth' : type}
@@ -884,11 +884,11 @@ const Profile: React.FC = () => {
 
                   {/* Images Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {userFavorites.data
-                      .filter((item: UserSavedItem) => ['nasa_image', 'apod', 'mars_photo', 'epic'].includes(item.item_type))
-                      .map((favorite: UserSavedItem, index: number) => (
+                    {savedContent
+                      .filter((item) => ['apod', 'mars_photo', 'epic'].includes(item.content_type))
+                      .map((item, index) => (
                         <motion.div
-                          key={favorite.id}
+                          key={item.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: index * 0.05 }}
@@ -904,15 +904,21 @@ const Profile: React.FC = () => {
                               {/* Type Badge */}
                               <div className="absolute top-3 left-3">
                                 <span className="px-2 py-1 rounded bg-purple-500/80 text-white text-xs font-bold">
-                                  {favorite.item_type === 'nasa_image' ? 'NASA' :
-                                   favorite.item_type === 'apod' ? 'APOD' :
-                                   favorite.item_type === 'mars_photo' ? 'MARS' :
-                                   favorite.item_type === 'epic' ? 'EPIC' : favorite.item_type}
+                                  {item.content_type === 'apod' ? 'APOD' :
+                                   item.content_type === 'mars_photo' ? 'MARS' :
+                                   item.content_type === 'epic' ? 'EPIC' : item.content_type}
                                 </span>
                               </div>
 
                               {/* Remove Button */}
-                              <button className="absolute top-3 right-3 p-2 bg-red-500/80 hover:bg-red-500 rounded-full transition-all opacity-0 group-hover:opacity-100">
+                              <button 
+                                onClick={() => {
+                                  if (confirm('Delete this saved image?')) {
+                                    deleteContent.mutate(item.id);
+                                  }
+                                }}
+                                className="absolute top-3 right-3 p-2 bg-red-500/80 hover:bg-red-500 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                              >
                                 <Trash2 className="h-4 w-4 text-white" />
                               </button>
                             </div>
@@ -921,24 +927,26 @@ const Profile: React.FC = () => {
                             <div className="p-4">
                               <div className="flex items-center justify-between mb-2">
                                 <span className="px-2 py-1 rounded bg-purple-500/20 text-purple-300 text-xs font-medium">
-                                  {favorite.item_type.replace('_', ' ').toUpperCase()}
+                                  {item.content_type.replace('_', ' ').toUpperCase()}
                                 </span>
-                                <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+                                {item.is_favorite && (
+                                  <Star className="h-4 w-4 text-yellow-400" fill="currentColor" />
+                                )}
                               </div>
                               
                               <h4 className="text-white font-bold line-clamp-2 mb-2">
-                                Saved Image {favorite.id}
+                                {item.title}
                               </h4>
                               
-                              {favorite.notes && (
+                              {item.notes && (
                                 <p className="text-gray-400 text-sm line-clamp-2 mb-3">
-                                  {favorite.notes}
+                                  {item.notes}
                                 </p>
                               )}
                               
-                              {favorite.tags && favorite.tags.length > 0 && (
+                              {item.tags && item.tags.length > 0 && (
                                 <div className="flex flex-wrap gap-1 mb-3">
-                                  {favorite.tags.slice(0, 3).map((tag: string, i: number) => (
+                                  {item.tags.slice(0, 3).map((tag, i) => (
                                     <span key={i} className="px-2 py-1 rounded bg-white/10 text-gray-300 text-xs">
                                       #{tag}
                                     </span>
@@ -948,7 +956,7 @@ const Profile: React.FC = () => {
                               
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-gray-500">
-                                  {new Date(favorite.saved_at).toLocaleDateString()}
+                                  {new Date(item.created_at).toLocaleDateString()}
                                 </span>
                                 <ExternalLink className="h-4 w-4 text-gray-400 group-hover:text-purple-400 transition-colors" />
                               </div>
@@ -971,6 +979,174 @@ const Profile: React.FC = () => {
                   >
                     <Camera className="h-5 w-5" />
                     Explore Gallery
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sky Markers Tab - only for own profile */}
+          {activeTab === 'skymap' && isOwnProfile && (
+            <div className="space-y-4">
+              {skyMarkersLoading ? (
+                <div className="text-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
+                </div>
+              ) : skyMarkers && skyMarkers.length > 0 ? (
+                skyMarkers.map((marker: SkyMarker, index: number) => (
+                  <motion.div
+                    key={marker.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 backdrop-blur-sm rounded-xl border border-white/10 p-6 hover:border-purple-500/50 transition-all group"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <Star className={`h-5 w-5 ${marker.is_tracking ? 'text-yellow-400' : 'text-purple-400'}`} />
+                          <h3 className="text-xl font-bold text-white">{marker.display_name}</h3>
+                          <div className="flex gap-2">
+                            {marker.is_tracking && (
+                              <span className="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-300 text-xs font-medium">
+                                TRACKING
+                              </span>
+                            )}
+                            {marker.is_public && (
+                              <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-medium">
+                                PUBLIC
+                              </span>
+                            )}
+                            {marker.is_featured && (
+                              <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium">
+                                FEATURED
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                          <div className="text-sm">
+                            <span className="text-gray-500">Type:</span>
+                            <span className="text-white ml-2">{marker.object_type}</span>
+                          </div>
+                          {marker.az !== undefined && marker.alt !== undefined ? (
+                            <>
+                              <div className="text-sm">
+                                <span className="text-gray-500">Az:</span>
+                                <span className="text-white ml-2">{marker.az.toFixed(2)}°</span>
+                              </div>
+                              <div className="text-sm">
+                                <span className="text-gray-500">Alt:</span>
+                                <span className="text-white ml-2">{marker.alt.toFixed(2)}°</span>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              <div className="text-sm">
+                                <span className="text-gray-500">RA:</span>
+                                <span className="text-white ml-2">{marker.ra.toFixed(4)}°</span>
+                              </div>
+                              <div className="text-sm">
+                                <span className="text-gray-500">Dec:</span>
+                                <span className="text-white ml-2">{marker.dec.toFixed(4)}°</span>
+                              </div>
+                            </>
+                          )}
+                          {marker.magnitude && (
+                            <div className="text-sm">
+                              <span className="text-gray-500">Mag:</span>
+                              <span className="text-white ml-2">{marker.magnitude}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {marker.notes && (
+                          <p className="text-gray-300 text-sm mb-3 line-clamp-2">{marker.notes}</p>
+                        )}
+                        
+                        {marker.ai_description && (
+                          <div className="mt-3 p-3 bg-black/30 rounded-lg">
+                            <p className="text-xs text-gray-400 mb-1">AI Description:</p>
+                            <p className="text-gray-300 text-sm line-clamp-3">{marker.ai_description}</p>
+                          </div>
+                        )}
+                        
+                        {marker.tags && marker.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-2 mt-3">
+                            {marker.tags.map((tag: string, i: number) => (
+                              <span key={i} className="px-2 py-1 rounded bg-white/10 text-gray-300 text-xs">
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center gap-2 ml-4">
+                        <button
+                          onClick={() => {
+                            // Navigate to skymap with this marker selected
+                            const params = new URLSearchParams({
+                              marker: marker.id.toString(),
+                              ...(marker.az !== undefined && marker.alt !== undefined
+                                ? { az: marker.az.toString(), alt: marker.alt.toString() }
+                                : { ra: marker.ra.toString(), dec: marker.dec.toString() }
+                              )
+                            });
+                            window.location.href = `/skymap?${params.toString()}`;
+                          }}
+                          className="px-4 py-2 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 text-sm font-medium transition-all flex items-center gap-2"
+                          title="View in Skymap"
+                        >
+                          <ExternalLink className="h-4 w-4" />
+                          View
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (confirm('Delete this sky marker?')) {
+                              deleteMarker.mutate(marker.id);
+                            }
+                          }}
+                          className="p-2 hover:bg-red-500/20 rounded-lg transition-all"
+                          title="Delete marker"
+                        >
+                          <Trash2 className="h-4 w-4 text-red-400" />
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
+                      <span className="text-xs text-gray-500">
+                        Created {new Date(marker.created_at).toLocaleDateString('en-US', { 
+                          month: 'long', 
+                          day: 'numeric', 
+                          year: 'numeric' 
+                        })}
+                      </span>
+                      <div className="flex items-center gap-2 text-xs text-gray-500">
+                        {marker.observation_count && marker.observation_count > 0 && (
+                          <span>{marker.observation_count} observations</span>
+                        )}
+                        {marker.visibility_rating && (
+                          <span>★ {marker.visibility_rating}/10</span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <Star className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400 text-lg">No sky markers yet</p>
+                  <p className="text-gray-500 text-sm mt-2">Start marking celestial objects in the Skymap!</p>
+                  <button 
+                    onClick={() => window.location.href = '/skymap'}
+                    className="mt-4 px-6 py-3 rounded-lg bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 font-medium transition-all flex items-center gap-2 mx-auto"
+                  >
+                    <Star className="h-5 w-5" />
+                    Explore Skymap
                   </button>
                 </div>
               )}

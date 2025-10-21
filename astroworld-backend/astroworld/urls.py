@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/spacex/', include('spacex_api.urls')),
     path('api/spaceflight/', include('spaceflightnews.urls')),
     path('api/murphai/', include('murphai.urls')),
+    path('api/skymap/', include('skymap.urls')),
 ]

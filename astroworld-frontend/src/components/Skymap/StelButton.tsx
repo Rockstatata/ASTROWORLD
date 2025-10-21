@@ -1,48 +1,63 @@
 import React from 'react';
-import type { StellariumObject } from '../../types/stellarium';
 
 interface StelButtonProps {
   label: string;
   img: string;
-  obj: StellariumObject | null;
+  obj: any;
   attr: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  className?: string;
 }
 
-const StelButton: React.FC<StelButtonProps> = ({ label, img, obj, attr }) => {
-  const value = obj ? obj[attr] : false;
+const StelButton: React.FC<StelButtonProps> = ({
+  label,
+  img,
+  obj,
+  attr,
+  onClick,
+  disabled = false,
+  className = '',
+}) => {
+  const isActive = obj && obj[attr];
 
   const handleClick = () => {
-    if (obj) {
+    if (obj && attr && typeof obj[attr] !== 'undefined') {
       obj[attr] = !obj[attr];
     }
+    onClick?.();
   };
 
   return (
-    <div 
-      className="relative group"
+    <button
+      onClick={handleClick}
+      disabled={disabled}
+      className={`group relative p-3 rounded-lg transition-all duration-200 ${
+        isActive 
+          ? 'bg-blue-600/20 border border-blue-500/50' 
+          : 'bg-gray-800/50 border border-gray-600/30 hover:bg-gray-700/50'
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'} ${className}`}
       title={label}
     >
-      <button 
-        onClick={handleClick} 
-        className={`w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-200 ${
-          value 
-            ? 'bg-gradient-to-br from-space-blue to-space-violet shadow-lg shadow-space-violet/30' 
-            : 'bg-transparent hover:bg-white/10'
-        }`}
-      >
+      <div className="flex flex-col items-center space-y-1">
         <img 
           src={img} 
           alt={label}
-          className={`w-8 h-8 object-contain transition-all duration-200 ${
-            value ? 'brightness-125' : 'brightness-75 opacity-70 group-hover:opacity-100 group-hover:brightness-100'
+          className={`w-6 h-6 transition-colors ${
+            isActive ? 'brightness-125' : 'brightness-75 group-hover:brightness-100'
           }`}
         />
-      </button>
-      {/* Tooltip */}
-      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
-        {label}
+        <span className={`text-xs font-medium transition-colors ${
+          isActive ? 'text-blue-300' : 'text-gray-300 group-hover:text-white'
+        }`}>
+          {label}
+        </span>
       </div>
-    </div>
+      
+      {isActive && (
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-gray-900" />
+      )}
+    </button>
   );
 };
 

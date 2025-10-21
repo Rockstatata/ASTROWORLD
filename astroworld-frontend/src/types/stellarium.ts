@@ -1,11 +1,27 @@
 // TypeScript interfaces for Stellarium Web Engine
 
+// TypeScript interfaces for Stellarium Web Engine
+
 export interface StellariumObject {
-  [key: string]: any;
+  [key: string]: unknown;
   visible?: boolean;
   lines_visible?: boolean;
+  images_visible?: boolean;
   designations(): string[];
-  getInfo(key: string): any;
+  getInfo(key: string): unknown;
+  type?: string;
+  designation?: string;
+  catalog_number?: string;
+  name?: string;
+  icrs_pos?: {
+    ra: number;
+    dec: number;
+  };
+  coordinates?: unknown;
+  horizontal_pos?: number[] | (() => number[]) | { alt: number; az: number };
+  magnitude?: number;
+  jsonData?: unknown | (() => unknown);
+  addDataSource?: (options: { url: string; key?: string }) => void;
 }
 
 export interface ProgressBar {
@@ -16,8 +32,18 @@ export interface ProgressBar {
 
 export interface StellariumCore {
   progressbars: ProgressBar[];
-  selection: any; // More flexible type for selection
-  observer: any;
+  selection: StellariumObject | null;
+  observer: {
+    utc_to_local_tz: number;
+    latitude: number;
+    longitude: number;
+    elevation: number;
+    time: number;
+    fov?: number;
+    set_direction?: (direction: number[]) => void;
+    set_azimuthal?: (azimuth: number, altitude: number) => void;
+    set_zoom?: (zoom: number) => void;
+  };
   constellations: StellariumObject;
   atmosphere: StellariumObject;
   landscapes: StellariumObject;
@@ -48,11 +74,13 @@ export interface StellariumCore {
   satellites: StellariumObject & {
     addDataSource(options: { url: string; key: string }): void;
   };
+  getObjAtPos?: (x: number, y: number) => StellariumObject | null;
+  update?: (deltaTime: number) => void;
 }
 
 export interface StellariumEngine {
   core: StellariumCore;
-  change(callback: (obj: any, attr: string) => void): void;
+  change(callback: (obj: StellariumObject | null, attr: string) => void): void;
   setFont(name: string, url: string, scale: number): void;
   a2tf(angle: number, precision: number): {
     hours: number;
@@ -70,7 +98,7 @@ export interface StellariumEngine {
   anp(angle: number): number;
   anpm(angle: number): number;
   c2s(vector: number[]): number[];
-  convertFrame(observer: any, from: string, to: string, coords: any): any;
+  convertFrame(observer: unknown, from: string, to: string, coords: unknown): unknown;
 }
 
 export interface StelWebEngineOptions {
