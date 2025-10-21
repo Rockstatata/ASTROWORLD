@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import Layout from '../../components/Layout';
+import StarryBackground from '../../components/Home/StarryBackground';
 import NewsCard from '../../components/News/NewsCard';
 import { useNews, useNewsSites, useFeaturedNews } from '../../hooks/useNewsData';
 import { useFavoriteMutation } from '../../hooks/useNASAData';
@@ -30,7 +31,12 @@ const News = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-b from-space-dark via-space-dark to-black text-white">
+      <div className="relative min-h-screen text-white overflow-hidden">
+        {/* Animated Starry Background */}
+        <StarryBackground />
+        
+        {/* Main Content - positioned above background */}
+        <div className="relative z-10">
         <div className="max-w-7xl mx-auto px-4 py-8">
           {/* Header */}
           <div className="text-center mb-12">
@@ -183,6 +189,7 @@ const News = () => {
               </button>
             </div>
           )}
+        </div>
         </div>
       </div>
     </Layout>

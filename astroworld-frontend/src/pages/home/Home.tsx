@@ -58,19 +58,19 @@ const Home: React.FC = () => {
           <ExoplanetStat />
 
           {/* NASA Image Gallery */}
-          <div className="px-4 py-8">
+          
             <NASAImageGallery />
-          </div>
+          
 
           {/* Satellite Tracker */}
-          <div className="px-4 py-8">
+          
             <SatelliteTracker />
-          </div>
+          
 
           {/* GIBS Earth Imagery */}
-          <div className="px-4 py-8">
+          
             <GIBSImageryMap />
-          </div>
+          
 
           {/* Original Events Showcase */}
           <EventsShowcase />

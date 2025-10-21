@@ -23,6 +23,7 @@ import {
   X
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import StarryBackground from '../../components/Home/StarryBackground';
 import { useUserProfile, useUpdateProfile, usePublicProfile } from '../../hooks/useUserInteractions';
 import { useUserContent } from '../../hooks/useUserContent';
 import { useUserJournals } from '../../hooks/useUserJournals';
@@ -184,7 +185,12 @@ const Profile: React.FC = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="relative min-h-screen text-white overflow-hidden">
+        {/* Animated Starry Background */}
+        <StarryBackground />
+        
+        {/* Main Content - positioned above background */}
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -897,6 +903,7 @@ const Profile: React.FC = () => {
           isLoading={updateProfile.isPending}
         />
       )}
+      </div>
     </Layout>
   );
 };

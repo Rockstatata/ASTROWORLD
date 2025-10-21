@@ -12,6 +12,7 @@ import {
   Calendar
 } from 'lucide-react';
 import Layout from '../../components/Layout';
+import StarryBackground from '../../components/Home/StarryBackground';
 import UserCard from '../../components/explore/UserCard';
 import PaperListCard from '../../components/explore/PaperListCard';
 import JournalCard from '../../components/explore/JournalCard';
@@ -234,7 +235,12 @@ const Explore: React.FC = () => {
 
   return (
     <Layout>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50/30 dark:from-gray-900 dark:to-indigo-950/20">
+      <div className="relative min-h-screen text-white overflow-hidden">
+        {/* Animated Starry Background */}
+        <StarryBackground />
+        
+        {/* Main Content - positioned above background */}
+        <div className="relative z-10">
         <div className="max-w-8xl mx-auto px-4 py-8">
           {/* Header */}
           <motion.div
@@ -406,6 +412,7 @@ const Explore: React.FC = () => {
               </div>
             </motion.div>
           </div>
+        </div>
         </div>
       </div>
     </Layout>

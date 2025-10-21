@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import type { StellariumEngine } from '../../types/stellarium';
 import StelButton from '../../components/Skymap/StelButton';
 import Layout from '../../components/Layout';
+import StarryBackground from '../../components/Home/StarryBackground';
 import { getTitle, getInfos } from '../../utils/stellarium';
 import { useSaveContent } from '../../hooks/useUserContent';
 import { Bookmark, BookmarkCheck } from 'lucide-react';

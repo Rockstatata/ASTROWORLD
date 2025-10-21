@@ -106,7 +106,7 @@ const GIBSImageryMap: React.FC<GIBSImageryMapProps> = ({ className = '' }) => {
   };
 
   return (
-    <div className={`bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 ${className}`}>
+    <div className={`bg-gray-900/50 backdrop-blur-sm rounded-xl p-6 ${className} mx-auto max-w-7xl`}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import (
     APOD, NearEarthObject, NEOCloseApproach, MarsRover, MarsRoverPhoto,
     EPICImage, Exoplanet, SpaceWeatherEvent, NaturalEvent, NaturalEventGeometry,
-    UserSavedItem, UserTrackedObject, NASAMediaItem, Satellite
+    SpaceEvent, UserSavedItem, UserTrackedObject, NASAMediaItem, Satellite
 )
 
 class APODSerializer(serializers.ModelSerializer):
@@ -208,6 +208,40 @@ class NaturalEventSerializer(serializers.ModelSerializer):
                 object_id=obj.nasa_id
             ).exists()
         return False
+
+
+class SpaceEventSerializer(serializers.ModelSerializer):
+    is_saved = serializers.SerializerMethodField()
+    is_tracked = serializers.SerializerMethodField()
+    days_until_event = serializers.ReadOnlyField()
+    is_past = serializers.ReadOnlyField()
+    event_type_display = serializers.CharField(source='get_event_type_display', read_only=True)
+    visibility_display = serializers.CharField(source='get_visibility_display', read_only=True)
+    
+    class Meta:
+        model = SpaceEvent
+        fields = '__all__'
+    
+    def get_is_saved(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return UserSavedItem.objects.filter(
+                user=request.user,
+                item_type='space_event',
+                item_id=obj.nasa_id
+            ).exists()
+        return False
+    
+    def get_is_tracked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return UserTrackedObject.objects.filter(
+                user=request.user,
+                object_type='space_event',
+                object_id=obj.nasa_id
+            ).exists()
+        return False
+
 
 class UserSavedItemSerializer(serializers.ModelSerializer):
     item_data = serializers.SerializerMethodField()

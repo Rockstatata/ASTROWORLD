@@ -151,6 +151,7 @@ class UserSavedItem(models.Model):
         ('exoplanet', 'Exoplanet'),
         ('space_weather', 'Space Weather Event'),
         ('natural_event', 'Natural Event'),
+        ('space_event', 'Space Event'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_nasa_items')
@@ -244,3 +245,82 @@ class Satellite(models.Model):
         verbose_name = "Satellite"
         verbose_name_plural = "Satellites"
         ordering = ['name']
+
+
+class SpaceEvent(BaseNASAModel):
+    """Model for astronomical and space events like eclipses, supermoons, meteor showers, etc."""
+    
+    EVENT_TYPE_CHOICES = [
+        ('ECLIPSE_SOLAR', 'Solar Eclipse'),
+        ('ECLIPSE_LUNAR', 'Lunar Eclipse'),
+        ('SUPERMOON', 'Supermoon'),
+        ('METEOR_SHOWER', 'Meteor Shower'),
+        ('PLANETARY_ALIGNMENT', 'Planetary Alignment'),
+        ('CONJUNCTION', 'Planetary Conjunction'),
+        ('COMET', 'Comet Appearance'),
+        ('TRANSIT', 'Planet Transit'),
+        ('OCCULTATION', 'Occultation'),
+        ('EQUINOX', 'Equinox'),
+        ('SOLSTICE', 'Solstice'),
+        ('LAUNCH', 'Space Launch'),
+        ('MISSION', 'Space Mission Event'),
+        ('OTHER', 'Other Astronomical Event'),
+    ]
+    
+    VISIBILITY_CHOICES = [
+        ('GLOBAL', 'Global'),
+        ('NORTHERN_HEMISPHERE', 'Northern Hemisphere'),
+        ('SOUTHERN_HEMISPHERE', 'Southern Hemisphere'),
+        ('PARTIAL', 'Partial Visibility'),
+        ('LOCAL', 'Local/Regional'),
+    ]
+    
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    event_type = models.CharField(max_length=30, choices=EVENT_TYPE_CHOICES)
+    event_date = models.DateTimeField()
+    end_date = models.DateTimeField(null=True, blank=True)  # For events with duration
+    
+    # Location and visibility
+    visibility = models.CharField(max_length=30, choices=VISIBILITY_CHOICES, default='GLOBAL')
+    location = models.CharField(max_length=255, blank=True)  # Best viewing location
+    coordinates = models.JSONField(null=True, blank=True)  # [longitude, latitude] for specific locations
+    
+    # Additional details
+    magnitude = models.FloatField(null=True, blank=True)  # For celestial objects
+    peak_time = models.DateTimeField(null=True, blank=True)  # Peak visibility time
+    duration_minutes = models.IntegerField(null=True, blank=True)  # Event duration
+    
+    # External resources
+    image_url = models.URLField(blank=True)
+    source_url = models.URLField(blank=True)  # Link to detailed info
+    source_name = models.CharField(max_length=100, blank=True)  # NASA, ESA, etc.
+    
+    # User engagement
+    is_featured = models.BooleanField(default=False)
+    is_upcoming = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['event_date']
+        verbose_name = "Space Event"
+        verbose_name_plural = "Space Events"
+        indexes = [
+            models.Index(fields=['event_date']),
+            models.Index(fields=['event_type']),
+            models.Index(fields=['is_featured']),
+            models.Index(fields=['is_upcoming']),
+        ]
+    
+    def __str__(self):
+        return f"{self.title} - {self.event_date.strftime('%Y-%m-%d')}"
+    
+    @property
+    def is_past(self):
+        return self.event_date < timezone.now()
+    
+    @property
+    def days_until_event(self):
+        if self.is_past:
+            return 0
+        delta = self.event_date - timezone.now()
+        return delta.days

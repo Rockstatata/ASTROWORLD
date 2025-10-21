@@ -44,6 +44,14 @@ urlpatterns = [
     path('natural-events/active/', views.get_active_natural_events, name='natural-events-active'),
     path('natural-events/category/<str:category>/', views.get_events_by_category, name='natural-events-category'),
     
+    # Space Events endpoints
+    path('space-events/', views.SpaceEventListView.as_view(), name='space-events-list'),
+    path('space-events/featured/', views.get_featured_space_events, name='space-events-featured'),
+    path('space-events/upcoming/', views.get_upcoming_space_events, name='space-events-upcoming'),
+    path('space-events/type/<str:event_type>/', views.get_space_events_by_type, name='space-events-by-type'),
+    path('space-events/sync/', views.sync_space_events, name='space-events-sync'),
+    path('space-events/<str:nasa_id>/', views.SpaceEventDetailView.as_view(), name='space-events-detail'),
+    
     # User interaction endpoints
     path('saved/', views.UserSavedItemListView.as_view(), name='user-saved-list'),
     path('saved/<int:pk>/', views.UserSavedItemDetailView.as_view(), name='user-saved-detail'),

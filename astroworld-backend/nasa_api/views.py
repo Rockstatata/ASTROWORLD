@@ -10,16 +10,16 @@ from datetime import datetime, timedelta
 
 from .models import (
     APOD, NearEarthObject, NEOCloseApproach, MarsRoverPhoto, EPICImage, Exoplanet,
-    SpaceWeatherEvent, NaturalEvent, UserSavedItem, UserTrackedObject
+    SpaceWeatherEvent, NaturalEvent, SpaceEvent, UserSavedItem, UserTrackedObject
 )
 from .serializers import (
     APODSerializer, NEOSerializer, MarsRoverPhotoSerializer, EPICImageSerializer,
     ExoplanetSerializer, SpaceWeatherEventSerializer, NaturalEventSerializer,
-    UserSavedItemSerializer, UserTrackedObjectSerializer
+    SpaceEventSerializer, UserSavedItemSerializer, UserTrackedObjectSerializer
 )
 from .services import (
     apod_service, neo_service, mars_rover_service, epic_service, exoplanet_service,
-    space_weather_service, natural_event_service
+    space_weather_service, natural_event_service, space_event_service
 )
 
 class StandardPagination(PageNumberPagination):
@@ -350,6 +350,103 @@ def get_events_by_category(request, category):
     events = NaturalEvent.objects.filter(category_id=category).order_by('-created_at')[:50]
     serializer = NaturalEventSerializer(events, many=True)
     return Response(serializer.data)
+
+
+# Space Events Views
+class SpaceEventListView(generics.ListAPIView):
+    """List space events with filtering options"""
+    serializer_class = SpaceEventSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    pagination_class = StandardPagination
+    
+    def get_queryset(self):
+        queryset = SpaceEvent.objects.all().order_by('event_date')
+        
+        # Filter by event type
+        event_type = self.request.query_params.get('type')
+        if event_type:
+            queryset = queryset.filter(event_type=event_type)
+        
+        # Filter by visibility
+        visibility = self.request.query_params.get('visibility')
+        if visibility:
+            queryset = queryset.filter(visibility=visibility)
+        
+        # Filter by upcoming/past events
+        time_filter = self.request.query_params.get('time_filter')
+        if time_filter == 'upcoming':
+            queryset = queryset.filter(event_date__gte=timezone.now())
+        elif time_filter == 'past':
+            queryset = queryset.filter(event_date__lt=timezone.now())
+        
+        # Filter by featured events
+        featured = self.request.query_params.get('featured')
+        if featured == 'true':
+            queryset = queryset.filter(is_featured=True)
+        
+        # Search by title or description
+        search = self.request.query_params.get('search')
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search) | Q(description__icontains=search)
+            )
+        
+        return queryset
+
+
+class SpaceEventDetailView(generics.RetrieveAPIView):
+    """Get specific space event details"""
+    queryset = SpaceEvent.objects.all()
+    serializer_class = SpaceEventSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    lookup_field = 'nasa_id'
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly])
+def get_featured_space_events(request):
+    """Get featured space events"""
+    events = SpaceEvent.objects.filter(is_featured=True).order_by('event_date')[:10]
+    serializer = SpaceEventSerializer(events, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly])
+def get_upcoming_space_events(request):
+    """Get upcoming space events"""
+    events = SpaceEvent.objects.filter(
+        event_date__gte=timezone.now()
+    ).order_by('event_date')[:20]
+    serializer = SpaceEventSerializer(events, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly])
+def get_space_events_by_type(request, event_type):
+    """Get space events by type"""
+    events = SpaceEvent.objects.filter(event_type=event_type).order_by('event_date')[:50]
+    serializer = SpaceEventSerializer(events, many=True, context={'request': request})
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([permissions.IsAdminUser])
+def sync_space_events(request):
+    """Sync space events data (Admin only)"""
+    try:
+        synced_count = space_event_service.sync_space_events()
+        return Response({
+            'message': f'Successfully synced {synced_count} space events',
+            'synced_count': synced_count
+        })
+    except Exception as e:
+        return Response({
+            'error': f'Failed to sync space events: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class UserSavedItemListView(generics.ListCreateAPIView):
     """List and create user saved items"""
     serializer_class = UserSavedItemSerializer
@@ -446,7 +543,7 @@ def search_all_nasa_data(request):
     if len(query) < 3:
         return Response({'error': 'Query must be at least 3 characters'}, status=status.HTTP_400_BAD_REQUEST)
     
-    results = {'apod': [], 'neo': [], 'exoplanets': [], 'mars_photos': [], 'space_weather': [], 'natural_events': []}
+    results = {'apod': [], 'neo': [], 'exoplanets': [], 'mars_photos': [], 'space_weather': [], 'natural_events': [], 'space_events': []}
     
     if not types or 'apod' in types:
         apods = APOD.objects.filter(
@@ -483,6 +580,12 @@ def search_all_nasa_data(request):
             Q(title__icontains=query) | Q(description__icontains=query)
         )[:5]
         results['natural_events'] = NaturalEventSerializer(events, many=True).data
+    
+    if not types or 'space_events' in types:
+        events = SpaceEvent.objects.filter(
+            Q(title__icontains=query) | Q(description__icontains=query)
+        )[:5]
+        results['space_events'] = SpaceEventSerializer(events, many=True, context={'request': request}).data
     
     return Response(results)
 
@@ -626,6 +729,9 @@ def sync_nasa_data(request):
         
         if data_type == 'all' or data_type == 'natural_events':
             results['natural_events'] = natural_event_service.sync_natural_events_data(limit=500)
+        
+        if data_type == 'all' or data_type == 'space_events':
+            results['space_events'] = space_event_service.sync_space_events()
         
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

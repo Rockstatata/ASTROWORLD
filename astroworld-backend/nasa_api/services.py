@@ -523,6 +523,140 @@ class NaturalEventService:
         return synced_count
 
 
+class SpaceEventService:
+    """Service for fetching and managing space events like eclipses, supermoons, etc."""
+    
+    def __init__(self):
+        self.session = requests.Session()
+        
+    def fetch_astronomical_events(self) -> List[Dict]:
+        """Fetch astronomical events from multiple sources"""
+        events = []
+        
+        # Add manual curated events (can be expanded with real APIs)
+        events.extend(self._get_curated_events_2025())
+        
+        # TODO: Add integration with:
+        # - NASA Eclipse API
+        # - TimeandDate.com API
+        # - In-The-Sky.org API
+        # - Astronomy calendars
+        
+        return events
+    
+    def _get_curated_events_2025(self) -> List[Dict]:
+        """Get curated space events for 2025"""
+        from datetime import datetime
+        
+        events = [
+            {
+                'nasa_id': 'eclipse_total_2025_03_29',
+                'title': 'Total Solar Eclipse',
+                'description': 'A spectacular total solar eclipse will be visible across parts of the Atlantic, Europe, Asia, and Africa. The path of totality will pass through the Faroe Islands, northwestern Spain, Algeria, Tunisia, Libya, Egypt, Saudi Arabia, Iran, Afghanistan, Pakistan, India, and China.',
+                'event_type': 'ECLIPSE_SOLAR',
+                'event_date': datetime(2025, 3, 29, 10, 0),
+                'end_date': datetime(2025, 3, 29, 14, 30),
+                'visibility': 'PARTIAL',
+                'location': 'Atlantic, Europe, Asia, Africa',
+                'coordinates': [29.0, 45.0],
+                'peak_time': datetime(2025, 3, 29, 12, 15),
+                'duration_minutes': 270,
+                'image_url': 'https://images.nasa.gov/eclipse-2025-preview.jpg',
+                'source_url': 'https://eclipse.gsfc.nasa.gov/SEpath/SEpath2025.html',
+                'source_name': 'NASA Eclipse Website',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'supermoon_2025_11_05',
+                'title': 'Supermoon - Beaver Moon',
+                'description': 'The November 2025 supermoon, traditionally called the Beaver Moon, will appear larger and brighter than usual as it reaches its closest approach to Earth.',
+                'event_type': 'SUPERMOON',
+                'event_date': datetime(2025, 11, 5, 18, 30),
+                'visibility': 'GLOBAL',
+                'location': 'Worldwide',
+                'magnitude': -12.7,
+                'peak_time': datetime(2025, 11, 5, 21, 0),
+                'duration_minutes': 720,
+                'image_url': 'https://images.nasa.gov/supermoon-preview.jpg',
+                'source_url': 'https://moon.nasa.gov/news/196/super-blue-blood-moon-coming-jan-31/',
+                'source_name': 'NASA Moon Info',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'geminids_2025_12_14',
+                'title': 'Geminids Meteor Shower Peak',
+                'description': 'The Geminids meteor shower, one of the year\'s most reliable and prolific meteor showers, reaches its peak. Expect up to 120 meteors per hour under dark skies.',
+                'event_type': 'METEOR_SHOWER',
+                'event_date': datetime(2025, 12, 14, 2, 0),
+                'end_date': datetime(2025, 12, 14, 6, 0),
+                'visibility': 'GLOBAL',
+                'location': 'Best viewed from Northern Hemisphere',
+                'peak_time': datetime(2025, 12, 14, 4, 0),
+                'duration_minutes': 240,
+                'image_url': 'https://images.nasa.gov/geminids-preview.jpg',
+                'source_url': 'https://solarsystem.nasa.gov/asteroids-comets-and-meteors/meteors-and-meteorites/geminids/in-depth/',
+                'source_name': 'NASA Solar System',
+                'is_featured': True
+            },
+            {
+                'nasa_id': 'winter_solstice_2025_12_21',
+                'title': 'Winter Solstice',
+                'description': 'The winter solstice marks the shortest day and longest night of the year in the Northern Hemisphere. This astronomical event occurs when the Sun reaches its southernmost position in the sky.',
+                'event_type': 'SOLSTICE',
+                'event_date': datetime(2025, 12, 21, 15, 3),
+                'visibility': 'NORTHERN_HEMISPHERE',
+                'location': 'Northern Hemisphere',
+                'source_url': 'https://solarsystem.nasa.gov/news/1571/the-first-day-of-winter/',
+                'source_name': 'NASA Solar System',
+                'is_featured': False
+            },
+            {
+                'nasa_id': 'venus_jupiter_conjunction_2025_08_12',
+                'title': 'Venus-Jupiter Conjunction',
+                'description': 'Venus and Jupiter will appear extremely close together in the evening sky, creating a spectacular celestial show. The two brightest planets will be separated by less than 1 degree.',
+                'event_type': 'CONJUNCTION',
+                'event_date': datetime(2025, 8, 12, 20, 30),
+                'visibility': 'GLOBAL',
+                'location': 'Western sky after sunset',
+                'magnitude': -4.5,
+                'peak_time': datetime(2025, 8, 12, 21, 0),
+                'duration_minutes': 180,
+                'image_url': 'https://images.nasa.gov/conjunction-preview.jpg',
+                'source_url': 'https://solarsystem.nasa.gov/news/planetary-conjunctions/',
+                'source_name': 'NASA Solar System',
+                'is_featured': True
+            }
+        ]
+        
+        return events
+    
+    def sync_space_events(self) -> int:
+        """Sync space events to database"""
+        from .models import SpaceEvent
+        synced_count = 0
+        
+        events_data = self.fetch_astronomical_events()
+        
+        for event_data in events_data:
+            event, created = SpaceEvent.objects.get_or_create(
+                nasa_id=event_data['nasa_id'],
+                defaults=event_data
+            )
+            
+            if created:
+                synced_count += 1
+                logger.info(f"Created space event: {event.title}")
+            else:
+                # Update existing event
+                for key, value in event_data.items():
+                    if key != 'nasa_id':
+                        setattr(event, key, value)
+                event.save()
+                logger.info(f"Updated space event: {event.title}")
+        
+        return synced_count
+
+
 # Initialize service instances
 apod_service = APODService()
 neo_service = NEOService()
@@ -531,6 +665,7 @@ epic_service = EPICService()
 exoplanet_service = ExoplanetService()
 space_weather_service = SpaceWeatherService()
 natural_event_service = NaturalEventService()
+space_event_service = SpaceEventService()
 
 
 class NASAImageLibraryService:
@@ -634,58 +769,7 @@ class TLEService:
             response.raise_for_status()
             return response.json()
         except Exception as e:
-            logger.error(f"TLE search error for '{query}': {str(e)}")
-            
-            # Fallback to static data for popular satellites
-            fallback_data = {
-                'ISS': [{
-                    "satellite_id": 25544,
-                    "name": "ISS (ZARYA)",
-                    "orbit_type": "LEO",
-                    "tle_line1": "1 25544U 98067A   25293.50000000  .00002182  00000-0  40768-4 0  9990",
-                    "tle_line2": "2 25544  51.6461 339.7939 0001393  92.8340 267.3124 15.49309239000000",
-                    "tle_date": "2025-10-20T00:00:00Z"
-                }],
-                'HUBBLE': [{
-                    "satellite_id": 20580,
-                    "name": "HST (HUBBLE SPACE TELESCOPE)",
-                    "orbit_type": "LEO",
-                    "tle_line1": "1 20580U 90037B   25293.50000000  .00000000  00000-0  00000-0 0  9999",
-                    "tle_line2": "2 20580  28.4684 276.2531 0002978 321.7771  38.2675 15.09309239000000",
-                    "tle_date": "2025-10-20T00:00:00Z"
-                }],
-                'TIANGONG': [{
-                    "satellite_id": 48274,
-                    "name": "TIANGONG-1",
-                    "orbit_type": "LEO",
-                    "tle_line1": "1 48274U 21035A   25293.50000000  .00001500  00000-0  28000-4 0  9999",
-                    "tle_line2": "2 48274  41.4737 156.2039 0003040 315.0340  45.0234 15.61309239000000",
-                    "tle_date": "2025-10-20T00:00:00Z"
-                }],
-                'GPS': [{
-                    "satellite_id": 32384,
-                    "name": "NAVSTAR 53 (GPS BIIF-4)",
-                    "orbit_type": "MEO",
-                    "tle_line1": "1 32384U 07047A   25293.50000000 -.00000079  00000-0  00000-0 0  9999",
-                    "tle_line2": "2 32384  55.0000 201.7039 0001000 180.0000 180.0000  2.00561393000000",
-                    "tle_date": "2025-10-20T00:00:00Z"
-                }],
-                'STARLINK': [{
-                    "satellite_id": 44713,
-                    "name": "STARLINK-1007",
-                    "orbit_type": "LEO",
-                    "tle_line1": "1 44713U 19074A   25293.50000000  .00001200  00000-0  90000-4 0  9999",
-                    "tle_line2": "2 44713  53.0537  47.2039 0001532  90.0000 270.1234 15.05939239000000",
-                    "tle_date": "2025-10-20T00:00:00Z"
-                }]
-            }
-            
-            # Return fallback data if available
-            query_upper = query.upper()
-            for key in fallback_data.keys():
-                if key in query_upper or query_upper in key:
-                    return fallback_data[key]
-            
+            logger.error(f"TLE search error for '{query}': {str(e)}")      
             return None
     
     def get_satellite_by_id(self, satellite_id: int) -> Optional[Dict]:

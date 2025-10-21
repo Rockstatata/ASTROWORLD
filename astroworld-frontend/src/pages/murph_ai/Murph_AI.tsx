@@ -9,6 +9,7 @@ import { apiPostChat } from '../../utils/murphaiUtils';
 import { uid, nowISO } from '../../utils/murphaiUtils';
 import type { Message } from '../../types';
 import Layout from '../../components/Layout';
+import StarryBackground from '../../components/Home/StarryBackground';
 
 
 const MurphAIChatApp: React.FC = () => {
@@ -101,7 +102,12 @@ const handleRenameSession = useCallback(async (sessionId: string, newTitle: stri
 
   return (
     <Layout>
-      <div className="flex h-screen w-full overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+      <div className="relative h-screen w-full overflow-hidden">
+        {/* Animated Starry Background */}
+        <StarryBackground />
+        
+        {/* Main Content - positioned above background */}
+        <div className="relative z-10 flex h-screen w-full overflow-hidden text-white">
         <Sidebar 
           sessions={sessions} 
           activeId={activeId} 
@@ -131,6 +137,7 @@ const handleRenameSession = useCallback(async (sessionId: string, newTitle: stri
           <div className="border-t border-zinc-800/60 bg-zinc-950/60 p-4">
             <Composer value={input} setValue={setInput} onSend={handleSend} disabled={loading} />
           </div>
+        </div>
         </div>
       </div>
     </Layout>
