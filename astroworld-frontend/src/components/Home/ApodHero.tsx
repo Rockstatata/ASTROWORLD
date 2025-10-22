@@ -91,7 +91,7 @@ const ApodHero: React.FC = () => {
         </motion.div>
 
         {/* APOD Credit with Actions */}
-        {!loading && data && (
+        {loading && data && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -140,24 +140,7 @@ const ApodHero: React.FC = () => {
         )}
       </div>
 
-      {/* Animated Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.8, repeat: Infinity, repeatType: 'reverse' }}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
-      >
-        <div className="flex flex-col items-center gap-2 text-gray-400">
-          <span className="text-xs">Scroll to explore</span>
-          <div className="h-8 w-5 rounded-full border-2 border-gray-400 flex items-start justify-center p-1">
-            <motion.div
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="h-2 w-2 rounded-full bg-gray-400"
-            />
-          </div>
-        </div>
-      </motion.div>
+    
     </section>
   );
 };

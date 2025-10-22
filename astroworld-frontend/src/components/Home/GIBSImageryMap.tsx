@@ -26,49 +26,49 @@ const GIBSImageryMap: React.FC<GIBSImageryMapProps> = ({ className = '' }) => {
       name: 'MODIS Terra True Color',
       description: 'Natural color satellite imagery from Terra satellite',
       satellite: 'Terra',
-      icon: '🌍'
+      icon: 'TERRA'
     },
     {
       id: 'MODIS_Aqua_CorrectedReflectance_TrueColor',
       name: 'MODIS Aqua True Color',
       description: 'Natural color satellite imagery from Aqua satellite',
       satellite: 'Aqua',
-      icon: '🌊'
+      icon: 'AQUA'
     },
     {
       id: 'VIIRS_SNPP_CorrectedReflectance_TrueColor',
       name: 'VIIRS True Color',
       description: 'High resolution true color from VIIRS instrument',
       satellite: 'Suomi NPP',
-      icon: '🛰️'
+      icon: 'VIIRS'
     },
     {
       id: 'MODIS_Terra_CorrectedReflectance_Bands721',
       name: 'MODIS Terra False Color',
       description: 'False color imagery highlighting vegetation',
       satellite: 'Terra',
-      icon: '🌱'
+      icon: 'VEG'
     },
     {
       id: 'MODIS_Terra_Aerosol',
       name: 'MODIS Terra Aerosol',
       description: 'Aerosol optical depth measurements',
       satellite: 'Terra',
-      icon: '💨'
+      icon: 'AERO'
     },
     {
       id: 'OMI_SO2_PBL',
       name: 'OMI Sulfur Dioxide',
       description: 'Atmospheric sulfur dioxide concentrations',
       satellite: 'Aura',
-      icon: '🌋'
+      icon: 'SO2'
     }
   ];
 
   const regions = [
-    { id: 'geographic', name: 'Global View', icon: '🌍' },
-    { id: 'arctic', name: 'Arctic View', icon: '🧊' },
-    { id: 'antarctic', name: 'Antarctic View', icon: '🐧' }
+    { id: 'geographic', name: 'Global View', icon: 'GLOBAL' },
+    { id: 'arctic', name: 'Arctic View', icon: 'ARCTIC' },
+    { id: 'antarctic', name: 'Antarctic View', icon: 'ANTARC' }
   ];
 
   const getCurrentLayer = () => layers.find(layer => layer.id === selectedLayer) || layers[0];
@@ -156,7 +156,7 @@ const GIBSImageryMap: React.FC<GIBSImageryMapProps> = ({ className = '' }) => {
           >
             {layers.map((layer) => (
               <option key={layer.id} value={layer.id}>
-                {layer.icon} {layer.name}
+                [{layer.icon}] {layer.name}
               </option>
             ))}
           </select>
@@ -176,7 +176,7 @@ const GIBSImageryMap: React.FC<GIBSImageryMapProps> = ({ className = '' }) => {
           >
             {regions.map((region) => (
               <option key={region.id} value={region.id}>
-                {region.icon} {region.name}
+                [{region.icon}] {region.name}
               </option>
             ))}
           </select>
@@ -296,7 +296,7 @@ const GIBSImageryMap: React.FC<GIBSImageryMapProps> = ({ className = '' }) => {
               }`}
             >
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-lg">{layer.icon}</span>
+                <span className="text-xs font-bold bg-green-500/20 text-green-300 px-2 py-1 rounded">{layer.icon}</span>
                 <span className="font-medium text-sm">{layer.name}</span>
               </div>
               <div className="text-xs text-gray-400">{layer.description}</div>

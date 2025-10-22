@@ -19,7 +19,7 @@ const SectionGrid: React.FC = () => {
       title: "Murph AI",
       description: "Ask Murph anything about the cosmos.",
       image: Murphai,
-      link: "/murph-ai",
+      link: "/murphai",
     },
     {
       title: "Space News",

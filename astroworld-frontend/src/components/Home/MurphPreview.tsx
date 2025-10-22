@@ -35,7 +35,7 @@ const MurphPreview: React.FC = () => {
         </motion.p>
         <div className="absolute -bottom-5 left-1/2 transform -translate-x-1/2">
           <Link
-            to="/murph-ai"
+            to="/murphai"
             className="px-6 py-2 bg-space-violet rounded-xl text-white font-semibold shadow-md hover:scale-105 transition-transform"
           >
             Continue Chat

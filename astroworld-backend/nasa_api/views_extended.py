@@ -88,10 +88,13 @@ def nasa_image_popular(request):
             status=status.HTTP_503_SERVICE_UNAVAILABLE
         )
     
-    # Cache for 6 hours
-    cache.set(cache_key, result, 21600)
+    # Return just the items array, not wrapped in collection
+    items = result.get('collection', {}).get('items', [])
     
-    return Response(result)
+    # Cache for 6 hours
+    cache.set(cache_key, items, 21600)
+    
+    return Response(items)
 
 
 @api_view(['GET'])
@@ -602,10 +605,35 @@ def nasa_donki(request):
             status=status.HTTP_503_SERVICE_UNAVAILABLE
         )
     
-    # Cache for 6 hours
-    cache.set(cache_key, result, 21600)
+    # Transform DONKI data to match frontend expectations
+    transformed_events = []
+    if isinstance(result, list):
+        for event in result:
+            # Transform each event to match DonkiEvent interface
+            transformed_event = {
+                'activityID': event.get('activityID'),
+                'messageType': event.get('messageType') or event.get('event_type', 'Space Weather'),
+                'messageIssueTime': event.get('messageIssueTime') or event.get('eventTime') or event.get('startTime'),
+                'messageBody': event.get('messageBody') or event.get('note') or event.get('summary') or 'No details available',
+                'messageID': event.get('messageID') or event.get('activityID'),
+                'messageURL': event.get('messageURL') or event.get('link')
+            }
+            transformed_events.append(transformed_event)
+    else:
+        # Single event
+        transformed_events = [{
+            'activityID': result.get('activityID'),
+            'messageType': result.get('messageType') or result.get('event_type', 'Space Weather'),
+            'messageIssueTime': result.get('messageIssueTime') or result.get('eventTime') or result.get('startTime'),
+            'messageBody': result.get('messageBody') or result.get('note') or result.get('summary') or 'No details available',
+            'messageID': result.get('messageID') or result.get('activityID'),
+            'messageURL': result.get('messageURL') or result.get('link')
+        }]
     
-    return Response(result)
+    # Cache for 6 hours
+    cache.set(cache_key, transformed_events, 21600)
+    
+    return Response(transformed_events)
 
 
 @api_view(['GET'])

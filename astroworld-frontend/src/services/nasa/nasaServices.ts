@@ -271,7 +271,6 @@ export interface SpaceEventFilters {
 
 // NASA Image Library interfaces
 export interface NASAMediaItem {
-  nasa_id: string;
   href: string;
   data: Array<{
     nasa_id: string;

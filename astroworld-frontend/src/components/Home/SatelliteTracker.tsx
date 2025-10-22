@@ -37,12 +37,13 @@ const SatelliteTracker: React.FC<SatelliteTrackerProps> = ({ className = '' }) =
   };
 
   const getSatelliteIcon = (name: string) => {
-    if (name.toLowerCase().includes('iss')) return '🛰️';
-    if (name.toLowerCase().includes('hubble')) return '🔭';
-    if (name.toLowerCase().includes('starlink')) return '📡';
-    if (name.toLowerCase().includes('gps')) return '🗺️';
-    if (name.toLowerCase().includes('tiangong')) return '🛰️';
-    return '🛰️';
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('iss')) return 'ISS';
+    if (lowerName.includes('hubble')) return 'HST';
+    if (lowerName.includes('starlink')) return 'STAR';
+    if (lowerName.includes('gps')) return 'GPS';
+    if (lowerName.includes('tiangong')) return 'TSS';
+    return 'SAT';
   };
 
   const getOrbitTypeColor = (type: string | undefined) => {
@@ -126,7 +127,9 @@ const SatelliteTracker: React.FC<SatelliteTrackerProps> = ({ className = '' }) =
               >
                 {/* Header */}
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="text-2xl">{getSatelliteIcon(satellite.name)}</div>
+                  <div className="text-xs font-bold bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                    {getSatelliteIcon(satellite.name)}
+                  </div>
                   <div className="flex-1">
                     <h3 className="text-white font-medium text-sm line-clamp-1">
                       {satellite.name}
@@ -205,7 +208,9 @@ const SatelliteTracker: React.FC<SatelliteTrackerProps> = ({ className = '' }) =
                 onClick={() => setSelectedSatellite(satellite)}
                 className="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm transition-colors flex items-center gap-2"
               >
-                <span>{getSatelliteIcon(satellite.name)}</span>
+                <span className="text-xs font-bold bg-blue-500/20 text-blue-300 px-2 py-1 rounded">
+                  {getSatelliteIcon(satellite.name)}
+                </span>
                 <span>{satellite.name}</span>
               </button>
             ))}
@@ -232,7 +237,9 @@ const SatelliteTracker: React.FC<SatelliteTrackerProps> = ({ className = '' }) =
             {/* Header */}
             <div className="p-6 border-b border-gray-700">
               <div className="flex items-center gap-4">
-                <div className="text-4xl">{getSatelliteIcon(selectedSatellite.name)}</div>
+                <div className="text-sm font-bold bg-blue-500/20 text-blue-300 px-3 py-2 rounded-lg">
+                  {getSatelliteIcon(selectedSatellite.name)}
+                </div>
                 <div className="flex-1">
                   <h2 className="text-2xl font-bold text-white">{selectedSatellite.name}</h2>
                   <p className="text-gray-400">NORAD ID: {selectedSatellite.satellite_id}</p>

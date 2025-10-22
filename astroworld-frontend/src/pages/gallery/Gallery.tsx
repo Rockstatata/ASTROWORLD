@@ -158,7 +158,7 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                     >
                       <SaveButton
                         contentType="nasa_image"
-                        contentId={item.nasa_id}
+                        contentId={data.nasa_id}
                         contentTitle={data.title}
                         contentDescription={data.description}
                         thumbnailUrl={imageUrl}
@@ -168,7 +168,7 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                           center: data.center,
                           date_created: data.date_created,
                           keywords: data.keywords,
-                          nasa_id: item.nasa_id
+                          nasa_id: data.nasa_id
                         }}
                         variant="heart"
                         size="sm"

@@ -1,12 +1,24 @@
 // src/components/Home/ExoplanetStat.tsx
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { useExoplanetCount } from '../../hooks/nasa/useExoplanets';
-import { Globe, TrendingUp, Sparkles } from 'lucide-react';
+import { Globe, TrendingUp, Sparkles, ArrowRight, Search, MapPin } from 'lucide-react';
 
 const ExoplanetStat: React.FC = () => {
   const { data, loading } = useExoplanetCount();
   const [displayCount, setDisplayCount] = useState(0);
+  const navigate = useNavigate();
+
+  const handleExploreClick = () => {
+    // Navigate to explore page with exoplanet focus
+    navigate('/explore?category=planetary&search=exoplanet');
+  };
+
+  const handleSkymapClick = () => {
+    // Navigate to skymap for exoplanet visualization
+    navigate('/skymap?filter=exoplanets');
+  };
 
   // Animated counter
   useEffect(() => {
@@ -130,34 +142,65 @@ const ExoplanetStat: React.FC = () => {
             Each one represents a world waiting to be explored.
           </p>
 
+          {/* Interactive Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+            <motion.button
+              onClick={handleExploreClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-purple-500/25 transition-all duration-300"
+            >
+              <Search className="h-5 w-5" />
+              Explore Research
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+            
+            <motion.button
+              onClick={handleSkymapClick}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+            >
+              <MapPin className="h-5 w-5" />
+              View in Sky
+              <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+            </motion.button>
+          </div>
+
           {/* Stats Grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 max-w-4xl mx-auto">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+            <motion.button
+              onClick={handleExploreClick}
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm hover:border-green-400/50 hover:bg-green-400/10 transition-all duration-300 cursor-pointer group"
             >
-              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-green-400" />
+              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-green-400 group-hover:scale-110 transition-transform" />
               <div className="text-2xl font-bold text-white mb-1">Growing</div>
-              <div className="text-sm text-gray-400">New discoveries weekly</div>
-            </motion.div>
+              <div className="text-sm text-gray-400 group-hover:text-green-300">New discoveries weekly</div>
+            </motion.button>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+            <motion.button
+              onClick={handleSkymapClick}
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm hover:border-blue-400/50 hover:bg-blue-400/10 transition-all duration-300 cursor-pointer group"
             >
-              <Globe className="h-8 w-8 mx-auto mb-2 text-blue-400" />
+              <Globe className="h-8 w-8 mx-auto mb-2 text-blue-400 group-hover:scale-110 transition-transform" />
               <div className="text-2xl font-bold text-white mb-1">Diverse</div>
-              <div className="text-sm text-gray-400">From gas giants to super-Earths</div>
-            </motion.div>
+              <div className="text-sm text-gray-400 group-hover:text-blue-300">From gas giants to super-Earths</div>
+            </motion.button>
 
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm"
+            <motion.button
+              onClick={handleExploreClick}
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+              className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm hover:border-purple-400/50 hover:bg-purple-400/10 transition-all duration-300 cursor-pointer group"
             >
-              <Sparkles className="h-8 w-8 mx-auto mb-2 text-purple-400" />
+              <Sparkles className="h-8 w-8 mx-auto mb-2 text-purple-400 group-hover:scale-110 transition-transform" />
               <div className="text-2xl font-bold text-white mb-1">Exploration</div>
-              <div className="text-sm text-gray-400">The search continues</div>
-            </motion.div>
+              <div className="text-sm text-gray-400 group-hover:text-purple-300">The search continues</div>
+            </motion.button>
           </div>
 
           {/* Source */}

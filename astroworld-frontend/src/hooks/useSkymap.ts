@@ -364,7 +364,7 @@ export const useGenerateAIDescription = () => {
       }
       
       // Create a detailed prompt for Murph AI
-      let prompt = `Please provide a detailed astronomical description of ${object_name}`;
+      let prompt = `Please provide a concise & proper astronomical description of ${object_name}`;
       
       if (object_type) {
         prompt += ` (${object_type})`;

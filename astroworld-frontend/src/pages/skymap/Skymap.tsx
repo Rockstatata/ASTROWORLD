@@ -7,6 +7,7 @@ import { getTitle, getInfos } from '../../utils/stellarium';
 import { useSaveContent } from '../../hooks/useUserContent';
 import { MarkerModal } from '../../components/Skymap/MarkerModal';
 import { SaveViewButton } from '../../components/Skymap/SaveViewButton';
+import MarkdownLite from '../../components/murphai/MarkdownLite';
 import { MarkerOverlay } from '../../components/Skymap/MarkerOverlay';
 import { 
   useSkyMarkers, 
@@ -1205,7 +1206,7 @@ const Skymap: React.FC = () => {
                     {/* AI Description Content */}
                     {aiDescription ? (
                       <div className="text-sm text-gray-300 bg-gray-800 p-3 rounded-lg">
-                        {aiDescription}
+                        <MarkdownLite text={aiDescription} />
                       </div>
                     ) : aiError ? (
                       <div className="text-sm text-red-400 bg-red-900/20 p-3 rounded-lg">

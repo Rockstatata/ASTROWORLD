@@ -11,7 +11,7 @@ import NeoWsPanel from "../../components/Home/NeoWsPanel";
 import EpicPanel from "../../components/Home/EpicPanel";
 import MarsPanel from "../../components/Home/MarsPanel";
 import ExoplanetStat from "../../components/Home/ExoplanetStat";
-import NASAImageGallery from "../../components/Home/NASAImageGallery";
+import NASAImageLibrarySection from "../../components/Home/NASAImageLibrarySection";
 import SatelliteTracker from "../../components/Home/SatelliteTracker";
 import GIBSImageryMap from "../../components/Home/GIBSImageryMap";
 import EventsShowcase from "../../components/Home/EventsShowcase";
@@ -29,7 +29,7 @@ const Home: React.FC = () => {
         {/* Main Content - positioned above background */}
         <div className="relative z-10">
           {/* NASA APOD Hero Section */}
-          {/* <ApodHero /> */}
+          <ApodHero />
 
           {/* Original Section Grid */}
           <SectionGrid />
@@ -67,7 +67,8 @@ const Home: React.FC = () => {
 
           {/* NASA Image Gallery */}
           
-            <NASAImageGallery />
+            <NASAImageLibrarySection />
+
           
 
           {/* Satellite Tracker */}
