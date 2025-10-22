@@ -608,7 +608,9 @@ const Profile: React.FC = () => {
                       <div className="mt-4 pt-4 border-t border-white/10">
                         <p className="text-xs text-gray-500 mb-2">Recent items:</p>
                         <div className="space-y-1">
-                          {collection.items.slice(0, 3).map((item) => (
+                          {collection.items
+                            .filter((item) => item) // Filter out undefined items
+                            .slice(0, 3).map((item) => (
                             <div key={item.id} className="flex items-center gap-2 text-sm">
                               <div className="h-1.5 w-1.5 rounded-full bg-green-400"></div>
                               <span className="text-gray-400">{item.title}</span>
@@ -739,7 +741,9 @@ const Profile: React.FC = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
               ) : savedPapers && savedPapers.results && savedPapers.results.length > 0 ? (
-                savedPapers.results.map((userPaper, index) => (
+                savedPapers.results
+                  .filter((userPaper) => userPaper.paper) // Filter out userPapers with undefined paper
+                  .map((userPaper, index) => (
                   <motion.div
                     key={userPaper.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -767,7 +771,9 @@ const Profile: React.FC = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
               ) : following && following.length > 0 ? (
-                following.map((follow, index) => (
+                following
+                  .filter((follow) => follow.following_profile) // Filter out follows with undefined following_profile
+                  .map((follow, index) => (
                   <motion.div
                     key={follow.id}
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -795,7 +801,9 @@ const Profile: React.FC = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
               ) : followers && followers.length > 0 ? (
-                followers.map((follow, index) => (
+                followers
+                  .filter((follow) => follow.follower_profile) // Filter out follows with undefined follower_profile
+                  .map((follow, index) => (
                   <motion.div
                     key={follow.id}
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -1121,7 +1129,9 @@ const Profile: React.FC = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
               ) : messageThreads && messageThreads.length > 0 ? (
-                messageThreads.map((thread, index) => (
+                messageThreads
+                  .filter((thread) => thread.other_user) // Filter out threads with undefined other_user
+                  .map((thread, index) => (
                   <motion.div
                     key={thread.id}
                     initial={{ opacity: 0, x: -20 }}
@@ -1158,7 +1168,7 @@ const Profile: React.FC = () => {
                         
                         <p className="text-gray-400 text-sm mb-1">@{thread.other_user.username}</p>
                         
-                        {thread.last_message && (
+                        {thread.last_message && thread.last_message.sender && (
                           <p className="text-gray-300 text-sm line-clamp-2">
                             <span className="text-gray-500">
                               {thread.last_message.sender.id === profile?.id ? 'You: ' : ''}
