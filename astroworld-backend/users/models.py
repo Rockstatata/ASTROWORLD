@@ -36,6 +36,9 @@ class UserContent(models.Model):
         ('news', 'Space News Article'),
         ('celestial', 'Celestial Object (Skymap)'),
         ('event', 'Cosmic Event'),
+        ('nasa_image', 'NASA Image Library'),
+        ('space_launch', 'Space Launch'),
+        ('gallery_image', 'Gallery Image'),
     ]
     
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='saved_content')

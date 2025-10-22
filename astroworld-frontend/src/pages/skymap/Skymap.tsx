@@ -715,12 +715,9 @@ const Skymap: React.FC = () => {
         content_type: 'celestial',
         content_id: contentId,
         title: objectTitle,
-        notes: `Saved from Skymap on ${new Date().toLocaleDateString()}`,
-        tags: ['skymap', 'celestial'],
-        metadata: {
-          description: description,
-          object_info: objectInfos
-        }
+        description: description,
+        notes: `Saved from Skymap on ${new Date().toLocaleDateString()} - ${JSON.stringify(objectInfos)}`,
+        tags: ['skymap', 'celestial']
       });
       
       setSavedObjectId(contentId);

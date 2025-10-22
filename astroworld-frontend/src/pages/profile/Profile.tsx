@@ -42,6 +42,7 @@ import { useSkyMarkers, useDeleteMarker, type SkyMarker } from '../../hooks/useS
 import type { ContentType } from '../../services/userInteractions';
 import UserCard from '../../components/explore/UserCard';
 import PaperListCard from '../../components/explore/PaperListCard';
+import SavedContentCard from '../../components/common/SavedContentCard';
 
 type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images' | 'skymap';
 
@@ -418,62 +419,15 @@ const Profile: React.FC = () => {
                   <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
                 </div>
               ) : filteredContent && filteredContent.length > 0 ? (
-                filteredContent.map((item, index) => (
-                  <motion.div
+                filteredContent.map((item) => (
+                  <SavedContentCard
                     key={item.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 backdrop-blur-sm rounded-xl border border-white/10 p-6 hover:border-purple-500/50 transition-all group"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium">
-                        {item.content_type.replace('_', ' ').toUpperCase()}
-                      </span>
-                      {item.is_favorite && (
-                        <Star className="h-5 w-5 text-yellow-400" fill="currentColor" />
-                      )}
-                    </div>
-                    
-                    <h3 className="text-lg font-bold text-white mb-2 line-clamp-2">
-                      {item.title}
-                    </h3>
-                    
-                    {item.notes && (
-                      <p className="text-gray-400 text-sm mb-3 line-clamp-2">{item.notes}</p>
-                    )}
-                    
-                    {item.tags && item.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mb-3">
-                        {item.tags.slice(0, 3).map((tag, i) => (
-                          <span key={i} className="px-2 py-1 rounded bg-white/10 text-gray-300 text-xs">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-white/10">
-                      <span className="text-xs text-gray-500">
-                        {new Date(item.created_at).toLocaleDateString()}
-                      </span>
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button className="p-2 hover:bg-white/10 rounded-lg transition-all">
-                          <ExternalLink className="h-4 w-4 text-gray-400" />
-                        </button>
-                        <button
-                          onClick={() => {
-                            if (confirm('Delete this item?')) {
-                              deleteContent.mutate(item.id);
-                            }
-                          }}
-                          className="p-2 hover:bg-red-500/20 rounded-lg transition-all"
-                        >
-                          <Trash2 className="h-4 w-4 text-red-400" />
-                        </button>
-                      </div>
-                    </div>
-                  </motion.div>
+                    content={item}
+                    onDeleted={() => {
+                      // Refresh the content list if needed
+                      // The useUserContent hook should automatically update
+                    }}
+                  />
                 ))
               ) : (
                 <div className="col-span-full text-center py-12">

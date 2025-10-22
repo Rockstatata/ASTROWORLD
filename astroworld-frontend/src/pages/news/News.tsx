@@ -22,22 +22,17 @@ const News = () => {
   const handleSaveNews = (newsId: string) => {
     // Find the news item to get its details
     const newsItems = Array.isArray(displayData?.data) ? displayData.data : displayData?.data.results || [];
-    const newsItem = newsItems.find((item) => item.nasa_id === newsId);
+    const newsItem = newsItems.find((item) => String(item.id) === newsId);
     if (!newsItem) return;
 
     saveContent.mutate({
       content_type: 'news',
       content_id: newsId,
       title: newsItem.title,
-      notes: newsItem.summary,
-      metadata: {
-        url: newsItem.url,
-        news_site: newsItem.news_site,
-        published_at: newsItem.published_at,
-        authors: newsItem.authors,
-        article_type: newsItem.article_type,
-        featured: newsItem.featured,
-      },
+      description: newsItem.summary,
+      thumbnail_url: newsItem.image_url,
+      source_url: newsItem.url,
+      notes: `News from ${newsItem.news_site} - Published: ${newsItem.published_at}`,
     });
   };
 

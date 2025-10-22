@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
+import SaveButton from '../../components/common/SaveButton';
 import { useSpaceEvents, useFeaturedSpaceEvents } from '../../hooks/nasa/useSpaceEvents';
 import type { SpaceEvent } from '../../services/nasa/nasaServices';
 import { spaceXService, type SpaceXLaunch, type SpaceXRocket, type SpaceXStats as SpaceXStatsType, type SpaceXHistoricalEvent } from '../../services/spaceXService';
@@ -1029,16 +1030,40 @@ const Events = () => {
           )}
         </div>
 
-        {/* Learn More */}
+        {/* Actions */}
         <div className="flex items-center justify-between">
-          <span className={`text-space-blue-light font-medium group-hover:text-space-blue-light/80 transition-colors ${
-            newsStyle ? 'text-xs' : 'text-sm'
-          }`}>
-            {hero ? 'Read full story' : 'Click to learn more'}
-          </span>
-          <ChevronRight className={`text-space-blue-light group-hover:translate-x-1 transition-transform ${
-            newsStyle ? 'h-3 w-3' : 'h-4 w-4'
-          }`} />
+          <div className="flex items-center gap-3">
+            <span className={`text-space-blue-light font-medium group-hover:text-space-blue-light/80 transition-colors ${
+              newsStyle ? 'text-xs' : 'text-sm'
+            }`}>
+              {hero ? 'Read full story' : 'Click to learn more'}
+            </span>
+            <ChevronRight className={`text-space-blue-light group-hover:translate-x-1 transition-transform ${
+              newsStyle ? 'h-3 w-3' : 'h-4 w-4'
+            }`} />
+          </div>
+          
+          {/* Save Button */}
+          <SaveButton
+            contentType="event"
+            contentId={event.id.toString()}
+            contentTitle={event.title}
+            contentDescription={event.description}
+            thumbnailUrl={event.image_url}
+            metadata={{
+              event_type: event.event_type,
+              event_type_display: event.event_type_display,
+              event_date: event.event_date,
+              visibility_display: event.visibility_display,
+              location: event.location,
+              duration_minutes: event.duration_minutes,
+              days_until_event: event.days_until_event,
+              is_featured: event.is_featured
+            }}
+            variant="bookmark"
+            size={newsStyle ? 'sm' : 'md'}
+            className="opacity-0 group-hover:opacity-100 transition-opacity"
+          />
         </div>
       </div>
     </motion.div>

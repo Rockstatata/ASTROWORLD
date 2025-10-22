@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
+import SaveButton from '../../components/common/SaveButton';
 import { useNASAImageSearch, usePopularNASAImages, useToggleFavoriteImage, useSaveFavoriteImage } from '../../hooks/useNASAImages';
 import { useAPOD, useMarsPhotos, useLatestMarsPhotos } from '../../hooks/useNASAData';
 import type { NASAMediaItem } from '../../services/nasa/nasaServices';
@@ -150,17 +151,29 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
                     {/* Overlay */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                     
-                    {/* Favorite Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleFavorite(item);
-                      }}
-                      disabled={saveFavorite.isPending}
-                      className="absolute top-3 right-3 p-2 bg-black/60 backdrop-blur-sm rounded-full hover:bg-black/80 transition-all opacity-0 group-hover:opacity-100 disabled:opacity-50"
+                    {/* Save Button */}
+                    <div 
+                      className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <Heart className={`h-4 w-4 ${saveFavorite.isPending ? 'text-yellow-400' : 'text-white hover:text-red-400'}`} />
-                    </button>
+                      <SaveButton
+                        contentType="nasa_image"
+                        contentId={item.nasa_id}
+                        contentTitle={data.title}
+                        contentDescription={data.description}
+                        thumbnailUrl={imageUrl}
+                        sourceUrl={item.href}
+                        metadata={{
+                          media_type: data.media_type,
+                          center: data.center,
+                          date_created: data.date_created,
+                          keywords: data.keywords,
+                          nasa_id: item.nasa_id
+                        }}
+                        variant="heart"
+                        size="sm"
+                      />
+                    </div>
                   </div>
 
                   {/* Content */}

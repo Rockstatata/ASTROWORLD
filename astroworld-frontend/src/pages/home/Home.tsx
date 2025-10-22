@@ -29,7 +29,7 @@ const Home: React.FC = () => {
         {/* Main Content - positioned above background */}
         <div className="relative z-10">
           {/* NASA APOD Hero Section */}
-          <ApodHero />
+          {/* <ApodHero /> */}
 
           {/* Original Section Grid */}
           <SectionGrid />
@@ -50,10 +50,10 @@ const Home: React.FC = () => {
           <NewsCarousel />
 
           {/* NASA Earth EPIC Images */}
-          <EpicPanel />
+          {/* <EpicPanel /> */}
 
           {/* NASA Mars Rover Photos */}
-          <MarsPanel />
+          {/* <MarsPanel /> */}
 
           {/* NASA Exoplanet Statistics */}
           <ExoplanetStat />
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
 
           {/* GIBS Earth Imagery */}
           
-            <GIBSImageryMap />
+            {/* <GIBSImageryMap /> */}
           
 
           {/* Original Events Showcase */}

@@ -13,7 +13,10 @@ export type ContentType =
   | 'space_weather' 
   | 'news' 
   | 'celestial' 
-  | 'event';
+  | 'event'
+  | 'nasa_image'
+  | 'space_launch'
+  | 'gallery_image';
 
 export type JournalType = 
   | 'note' 
@@ -40,10 +43,12 @@ export interface UserContent {
   content_type: ContentType;
   content_id: string;
   title: string;
+  description?: string;
+  thumbnail_url?: string;
+  source_url?: string;
   notes?: string;
   tags?: string[];
   is_favorite: boolean;
-  metadata?: Record<string, unknown>;
   created_at: string;
   updated_at: string;
 }
@@ -52,17 +57,21 @@ export interface SaveContentData {
   content_type: ContentType;
   content_id: string;
   title: string;
+  description?: string;
+  thumbnail_url?: string;
+  source_url?: string;
   notes?: string;
   tags?: string[];
   is_favorite?: boolean;
-  metadata?: Record<string, unknown>;
 }
 
 export interface UpdateContentData {
+  description?: string;
+  thumbnail_url?: string;
+  source_url?: string;
   notes?: string;
   tags?: string[];
   is_favorite?: boolean;
-  metadata?: Record<string, unknown>;
 }
 
 export interface UserJournal {

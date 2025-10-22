@@ -20,7 +20,7 @@ const formatDateTime = (dateString: string) => {
 const NewsCard = ({ news, onSave, className = '' }: NewsCardProps) => {
   const handleSave = () => {
     if (onSave) {
-      onSave(news.nasa_id);
+      onSave(String(news.id));
     }
   };
 
