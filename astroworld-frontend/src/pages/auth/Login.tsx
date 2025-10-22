@@ -12,6 +12,7 @@ const Login = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
+    remember_me: false,
   });
 
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +25,11 @@ const Login = () => {
   }, [user, authLoading, navigate]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value, type, checked } = e.target;
+    setFormData({ 
+      ...formData, 
+      [name]: type === 'checkbox' ? checked : value 
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,10 +38,11 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(formData.username, formData.password);
+      await login(formData.username, formData.password, formData.remember_me);
       navigate('/home', { replace: true });
-    } catch (err: any) {
-      setError(err.response?.data?.detail || 'Login failed. Please check your credentials.');
+    } catch (err) {
+      const error = err as { response?: { data?: { detail?: string } } };
+      setError(error.response?.data?.detail || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -123,6 +129,29 @@ const Login = () => {
                     )}
                   </button>
                 </div>
+              </div>
+
+              {/* Remember Me and Forgot Password */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="remember_me"
+                    id="remember_me"
+                    checked={formData.remember_me}
+                    onChange={handleChange}
+                    className="h-4 w-4 text-space-blue focus:ring-space-blue border-gray-600 rounded bg-gray-700"
+                  />
+                  <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-300">
+                    Remember me
+                  </label>
+                </div>
+                <Link 
+                  to="/forgot-password" 
+                  className="text-sm text-space-blue hover:text-space-bright"
+                >
+                  Forgot password?
+                </Link>
               </div>
 
               <button

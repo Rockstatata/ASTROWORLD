@@ -1,42 +1,48 @@
 import React from "react";
 import QuickPreviewCard from "./QuickPreviewCard";
+import Skymap from '../../assets/images/skymap.png'
+import Murphai from '../../assets/images/murphai.png'
+import News from '../../assets/images/News.png'
+import Events from '../../assets/images/Events.png'
+import Explore from '../../assets/images/Explore.png'
+import Profile from '../../assets/images/Profile.png'
 
 const SectionGrid: React.FC = () => {
   const cards = [
     {
       title: "Skymap",
       description: "View stars, planets, and satellites live above you.",
-      image: "/static/imgs/skymap-preview.jpg",
+      image: Skymap,
       link: "/skymap",
     },
     {
       title: "Murph AI",
       description: "Ask Murph anything about the cosmos.",
-      image: "/static/imgs/murphai-preview.jpg",
+      image: Murphai,
       link: "/murph-ai",
     },
     {
       title: "Space News",
       description: "Stay updated on missions, discoveries, and cosmic events.",
-      image: "/static/imgs/news-preview.jpg",
+      image: News,
       link: "/news",
     },
     {
       title: "Events",
       description: "Never miss meteor showers, eclipses, and conjunctions.",
-      image: "/static/imgs/events-preview.jpg",
+      image: Events,
       link: "/events",
     },
     {
       title: "Explore",
       description: "Discover celestial objects and expand your knowledge.",
-      image: "/static/imgs/explore-preview.jpg",
+      image: Explore,
       link: "/explore",
     },
     {
       title: "Profile",
       description: "Manage your favorites, journals, and settings.",
-      image: "/static/imgs/profile-preview.jpg",
+      image: Profile,
       link: "/profile",
     },
   ];

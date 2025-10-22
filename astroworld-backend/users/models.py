@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
+import uuid
+from datetime import timedelta
 
 
 class User(AbstractUser):
@@ -124,6 +126,55 @@ class UserJournal(models.Model):
     
     def __str__(self):
         return f"{self.user.username} - {self.title}"
+
+
+class PasswordResetToken(models.Model):
+    """
+    Password reset tokens for secure password recovery.
+    Tokens expire after a set time for security.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    token = models.UUIDField(default=uuid.uuid4, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    user_agent = models.TextField(blank=True, null=True)
+    
+    class Meta:
+        db_table = 'password_reset_tokens'
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['token']),
+            models.Index(fields=['user', 'created_at']),
+            models.Index(fields=['expires_at']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        if not self.expires_at:
+            # Set expiration to 1 hour from creation
+            self.expires_at = timezone.now() + timedelta(hours=1)
+        super().save(*args, **kwargs)
+    
+    def is_valid(self):
+        """Check if token is still valid (not expired and not used)"""
+        return not self.is_used and timezone.now() < self.expires_at
+    
+    def mark_as_used(self):
+        """Mark token as used"""
+        self.is_used = True
+        self.save(update_fields=['is_used'])
+    
+    def __str__(self):
+        return f"Reset token for {self.user.username} - {'Valid' if self.is_valid() else 'Invalid'}"
+    
+    @classmethod
+    def cleanup_expired(cls):
+        """Remove expired tokens"""
+        expired_tokens = cls.objects.filter(expires_at__lt=timezone.now())
+        count = expired_tokens.count()
+        expired_tokens.delete()
+        return count
 
 
 class UserCollection(models.Model):

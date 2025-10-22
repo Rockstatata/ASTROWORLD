@@ -61,6 +61,19 @@ export interface RegisterData {
 export interface LoginData {
   username: string;
   password: string;
+  remember_me?: boolean;
+}
+
+export interface ResetPasswordData {
+  token: string;
+  new_password: string;
+  new_password2: string;
+}
+
+export interface ChangePasswordData {
+  current_password: string;
+  new_password: string;
+  new_password2: string;
 }
 
 export const authAPI = {
@@ -78,11 +91,14 @@ export const authAPI = {
   
   getUser: () => axios.get('/users/user/'),
   
-  updateUser: (data: any) => axios.put('/users/user/', data),
+  updateUser: (data: Record<string, unknown>) => axios.put('/users/user/', data),
   
   requestPasswordReset: (email: string) => 
     axios.post('/users/password-reset/', { email }),
   
-  confirmPasswordReset: (uid: string, token: string, new_password: string, new_password2: string) =>
-    axios.post('/users/password-reset-confirm/', { uid, token, new_password, new_password2 }),
+  resetPasswordConfirm: (data: ResetPasswordData) =>
+    axios.post('/users/password-reset-confirm/', data),
+  
+  changePassword: (data: ChangePasswordData) =>
+    axios.post('/users/change-password/', data),
 };

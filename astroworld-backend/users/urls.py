@@ -7,7 +7,9 @@ from users.views import (
     VerifyEmailView, 
     PasswordResetRequestView, 
     PasswordResetConfirmView, 
+    LoginView,
     LogoutView, 
+    ChangePasswordView,
     UserRetrieveUpdateView,
     UserContentViewSet,
     UserJournalViewSet,
@@ -57,12 +59,13 @@ urlpatterns = [
     # Authentication endpoints
     path('register/', RegisterView.as_view(), name='register'),
     path('email-verify/', VerifyEmailView.as_view(), name='email-verify'),
-    path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('login/', LoginView.as_view(), name='login'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('user/', UserRetrieveUpdateView.as_view(), name='user-profile'),
     path('password-reset/', PasswordResetRequestView.as_view(), name='password-reset'),
     path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password-reset-confirm'),
+    path('change-password/', ChangePasswordView.as_view(), name='change-password'),
     
     # User profile with stats
     path('profile/', UserProfileView.as_view(), name='profile'),

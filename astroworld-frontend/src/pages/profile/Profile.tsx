@@ -22,7 +22,11 @@ import {
   Save,
   X,
   MessageCircle,
-  Image
+  Image,
+  Settings,
+  Key,
+  Shield,
+  CheckCircle
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
@@ -43,8 +47,9 @@ import type { ContentType } from '../../services/userInteractions';
 import UserCard from '../../components/explore/UserCard';
 import PaperListCard from '../../components/explore/PaperListCard';
 import SavedContentCard from '../../components/common/SavedContentCard';
+import ChangePassword from '../../components/profile/ChangePassword';
 
-type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images' | 'skymap';
+type TabType = 'saved' | 'journals' | 'collections' | 'subscriptions' | 'activity' | 'following' | 'followers' | 'papers' | 'messages' | 'images' | 'skymap' | 'settings';
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId?: string }>();
@@ -117,6 +122,7 @@ const Profile: React.FC = () => {
         { id: 'followers' as TabType, label: 'Followers', icon: Users, count: followers?.length || 0 },
         { id: 'subscriptions' as TabType, label: 'Subscriptions', icon: Bell, count: profile?.subscriptions_count },
         { id: 'activity' as TabType, label: 'Activity', icon: Activity, count: activities?.length },
+        { id: 'settings' as TabType, label: 'Account Settings', icon: Settings, count: undefined },
       ];
     } else {
       // Public profile - only show public information
@@ -1232,6 +1238,134 @@ const Profile: React.FC = () => {
                   <p className="text-gray-500 text-sm mt-2">Your cosmic journey starts here!</p>
                 </div>
               )}
+            </div>
+          )}
+
+          {/* Account Settings Tab - only for own profile */}
+          {activeTab === 'settings' && isOwnProfile && (
+            <div className="space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Change Password Section */}
+                <div className="lg:col-span-2">
+                  <ChangePassword />
+                </div>
+
+                {/* Account Security Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                  className="bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-sm rounded-2xl border border-white/10 p-8"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-green-500/20 rounded-xl">
+                      <Shield className="h-6 w-6 text-green-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">Account Security</h2>
+                      <p className="text-gray-400">Security status and settings</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <CheckCircle className="h-5 w-5 text-green-400" />
+                        <div>
+                          <p className="text-white font-medium">Email Verified</p>
+                          <p className="text-gray-400 text-sm">{profile?.email}</p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-green-500/20 text-green-300 text-xs font-medium">
+                        Verified
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Key className="h-5 w-5 text-blue-400" />
+                        <div>
+                          <p className="text-white font-medium">Password Security</p>
+                          <p className="text-gray-400 text-sm">Last changed recently</p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-medium">
+                        Strong
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between py-3 px-4 bg-white/5 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <Settings className="h-5 w-5 text-purple-400" />
+                        <div>
+                          <p className="text-white font-medium">Account Active</p>
+                          <p className="text-gray-400 text-sm">
+                            Joined {new Date(currentProfile?.date_joined || '').toLocaleDateString('en-US', { 
+                              month: 'long', 
+                              year: 'numeric' 
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                      <span className="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-medium">
+                        Active
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+
+                {/* Data & Privacy Section */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="bg-gradient-to-br from-gray-900/40 to-gray-800/40 backdrop-blur-sm rounded-2xl border border-white/10 p-8"
+                >
+                  <div className="flex items-center gap-3 mb-6">
+                    <div className="p-3 bg-orange-500/20 rounded-xl">
+                      <Shield className="h-6 w-6 text-orange-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-bold text-white">Data & Privacy</h2>
+                      <p className="text-gray-400">Manage your data and privacy settings</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="p-4 bg-white/5 rounded-lg">
+                      <p className="text-white font-medium mb-2">Account Statistics</p>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <span className="text-gray-400">Saved Content:</span>
+                          <span className="text-white ml-2">{profile?.saved_content_count || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Journals:</span>
+                          <span className="text-white ml-2">{profile?.journals_count || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Collections:</span>
+                          <span className="text-white ml-2">{profile?.collections_count || 0}</span>
+                        </div>
+                        <div>
+                          <span className="text-gray-400">Activities:</span>
+                          <span className="text-white ml-2">{activities?.length || 0}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-yellow-500/10 border border-yellow-500/20 rounded-lg">
+                      <p className="text-yellow-300 font-medium mb-2">Data Management</p>
+                      <p className="text-gray-400 text-sm mb-3">
+                        Your cosmic journey data is stored securely. Contact support if you need to export or delete your data.
+                      </p>
+                      <button className="px-4 py-2 rounded-lg bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 text-sm font-medium transition-all">
+                        Contact Support
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
           )}
         </div>

@@ -3,6 +3,8 @@ import LandingPage from '../pages/intro/LandingPage';
 import Login from '../pages/auth/Login';
 import Register from '../pages/auth/Register';
 import VerifyEmail from '../pages/auth/VerifyEmail';
+import ForgotPassword from '../pages/auth/ForgotPassword';
+import ResetPassword from '../pages/auth/ResetPassword';
 import Home from '../pages/home/Home';
 import ProtectedRoute from './ProtectedRoute';
 import Skymap from '../pages/skymap/Skymap';
@@ -31,6 +33,14 @@ const router = createBrowserRouter([
   {
     path: '/verify-email',
     element: <VerifyEmail />,
+  },
+  {
+    path: '/forgot-password',
+    element: <ForgotPassword />,
+  },
+  {
+    path: '/reset-password',
+    element: <ResetPassword />,
   },
   {
     path: '/home',

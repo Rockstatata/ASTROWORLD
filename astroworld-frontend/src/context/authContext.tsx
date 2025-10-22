@@ -16,9 +16,9 @@ interface User {
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
-  register: (data: any) => Promise<void>;
+  register: (data: Record<string, unknown>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -50,8 +50,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const login = async (username: string, password: string) => {
-    const response = await authAPI.login({ username, password });
+  const login = async (username: string, password: string, rememberMe = false) => {
+    const response = await authAPI.login({ username, password, remember_me: rememberMe });
     const { access, refresh } = response.data;
     
     localStorage.setItem('access_token', access);
@@ -72,8 +72,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (data: any) => {
-    await authAPI.register(data);
+  const register = async (data: Record<string, unknown>) => {
+    await authAPI.register(data as typeof data & { username: string; email: string; password: string; password2: string });
     // Don't auto-login, user needs to verify email
   };
 
