@@ -8,7 +8,7 @@ const ImmersiveBreak = ({ quote, author, backgroundType = 'iss' }: ImmersiveBrea
   const backgroundImage = backgroundType === 'iss' ? ISS : Space
   
   return (
-    <section className="relative h-[70vh] flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[55dvh] md:h-[70dvh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div 
         className="absolute inset-0"
@@ -27,14 +27,14 @@ const ImmersiveBreak = ({ quote, author, backgroundType = 'iss' }: ImmersiveBrea
       </div>
 
       {/* Quote Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto py-10">
         {/* Decorative border */}
         <div className="absolute -inset-4 bg-gradient-to-r from-transparent via-space-bright/20 to-transparent h-0.5 top-0" />
         
-        <blockquote className="text-2xl md:text-4xl lg:text-5xl font-light text-white leading-relaxed mb-8 font-space-mono">
-          <span className="text-6xl md:text-8xl text-space-bright/60 font-serif leading-none">"</span>
-          <span className="relative -top-4 md:-top-6">{quote}</span>
-          <span className="text-6xl md:text-8xl text-space-bright/60 font-serif leading-none">"</span>
+        <blockquote className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-light text-white leading-relaxed mb-8 font-space-mono">
+          <span className="text-4xl sm:text-6xl md:text-8xl text-space-bright/60 font-serif leading-none">"</span>
+          <span className="relative -top-2 sm:-top-4 md:-top-6">{quote}</span>
+          <span className="text-4xl sm:text-6xl md:text-8xl text-space-bright/60 font-serif leading-none">"</span>
         </blockquote>
         
         <div className="flex items-center justify-center space-x-4">

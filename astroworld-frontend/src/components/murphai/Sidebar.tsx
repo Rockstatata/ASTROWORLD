@@ -84,7 +84,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   };
 
   return (
-    <aside className="hidden w-72 shrink-0 border-r border-zinc-800/60 bg-zinc-950/40 p-3 md:block">
+    <aside className="hidden md:flex md:w-64 lg:w-72 shrink-0 flex-col border-r border-zinc-800/60 bg-zinc-950/40 p-3">
       {/* Header */}
       <div className="mb-3 flex items-center justify-between">
         <h2 className="text-sm font-medium text-zinc-300">Sessions</h2>
@@ -98,7 +98,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
       
       {/* Sessions List */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="space-y-1">
           {sessions.length === 0 && <div className="text-sm text-zinc-500">No sessions yet.</div>}
           {sessions.map((s) => (

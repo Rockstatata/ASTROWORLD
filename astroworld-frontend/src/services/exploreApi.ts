@@ -3,6 +3,7 @@
  * Handles all API calls for the Explore page features
  */
 import axios from 'axios';
+import { API_BASE } from '../config/api';
 import type {
   ResearchPaper,
   ResearchPaperList,
@@ -22,11 +23,11 @@ import type {
   PaginationParams
 } from '../types/explore';
 
-const API_BASE = 'http://localhost:8000/api/users';
+const USERS_API_BASE = `${API_BASE}/users`;
 
 // Create axios instance with auth
 const api = axios.create({
-  baseURL: API_BASE,
+  baseURL: USERS_API_BASE,
 });
 
 // Add auth token to requests

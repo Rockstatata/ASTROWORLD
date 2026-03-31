@@ -35,7 +35,7 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
        <video
         autoPlay
         muted
@@ -52,7 +52,7 @@ const VerifyEmail = () => {
       >
         <source src={Earth_Video} type="video/mp4" />
       </video>
-    <div className="min-h-screen  flex items-center justify-center px-4">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
       <div className="max-w-md w-full bg-gray-800 rounded-lg p-8 text-center">
         {status === 'verifying' && (
           <>

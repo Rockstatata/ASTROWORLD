@@ -10,7 +10,7 @@ const ApodHero: React.FC = () => {
   const { data, loading } = useApod();
 
   return (
-    <section className="relative h-[70vh] min-h-[600px] w-full overflow-hidden">
+    <section className="relative min-h-[520px] h-[70dvh] md:min-h-[600px] w-full overflow-hidden">
       {/* Background Image with Parallax Effect */}
       {data?.media_type === 'image' && (
         <motion.div
@@ -32,7 +32,7 @@ const ApodHero: React.FC = () => {
       <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 via-transparent to-blue-900/20" />
 
       {/* Content */}
-      <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-6 text-center">
+      <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col items-center justify-center px-4 sm:px-6 text-center">
         {/* Logo/Title */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -40,12 +40,12 @@ const ApodHero: React.FC = () => {
           transition={{ duration: 0.8 }}
           className="mb-6"
         >
-          <h1 className="mb-4 text-6xl md:text-7xl lg:text-8xl font-extrabold">
+          <h1 className="mb-4 text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-extrabold">
             <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               ASTROWORLD
             </span>
           </h1>
-          <div className="flex items-center justify-center gap-2 text-xl md:text-2xl text-gray-300">
+          <div className="flex flex-wrap items-center justify-center gap-2 text-base sm:text-lg md:text-2xl text-gray-300">
             <Telescope className="h-6 w-6 text-purple-400" />
             <span>Explore the Cosmos</span>
             <Sparkles className="h-6 w-6 text-blue-400" />
@@ -57,7 +57,7 @@ const ApodHero: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8 }}
-          className="mt-4 max-w-3xl text-lg md:text-xl text-gray-200 leading-relaxed"
+          className="mt-4 max-w-3xl text-base md:text-xl text-gray-200 leading-relaxed"
         >
           Discover the universe through NASA's eyes — live sky maps, AI-powered exploration,
           space weather alerts, asteroid tracking, stunning Earth & Mars imagery, and the latest exoplanet discoveries.
@@ -68,11 +68,11 @@ const ApodHero: React.FC = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="mt-8 flex flex-wrap justify-center gap-4"
+          className="mt-8 flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4"
         >
           <Link 
             to="/skymap" 
-            className="group relative px-8 py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 font-semibold text-lg"
+            className="group relative px-6 sm:px-8 py-3 sm:py-4 rounded-2xl bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 transition-all duration-300 shadow-lg hover:shadow-purple-500/50 font-semibold text-base sm:text-lg"
           >
             <span className="relative z-10 flex items-center gap-2">
               <Telescope className="h-5 w-5" />
@@ -80,8 +80,8 @@ const ApodHero: React.FC = () => {
             </span>
           </Link>
           <Link 
-            to="/murph-ai" 
-            className="group relative px-8 py-4 rounded-2xl border-2 border-purple-400/50 hover:border-purple-400 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 font-semibold text-lg"
+            to="/murphai" 
+            className="group relative px-6 sm:px-8 py-3 sm:py-4 rounded-2xl border-2 border-purple-400/50 hover:border-purple-400 bg-white/5 hover:bg-white/10 backdrop-blur-sm transition-all duration-300 font-semibold text-base sm:text-lg"
           >
             <span className="relative z-10 flex items-center gap-2">
               <Sparkles className="h-5 w-5" />

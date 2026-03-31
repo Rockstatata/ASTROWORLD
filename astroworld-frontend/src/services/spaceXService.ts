@@ -1,11 +1,11 @@
 // SpaceX API service - communicates with Django backend
+import { API_BASE } from '../config/api';
 
-const BACKEND_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-const SPACEX_API_BASE = `${BACKEND_BASE}/spacex`;
+const SPACEX_API_BASE = `${API_BASE}/spacex`;
 
 // Helper for authenticated backend requests
 const backendFetch = async (endpoint: string, options?: RequestInit) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem('access_token');
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...(options?.headers as Record<string, string> || {}),

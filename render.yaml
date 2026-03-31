@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: astroworld-backend
+    runtime: python
+    rootDir: astroworld-backend
+    plan: starter
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
+    startCommand: python manage.py migrate && gunicorn astroworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.11
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: astroworld-backend.onrender.com
+      - key: FRONTEND_URL
+        value: https://your-frontend.vercel.app
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://your-frontend.vercel.app
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://your-frontend.vercel.app,https://*.vercel.app
+      - key: CORS_ALLOWED_ORIGIN_REGEXES
+        value: https://.*\.vercel\.app
+      - key: DB_SSL_REQUIRE
+        value: "True"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: astroworld-postgres
+          property: connectionString
+      - key: NASA_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: LOG_LEVEL
+        value: INFO
+
+databases:
+  - name: astroworld-postgres
+    databaseName: astroworld
+    user: astroworld
+    plan: starter

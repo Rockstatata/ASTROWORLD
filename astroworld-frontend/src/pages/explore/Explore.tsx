@@ -235,13 +235,13 @@ const Explore: React.FC = () => {
 
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         
         {/* Main Content - positioned above background */}
         <div className="relative z-10">
-        <div className="max-w-8xl mx-auto px-4 py-8">
+        <div className="max-w-8xl mx-auto px-4 py-6 md:py-8">
           {/* Header */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -265,7 +265,7 @@ const Explore: React.FC = () => {
               animate={{ opacity: 1, x: 0 }}
               className="lg:col-span-1"
             >
-              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 sticky top-8">
+              <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200/50 dark:border-gray-700/50 lg:sticky lg:top-8">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
                     <Filter className="w-5 h-5" />

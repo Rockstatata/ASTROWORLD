@@ -237,10 +237,10 @@ const MessagingPage: React.FC = () => {
   if (isDirectMessage && userIdParam) {
     return (
       <Layout>
-        <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+        <div className="flex h-[calc(100dvh-4rem)] w-full overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
           
           {/* Threads Sidebar */}
-          <div className="hidden md:block w-96 border-r border-zinc-800/60 bg-zinc-950/60">
+          <div className="hidden md:block md:w-80 lg:w-96 border-r border-zinc-800/60 bg-zinc-950/60">
             <div className="p-4 border-b border-zinc-800/60">
               <h1 className="text-xl font-bold text-white flex items-center gap-2">
                 <MessageCircle className="h-6 w-6" />
@@ -272,7 +272,7 @@ const MessagingPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
+      <div className="flex h-[calc(100dvh-4rem)] w-full overflow-hidden bg-zinc-100 text-zinc-900 dark:bg-zinc-950 dark:text-zinc-50">
         
         {/* Threads Sidebar */}
         <div className={[

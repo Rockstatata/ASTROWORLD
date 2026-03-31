@@ -41,13 +41,13 @@ const News = () => {
 
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         
         {/* Main Content - positioned above background */}
         <div className="relative z-10">
-        <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto px-4 py-6 md:py-8">
           {/* Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-space-mono font-bold mb-4">
@@ -65,7 +65,7 @@ const News = () => {
             <div className="bg-gray-800 rounded-lg p-1">
               <button
                 onClick={() => setActiveTab('all')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                className={`px-4 sm:px-6 py-2 rounded-md font-medium transition-colors ${
                   activeTab === 'all'
                     ? 'bg-space-violet text-white'
                     : 'text-gray-400 hover:text-white'
@@ -75,7 +75,7 @@ const News = () => {
               </button>
               <button
                 onClick={() => setActiveTab('featured')}
-                className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                className={`px-4 sm:px-6 py-2 rounded-md font-medium transition-colors ${
                   activeTab === 'featured'
                     ? 'bg-space-violet text-white'
                     : 'text-gray-400 hover:text-white'

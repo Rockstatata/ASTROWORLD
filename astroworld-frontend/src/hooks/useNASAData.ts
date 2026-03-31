@@ -2,7 +2,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { nasaAPI } from '../services/nasa/nasaServices';
 import type { 
-  APODFilters, 
   NEOFilters, 
   MarsPhotosFilters, 
   ExoplanetFilters,

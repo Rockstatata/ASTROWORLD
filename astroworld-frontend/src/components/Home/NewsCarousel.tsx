@@ -7,16 +7,16 @@ const NewsCarousel: React.FC = () => {
   const { data, isLoading } = useNews({  });
 
   return (
-    <section className="py-20 px-6 text-center">
+    <section className="py-12 md:py-20 px-4 sm:px-6 text-center">
       <h2 className="text-4xl font-bold mb-10">Latest Space News</h2>
       {isLoading ? (
         <div className="text-gray-500">Loading news...</div>
       ) : (
         <div className="flex overflow-x-auto space-x-6 px-4 snap-x">
-          {data?.data?.results?.slice(0, 5).map((news: any, i: number) => (
+          {data?.data?.results?.slice(0, 5).map((news: any) => (
             <motion.div
               key={news.id}
-              className="min-w-[320px] bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-lg snap-center"
+              className="min-w-[260px] sm:min-w-[300px] md:min-w-[320px] bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-lg snap-center"
               whileHover={{ scale: 1.05 }}
             >
               <img

@@ -90,13 +90,18 @@ const LiveSkyPreview: React.FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // Set canvas size
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    // Keep the canvas backing buffer in sync with visual size.
+    const resizeCanvas = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resizeCanvas();
 
     // Create animated starfield
     const cleanup = createStarField(canvas);
     setLoading(false);
+
+    window.addEventListener('resize', resizeCanvas);
 
     // Get user location
     if (navigator.geolocation) {
@@ -120,35 +125,36 @@ const LiveSkyPreview: React.FC = () => {
     return () => {
       cleanup?.();
       clearInterval(timeInterval);
+      window.removeEventListener('resize', resizeCanvas);
     };
   }, []);
 
   return (
-    <section className="relative py-20 px-6">
+    <section className="relative py-12 md:py-20 px-4 sm:px-6">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+        <div className="text-center mb-8 md:mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
             Real-Time Sky View
           </h2>
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-400 text-base md:text-lg">
             Observe your live night sky powered by Stellarium Web Engine
           </p>
         </div>
 
         <div className="relative group">
           <div 
-            className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-2xl border border-white/10 p-6 hover:border-blue-500/50 transition-all duration-300 cursor-pointer"
+            className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 backdrop-blur-sm rounded-2xl border border-white/10 p-4 sm:p-6 hover:border-blue-500/50 transition-all duration-300 cursor-pointer"
             onClick={handleSkyClick}
           >
             {/* Header */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-500/20 rounded-lg">
                   <Eye className="h-5 w-5 text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-white">Live Sky Preview</h3>
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <h3 className="text-lg sm:text-xl font-bold text-white">Live Sky Preview</h3>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm text-gray-400">
                     <div className="flex items-center gap-1">
                       <Clock className="h-4 w-4" />
                       <span>{currentTime.toLocaleTimeString()}</span>
@@ -163,7 +169,7 @@ const LiveSkyPreview: React.FC = () => {
               
               <button 
                 onClick={handleSkyClick}
-                className="px-6 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg font-medium transition-all flex items-center gap-2 group-hover:scale-105 duration-300"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-lg font-medium transition-all flex items-center justify-center gap-2 group-hover:scale-105 duration-300"
               >
                 <Eye className="h-4 w-4" />
                 Open Full Skymap
@@ -183,7 +189,7 @@ const LiveSkyPreview: React.FC = () => {
 
               <canvas
                 ref={canvasRef}
-                className="w-full h-[400px] rounded-xl bg-gradient-to-b from-indigo-900 via-purple-900 to-black"
+                className="w-full h-[280px] sm:h-[340px] md:h-[400px] rounded-xl bg-gradient-to-b from-indigo-900 via-purple-900 to-black"
                 width={800}
                 height={400}
               />

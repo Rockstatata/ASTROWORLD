@@ -1,13 +1,13 @@
 // src/services/nasa/nasaAPI.ts
 // ======= UPDATED: All NASA API calls now go through Django backend =======
 // No API keys needed in frontend - backend handles all NASA API communication
+import { API_BASE } from '../../config/api';
 
-const BACKEND_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-const NASA_API_BASE = `${BACKEND_BASE}/nasa`;
+const NASA_API_BASE = `${API_BASE}/nasa`;
 
 // Helper for authenticated backend requests
 const backendFetch = async (endpoint: string, options?: RequestInit) => {
-  const token = localStorage.getItem("accessToken");
+  const token = localStorage.getItem('access_token');
   const headers: HeadersInit = {
     "Content-Type": "application/json",
     ...(token && { Authorization: `Bearer ${token}` }),

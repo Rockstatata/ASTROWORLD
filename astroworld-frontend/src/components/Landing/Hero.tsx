@@ -1,13 +1,12 @@
 import type { HeroProps } from '../../types'
 import { useNavigate } from 'react-router-dom'
-import Earth from '../../assets/images/Earth.jpg'
 import Earth_Video from '../../assets/videos/Interstellar-2.mp4'
 
 const Hero = ({ scrollY }: HeroProps) => {
   const navigate = useNavigate();
 
   return (
-    <section className="relative h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
       {/* <div 
         className="absolute inset-0"
         style={{
@@ -33,16 +32,16 @@ const Hero = ({ scrollY }: HeroProps) => {
       </video>
 
       {/* Content */}
-      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto">
+      <div className="relative z-10 text-center px-4 max-w-5xl mx-auto pt-16">
         {/* Main Title */}
-        <h1 className="text-7xl md:text-9xl lg:text-[100] font-space-mono font-bold mb-6">
+        <h1 className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl font-space-mono font-bold mb-6">
           <span className="bg-gradient-to-b from-white via-space-blue-dark to-white bg-clip-text text-transparent">
             ASTROWORLD
           </span>
         </h1>
 
         {/* Tagline */}
-        <p className="text-xl md:text-2xl lg:text-3xl text-white mb-4 font-bold border-b-2 border-white pb-2  ">
+        <p className="text-lg md:text-2xl lg:text-3xl text-white mb-4 font-bold border-b-2 border-white pb-2">
           Explore the Interstellar at Your Fingertips
         </p>
 

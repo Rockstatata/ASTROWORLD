@@ -46,6 +46,7 @@ export interface UserContent {
   description?: string;
   thumbnail_url?: string;
   source_url?: string;
+  metadata?: Record<string, unknown>;
   notes?: string;
   tags?: string[];
   is_favorite: boolean;
@@ -60,6 +61,7 @@ export interface SaveContentData {
   description?: string;
   thumbnail_url?: string;
   source_url?: string;
+  metadata?: Record<string, unknown>;
   notes?: string;
   tags?: string[];
   is_favorite?: boolean;
@@ -69,6 +71,7 @@ export interface UpdateContentData {
   description?: string;
   thumbnail_url?: string;
   source_url?: string;
+  metadata?: Record<string, unknown>;
   notes?: string;
   tags?: string[];
   is_favorite?: boolean;

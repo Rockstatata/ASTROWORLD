@@ -91,7 +91,7 @@ const NASAImageLibrarySection: React.FC<NASAImageLibrarySectionProps> = ({
   const images = searchResults?.collection?.items || [];
 
   return (
-    <div className={`space-y-6 ${className} px-12`}>
+    <div className={`space-y-6 ${className} px-4 sm:px-6 md:px-12`}>
       {/* Search Summary */}
       {showSearch && (
         <div className="flex items-center justify-between">
@@ -349,10 +349,10 @@ const NASAImageLibrarySection: React.FC<NASAImageLibrarySectionProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="w-full max-w-4xl max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden my-4"
+              className="w-full max-w-4xl max-h-[90dvh] bg-gray-900 rounded-xl overflow-hidden my-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col max-h-[90vh]">
+              <div className="flex flex-col max-h-[90dvh]">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                   <h3 className="text-xl font-bold text-white truncate">
@@ -377,7 +377,7 @@ const NASAImageLibrarySection: React.FC<NASAImageLibrarySectionProps> = ({
 
                 {/* Content - Scrollable */}
                 <div className="flex-1 overflow-y-auto">
-                  <div className="max-h-[50vh] relative bg-black">
+                  <div className="max-h-[50dvh] relative bg-black">
                     <img
                       src={selectedImage.links?.[0]?.href}
                       alt={selectedImage.data[0].title}

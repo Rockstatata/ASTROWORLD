@@ -787,8 +787,8 @@ const Skymap: React.FC = () => {
 
           core.stars.addDataSource({ url: baseUrl + 'stars' });
           core.skycultures.addDataSource({ url: baseUrl + 'skycultures/western', key: 'western' });
-          core.dsos.addDataSource({ url: baseUrl + 'dso' });
-          core.landscapes.addDataSource({ url: baseUrl + 'landscapes/guereins', key: 'guereins' });
+          core.dsos.addDataSource?.({ url: baseUrl + 'dso' });
+          core.landscapes.addDataSource?.({ url: baseUrl + 'landscapes/guereins', key: 'guereins' });
           core.milkyway.addDataSource({ url: baseUrl + 'surveys/milkyway' });
           core.minor_planets.addDataSource({ url: baseUrl + 'mpcorb.dat', key: 'mpc_asteroids' });
           core.planets.addDataSource({ url: baseUrl + 'surveys/sso/moon', key: 'moon' });
@@ -886,72 +886,72 @@ const Skymap: React.FC = () => {
     <Layout
       showLoginButton={false}
       isFullscreen={isFullscreen}
-      mainClassName="pt-16 h-screen relative"
+      mainClassName="pt-16 min-h-[100dvh] relative"
       footer={
-        <footer className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50">
-          <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl px-6 py-3">
-            <div className="flex items-center justify-center space-x-2">
+        <footer className="fixed bottom-4 sm:bottom-8 left-1/2 transform -translate-x-1/2 z-50 w-[calc(100%-1rem)] sm:w-auto max-w-[96vw]">
+          <div className="bg-gray-900/80 backdrop-blur-xl border border-gray-700/50 rounded-2xl shadow-2xl px-2 sm:px-4 py-2 sm:py-3">
+            <div className="flex items-center justify-center gap-1 sm:gap-2 flex-wrap sm:flex-nowrap max-h-[38vh] overflow-y-auto">
               <StelButton
                 label="Constellations"
                 img="/static/imgs/symbols/btn-cst-lines.svg"
                 obj={stel?.core.constellations || null}
                 attr="lines_visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Constellation Art"
                 img="/static/imgs/symbols/btn-constellation-names.svg"
                 obj={stel?.core.constellations || null}
                 attr="images_visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Atmosphere"
                 img="/static/imgs/symbols/btn-atmosphere.svg"
                 obj={stel?.core.atmosphere || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Landscape"
                 img="/static/imgs/symbols/btn-landscape.svg"
                 obj={stel?.core.landscapes || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Azimuthal Grid"
                 img="/static/imgs/symbols/btn-azimuthal-grid.svg"
                 obj={stel?.core.lines.azimuthal || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Equatorial Grid"
                 img="/static/imgs/symbols/btn-equatorial-grid.svg"
                 obj={stel?.core.lines.equatorial || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="Nebulae"
                 img="/static/imgs/symbols/btn-nebulae.svg"
                 obj={stel?.core.dsos || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               <StelButton
                 label="DSS"
                 img="/static/imgs/symbols/btn-nebulae.svg"
                 obj={stel?.core.dss || null}
                 attr="visible"
               />
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               
               {/* Real-time Controls */}
               <button
                 onClick={toggleTimeSync}
-                className="group relative w-16 h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200"
+                className="group relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200"
                 title={isTimeRunning ? "Pause Real-time" : "Resume Real-time"}
               >
                 {isTimeRunning ? (
@@ -964,12 +964,12 @@ const Skymap: React.FC = () => {
                 </div>
               </button>
               
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               
               {/* Location Control */}
               <button
                 onClick={requestLocation}
-                className={`group relative w-16 h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ${
+                className={`group relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200 ${
                   userLocation ? 'text-green-400' : locationError ? 'text-red-400' : 'text-gray-300'
                 }`}
                 title="Update Location"
@@ -981,12 +981,12 @@ const Skymap: React.FC = () => {
                 </div>
               </button>
               
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               
               {/* Time Display */}
-              <div className="group relative w-24 h-16 flex flex-col items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200">
+              <div className="group relative w-20 sm:w-24 h-12 sm:h-16 flex flex-col items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200">
                 <Clock className="w-4 h-4 text-gray-300 group-hover:text-white transition-colors mb-1" />
-                <span className="text-xs text-gray-300 group-hover:text-white transition-colors">
+                <span className="text-[10px] sm:text-xs text-gray-300 group-hover:text-white transition-colors">
                   {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
                 <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap">
@@ -994,12 +994,12 @@ const Skymap: React.FC = () => {
                 </div>
               </div>
               
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               
               {/* Marker Mode Toggle */}
               <button
                 onClick={() => setMarkerMode(!markerMode)}
-                className={`group relative w-16 h-16 flex items-center justify-center rounded-xl transition-all duration-200 ${
+                className={`group relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl transition-all duration-200 ${
                   markerMode ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'hover:bg-white/10 text-gray-300'
                 }`}
                 title={markerMode ? "Exit Marker Mode" : "Enter Marker Mode"}
@@ -1012,12 +1012,12 @@ const Skymap: React.FC = () => {
                 </div>
               </button>
               
-              <div className="w-px h-12 bg-gray-700/50" />
+              <div className="hidden sm:block w-px h-12 bg-gray-700/50" />
               
               {/* Fullscreen Button */}
               <button
                 onClick={toggleFullscreen}
-                className="group relative w-16 h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200"
+                className="group relative w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center rounded-xl hover:bg-white/10 transition-all duration-200"
                 title="Enter Fullscreen"
               >
                 <svg className="w-6 h-6 text-gray-300 group-hover:text-white transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1057,7 +1057,7 @@ const Skymap: React.FC = () => {
           if (hasSelection) {
             return (
               <div
-                className="absolute top-20 left-4 w-96 bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg border border-white"
+                className="absolute top-20 left-2 sm:left-4 w-[calc(100%-1rem)] max-w-md bg-gray-900 bg-opacity-90 backdrop-blur-sm rounded-lg shadow-lg border border-white"
                 style={{ zIndex: 1000 }}
               >
                 <div className="p-4">

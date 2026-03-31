@@ -120,7 +120,7 @@ const StarryBackground: React.FC = () => {
             scale: [1, 1.1, 1],
           }}
           transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-0 left-1/4 w-96 h-96 bg-purple-900/20 rounded-full blur-[120px]"
+          className="absolute top-0 left-1/4 w-52 h-52 sm:w-72 sm:h-72 md:w-96 md:h-96 bg-purple-900/20 rounded-full blur-[120px]"
         />
         <motion.div
           animate={{
@@ -128,7 +128,7 @@ const StarryBackground: React.FC = () => {
             scale: [1.1, 1, 1.1],
           }}
           transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut', delay: 5 }}
-          className="absolute top-1/3 right-1/4 w-[500px] h-[500px] bg-blue-900/20 rounded-full blur-[120px]"
+          className="absolute top-1/3 right-1/4 w-60 h-60 sm:w-80 sm:h-80 md:w-[500px] md:h-[500px] bg-blue-900/20 rounded-full blur-[120px]"
         />
         <motion.div
           animate={{
@@ -136,7 +136,7 @@ const StarryBackground: React.FC = () => {
             scale: [1, 1.15, 1],
           }}
           transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut', delay: 10 }}
-          className="absolute bottom-1/4 left-1/3 w-[450px] h-[450px] bg-pink-900/15 rounded-full blur-[120px]"
+          className="absolute bottom-1/4 left-1/3 w-56 h-56 sm:w-72 sm:h-72 md:w-[450px] md:h-[450px] bg-pink-900/15 rounded-full blur-[120px]"
         />
       </div>
 

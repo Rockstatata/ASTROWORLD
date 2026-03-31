@@ -7,7 +7,6 @@ import {
   Rocket,
   Star,
   Heart,
-  Download,
   Search,
   Filter,
   Grid,
@@ -15,16 +14,12 @@ import {
   ChevronRight,
   BookOpen,
   Satellite,
-  MapPin,
-  Calendar,
-  Eye,
-  Bookmark
+  Eye
 } from 'lucide-react';
 import Layout from '../../components/Layout';
 import StarryBackground from '../../components/Home/StarryBackground';
 import SaveButton from '../../components/common/SaveButton';
-import { useNASAImageSearch, usePopularNASAImages, useToggleFavoriteImage, useSaveFavoriteImage } from '../../hooks/useNASAImages';
-import { useAPOD, useMarsPhotos, useLatestMarsPhotos } from '../../hooks/useNASAData';
+import { useNASAImageSearch, useSaveFavoriteImage } from '../../hooks/useNASAImages';
 import type { NASAMediaItem } from '../../services/nasa/nasaServices';
 
 type GallerySection = 'overview' | 'nasa-library' | 'gibs-earth' | 'apod' | 'epic' | 'mars-rover';
@@ -43,7 +38,7 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
   selectedImage: NASAMediaItem | null;
   setSelectedImage: (image: NASAMediaItem | null) => void;
 }> = ({ searchQuery, viewMode, currentPage, setCurrentPage, selectedImage, setSelectedImage }) => {
-  const [currentQuery, setCurrentQuery] = useState('hubble space telescope');
+  const [currentQuery] = useState('hubble space telescope');
   const effectiveQuery = searchQuery || currentQuery;
   
   const { data: searchResults, isLoading, error } = useNASAImageSearch({
@@ -53,7 +48,6 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
     page_size: 24
   });
 
-  const toggleFavorite = useToggleFavoriteImage();
   const saveFavorite = useSaveFavoriteImage();
 
   // Reset page when search query changes
@@ -356,10 +350,10 @@ const NASAImageLibrarySection: React.FC<SectionProps & {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="w-full max-w-4xl max-h-[90vh] bg-gray-900 rounded-xl overflow-hidden my-4"
+              className="w-full max-w-4xl max-h-[90dvh] bg-gray-900 rounded-xl overflow-hidden my-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="flex flex-col max-h-[90vh]">
+              <div className="flex flex-col max-h-[90dvh]">
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-gray-700 flex-shrink-0">
                   <h3 className="text-xl font-bold text-white truncate">
@@ -686,7 +680,7 @@ const Gallery: React.FC = () => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between"
+          className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
         >
           <div className="flex items-center gap-4">
             <button
@@ -705,7 +699,7 @@ const Gallery: React.FC = () => {
           </div>
 
           {/* View Controls */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 self-start md:self-auto">
             <div className="flex items-center bg-gray-900/80 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
@@ -775,7 +769,7 @@ const Gallery: React.FC = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="min-h-[600px]"
+          className="min-h-[420px] md:min-h-[600px]"
         >
           {renderGalleryContent()}
         </motion.div>
@@ -785,7 +779,7 @@ const Gallery: React.FC = () => {
 
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         

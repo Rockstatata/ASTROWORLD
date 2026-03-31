@@ -773,7 +773,7 @@ const Events = () => {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-orange-400/50 rounded-2xl"
+          className="relative max-w-4xl w-full max-h-[90dvh] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-orange-400/50 rounded-2xl"
         >
           {/* Close Button */}
           <button
@@ -1084,7 +1084,7 @@ const Events = () => {
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative max-w-4xl w-full max-h-[90vh] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-space-violet/50 rounded-2xl"
+          className="relative max-w-4xl w-full max-h-[90dvh] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border border-space-violet/50 rounded-2xl"
         >
           {/* Close Button */}
           <button
@@ -1208,7 +1208,7 @@ const Events = () => {
   if (isLoading) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-space-dark to-gray-900">
+        <div className="min-h-[100dvh] bg-gradient-to-br from-gray-900 via-space-dark to-gray-900">
           <div className="max-w-7xl mx-auto px-4 py-12">
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
@@ -1225,7 +1225,7 @@ const Events = () => {
   if (error) {
     return (
       <Layout>
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-space-dark to-gray-900">
+        <div className="min-h-[100dvh] bg-gradient-to-br from-gray-900 via-space-dark to-gray-900">
           <div className="max-w-7xl mx-auto px-4 py-12">
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
@@ -1246,7 +1246,7 @@ const Events = () => {
 
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         
@@ -1280,13 +1280,13 @@ const Events = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex justify-center mb-8"
+            className="flex justify-center mb-8 overflow-x-auto"
           >
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-lg p-2 border border-gray-700/50">
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-lg p-2 border border-gray-700/50 min-w-max">
               <div className="flex gap-2">
                 <button
                   onClick={() => setActiveTab('astronomical')}
-                  className={`px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                  className={`px-4 sm:px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
                     activeTab === 'astronomical'
                       ? 'bg-space-violet text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-800'
@@ -1297,7 +1297,7 @@ const Events = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('spacex')}
-                  className={`px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                  className={`px-4 sm:px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
                     activeTab === 'spacex'
                       ? 'bg-orange-500 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-800'
@@ -1308,7 +1308,7 @@ const Events = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab('comparison')}
-                  className={`px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
+                  className={`px-4 sm:px-6 py-3 rounded-lg transition-all duration-200 flex items-center gap-2 ${
                     activeTab === 'comparison'
                       ? 'bg-blue-500 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-800'

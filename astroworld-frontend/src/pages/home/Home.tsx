@@ -8,12 +8,9 @@ import MurphPreview from "../../components/Home/MurphPreview";
 import NewsCarousel from "../../components/Home/NewsCarousel";
 import DonkiPanel from "../../components/Home/DonkiPanel";
 import NeoWsPanel from "../../components/Home/NeoWsPanel";
-import EpicPanel from "../../components/Home/EpicPanel";
-import MarsPanel from "../../components/Home/MarsPanel";
 import ExoplanetStat from "../../components/Home/ExoplanetStat";
 import NASAImageLibrarySection from "../../components/Home/NASAImageLibrarySection";
 import SatelliteTracker from "../../components/Home/SatelliteTracker";
-import GIBSImageryMap from "../../components/Home/GIBSImageryMap";
 import EventsShowcase from "../../components/Home/EventsShowcase";
 import ProfileSummary from "../../components/Home/ProfileSummary";
 import Footer from "../../components/Home/Footer";
@@ -22,7 +19,7 @@ import { SpaceXStatsCard } from "../../components/spacex";
 const Home: React.FC = () => {
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
 
@@ -59,7 +56,7 @@ const Home: React.FC = () => {
           <ExoplanetStat />
 
           {/* SpaceX Statistics */}
-          <section className="py-20 px-6">
+          <section className="py-14 md:py-20 px-4 sm:px-6">
             <div className="max-w-4xl mx-auto">
               <SpaceXStatsCard />
             </div>

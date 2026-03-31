@@ -74,7 +74,7 @@ const ResetPassword = () => {
 
   if (success) {
     return (
-      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
         <video
           autoPlay
           muted
@@ -91,7 +91,7 @@ const ResetPassword = () => {
         >
           <source src={Earth_Video} type="video/mp4" />
         </video>
-        <div className="min-h-screen flex items-center justify-center px-4">
+        <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
           <div className="max-w-md w-full bg-gray-800 rounded-lg p-8 text-center">
             <div className="mb-4">
               <svg className="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,7 +118,7 @@ const ResetPassword = () => {
   }
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
       <video
         autoPlay
         muted
@@ -135,7 +135,7 @@ const ResetPassword = () => {
       >
         <source src={Earth_Video} type="video/mp4" />
       </video>
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
         <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">

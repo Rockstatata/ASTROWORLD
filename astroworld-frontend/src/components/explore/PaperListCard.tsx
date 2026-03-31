@@ -4,8 +4,7 @@ import {
   BookOpen, 
   Calendar, 
   Users,
-  ExternalLink,
-  Download
+  ExternalLink
 } from 'lucide-react';
 import { 
   LikeButton, 

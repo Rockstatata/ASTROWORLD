@@ -26,12 +26,12 @@ const Layout = ({
   }, [])
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-[100dvh] w-full overflow-x-clip bg-black text-white">
       {/* Navbar - conditionally rendered based on fullscreen */}
       {!isFullscreen && <Navbar scrollY={scrollY} showLoginButton={showLoginButton} isFullscreen={isFullscreen} />}
 
       {/* Main Content */}
-      <main className={mainClassName}>
+      <main className={`w-full ${mainClassName}`}>
         {children}
       </main>
 

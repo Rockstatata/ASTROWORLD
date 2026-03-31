@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { nasaAPI } from '../services/nasa/nasaServices';
-import type { NASAImageFilters, NASAImageSearchResult } from '../services/nasa/nasaServices';
+import type { NASAImageFilters } from '../services/nasa/nasaServices';
 
 // Hook for searching NASA images
 export const useNASAImageSearch = (filters: NASAImageFilters) => {
@@ -84,7 +84,7 @@ export const useSaveFavoriteImage = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ nasa_id, title, notes, tags }: {
+    mutationFn: async ({ nasa_id, title: _title, notes, tags }: {
       nasa_id: string;
       title: string;
       notes?: string;

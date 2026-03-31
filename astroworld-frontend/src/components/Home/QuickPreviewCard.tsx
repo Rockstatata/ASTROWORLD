@@ -21,7 +21,7 @@ const QuickPreviewCard: React.FC<QuickPreviewCardProps> = ({
       transition={{ duration: 0.3 }}
       className="group relative bg-white/5 border border-white/10 rounded-3xl overflow-hidden shadow-lg hover:shadow-space-violet/40 transition-all backdrop-blur-lg"
     >
-      <div className="relative h-52 overflow-hidden">
+      <div className="relative h-44 sm:h-52 overflow-hidden">
         <img
           src={image}
           alt={title}
@@ -30,9 +30,9 @@ const QuickPreviewCard: React.FC<QuickPreviewCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
       </div>
 
-      <div className="p-6 flex flex-col justify-between h-48">
+      <div className="p-5 sm:p-6 flex flex-col justify-between min-h-40 sm:min-h-48">
         <div>
-          <h3 className="text-2xl font-semibold mb-2 text-space-blue-light">
+          <h3 className="text-xl sm:text-2xl font-semibold mb-2 text-space-blue-light">
             {title}
           </h3>
           <p className="text-gray-300 text-sm leading-relaxed">{description}</p>

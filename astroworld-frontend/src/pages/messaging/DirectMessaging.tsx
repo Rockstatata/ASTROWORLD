@@ -79,7 +79,7 @@ const DirectMessaging: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex h-[calc(100vh-4rem)] w-full overflow-hidden bg-zinc-950 text-zinc-50">
+      <div className="flex h-[calc(100dvh-4rem)] w-full overflow-hidden bg-zinc-950 text-zinc-50">
         <div className="flex-1 flex flex-col">
           
           {/* Chat Header */}

@@ -1,8 +1,9 @@
 import axios from 'axios';
 import type { MessageThread, UserMessage, SendMessageRequest, MessageThreadResponse } from '../types/messaging';
+import { API_BASE } from '../config/api';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api',
+  baseURL: API_BASE,
 });
 
 // Add auth token to all requests

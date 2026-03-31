@@ -93,7 +93,7 @@ const PaperNotesModal: React.FC<PaperNotesModalProps> = ({
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-hidden"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-4xl max-h-[90dvh] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -111,8 +111,7 @@ const PaperNotesModal: React.FC<PaperNotesModalProps> = ({
                 <X className="w-5 h-5" />
               </button>
             </div>
-
-            <div className="flex flex-col lg:flex-row h-[calc(90vh-100px)]">
+            <div className="flex flex-col lg:flex-row h-[calc(90dvh-100px)]">
               {/* Paper Info Sidebar */}
               <div className="lg:w-1/3 p-6 border-r border-gray-200 dark:border-gray-700 overflow-y-auto">
                 <div className="space-y-4">

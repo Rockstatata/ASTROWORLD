@@ -83,10 +83,16 @@ export const getInfos = (stel: StellariumEngine, obj: any): CoordinateInfo[] => 
   const ret: CoordinateInfo[] = [];
   const obs = stel.core.observer;
   const cirs = stel.convertFrame(obs, 'ICRF', 'CIRS', obj.getInfo('radec'));
+  if (!Array.isArray(cirs)) {
+    return ret;
+  }
   const radec = stel.c2s(cirs);
   const ra = stel.anp(radec[0]);
   const dec = stel.anpm(radec[1]);
   const observed = stel.convertFrame(obs, 'CIRS', 'OBSERVED', cirs);
+  if (!Array.isArray(observed)) {
+    return ret;
+  }
   const azalt = stel.c2s(observed);
   const az = stel.anp(azalt[0]);
   const alt = stel.anp(azalt[1]);

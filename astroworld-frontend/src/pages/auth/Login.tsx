@@ -49,7 +49,7 @@ const Login = () => {
   };
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
        <video
         autoPlay
         muted
@@ -66,7 +66,7 @@ const Login = () => {
       >
         <source src={Earth_Video} type="video/mp4" />
       </video>
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
         <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">

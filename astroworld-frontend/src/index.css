@@ -93,12 +93,19 @@ html, body {
   padding: 0;
   width: 100%;
   height: 100%;
+  overflow-x: hidden;
 }
 
 body {
   min-width: 320px;
-  min-height: 100vh;
+  min-height: 100dvh;
   background-color: #000000;
+}
+
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  overflow-x: clip;
 }
 
 /* Custom scrollbar for space theme */

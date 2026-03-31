@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react'
-import Moon from '../../assets/images/Moon.jpg'
 import Earth_Video from '../../assets/videos/Earth-Spin.mp4'
 
 const Features = () => {

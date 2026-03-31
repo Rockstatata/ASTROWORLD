@@ -952,10 +952,7 @@ FRONTEND_URL=http://localhost:5173
 
 ```bash
 # API Configuration
-VITE_API_URL=http://localhost:8000/api
-
-# NASA API Key (for client-side calls)
-VITE_NASA_API_KEY=your_nasa_api_key
+VITE_API_URL=http://localhost:8000
 
 # Optional: Feature Flags
 VITE_ENABLE_AI=true
@@ -966,87 +963,92 @@ VITE_ENABLE_CELERY=true
 
 ## 🚀 Deployment
 
-### Production Checklist
+### Recommended Topology
 
-- [ ] Set `DEBUG=False` in Django settings
-- [ ] Configure secure `SECRET_KEY`
-- [ ] Set up PostgreSQL database
-- [ ] Configure Redis for Celery and caching
-- [ ] Set up static file serving (WhiteNoise or CDN)
-- [ ] Configure HTTPS with SSL certificates
-- [ ] Set up domain and DNS
-- [ ] Configure CORS for production domain
-- [ ] Set up email service (SendGrid, AWS SES, etc.)
-- [ ] Configure backup strategy for database
-- [ ] Set up monitoring (Sentry, New Relic, etc.)
-- [ ] Configure CI/CD pipeline
+For this codebase, the best production setup is:
 
-### Docker Deployment
+- Frontend: **Vercel** (React/Vite static build + global edge CDN)
+- Backend API: **Render Web Service** (Django + Gunicorn)
+- Database: **Render PostgreSQL**
+
+This gives better frontend performance, cleaner separation of concerns, and easier scaling than putting both frontend and backend on a single Render web service.
+
+### Why This Is Better Than "Everything on Render"
+
+- Vercel is optimized for static frontend delivery and SPA routing
+- Render is excellent for long-running Python web processes and managed Postgres
+- Independent deploys: UI changes do not require backend restarts
+- Better cost/performance tuning: scale API and frontend independently
+
+### Deployment Files Included In This Repo
+
+- `render.yaml` (Render Blueprint for backend + Postgres)
+- `astroworld-backend/requirements.txt`
+- `astroworld-backend/runtime.txt`
+- `astroworld-backend/Procfile`
+- `astroworld-frontend/vercel.json`
+
+### 1) Deploy Backend + Postgres on Render
+
+1. Push the repository to GitHub.
+2. In Render, click **New +** -> **Blueprint** and select this repo.
+3. Render reads `render.yaml` and creates:
+    - `astroworld-backend` web service
+    - `astroworld-postgres` database
+4. In backend environment variables, set real values for:
+    - `NASA_API_KEY`
+    - `GROQ_API_KEY`
+5. Deploy.
+
+Backend build/start commands (already configured):
 
 ```bash
-# Build images
-docker-compose build
-
-# Start services
-docker-compose up -d
-
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
+pip install -r requirements.txt && python manage.py collectstatic --no-input
+python manage.py migrate && gunicorn astroworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
 ```
 
-### Platform-Specific Guides
+### 2) Deploy Frontend on Vercel
 
-#### Heroku
+1. In Vercel, import the same repo.
+2. Set project root to `astroworld-frontend`.
+3. Add env var:
+
 ```bash
-# Install Heroku CLI
-heroku login
-
-# Create app
-heroku create astroworld-app
-
-# Add PostgreSQL
-heroku addons:create heroku-postgresql:hobby-dev
-
-# Add Redis
-heroku addons:create heroku-redis:hobby-dev
-
-# Set environment variables
-heroku config:set NASA_API_KEY=your_key
-
-# Deploy
-git push heroku master
+VITE_API_URL=https://<your-render-backend>.onrender.com
 ```
 
-#### AWS / DigitalOcean / VPS
+4. Deploy.
 
-1. **Server Setup**: Ubuntu 22.04 LTS recommended
-2. **Install Dependencies**: Python, Node.js, PostgreSQL, Redis, Nginx
-3. **Clone Repository**: Git clone and configure
-4. **Environment**: Set up virtual environment and .env files
-5. **Database**: Create PostgreSQL database and run migrations
-6. **Static Files**: Collect and serve with Nginx
-7. **Process Manager**: Use Gunicorn + Supervisor/Systemd
-8. **Reverse Proxy**: Configure Nginx for both frontend and backend
-9. **SSL**: Set up Let's Encrypt certificates
-10. **Monitoring**: Configure logging and monitoring tools
+### 3) Wire CORS/CSRF Back In Render
 
-### Performance Optimization
+After Vercel gives you your domain, update Render backend env vars:
 
-- **Frontend**:
-  - Enable production build: `npm run build`
-  - Serve static files via CDN
-  - Enable Gzip/Brotli compression
-  - Implement service workers for offline support
-  
-- **Backend**:
-  - Use Gunicorn with 4-8 workers
-  - Enable PostgreSQL connection pooling
-  - Configure Redis for session storage
-  - Set up database query optimization
-  - Enable Django's caching framework
+```bash
+FRONTEND_URL=https://<your-vercel-app>.vercel.app
+CORS_ALLOWED_ORIGINS=https://<your-vercel-app>.vercel.app
+CSRF_TRUSTED_ORIGINS=https://<your-vercel-app>.vercel.app,https://*.vercel.app
+CORS_ALLOWED_ORIGIN_REGEXES=https://.*\.vercel\.app
+ALLOWED_HOSTS=<your-render-backend>.onrender.com
+```
+
+Then redeploy backend.
+
+### 4) Production Smoke Test
+
+1. Open frontend URL and verify homepage renders.
+2. Register/login and confirm JWT-protected endpoints work.
+3. Check API health:
+
+```bash
+curl https://<your-render-backend>.onrender.com/
+```
+
+4. In Render logs, verify migrations ran and no CORS errors are present.
+
+### Optional: Deploy Frontend Also On Render
+
+You can host frontend on Render Static Site if you prefer one provider.
+It is simpler operationally, but usually slower globally than Vercel CDN for static assets.
 
 ---
 

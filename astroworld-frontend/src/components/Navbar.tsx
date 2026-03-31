@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import type { NavbarProps } from '../types'
 import Astroworld from '../assets/images/ASTROWORLD_ONLYLOGO.png'
 import {useAuth} from '../context/authContext'
@@ -11,8 +11,35 @@ interface ExtendedNavbarProps extends NavbarProps {
 
 function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: ExtendedNavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const location = useLocation()
   const isScrolled = scrollY > 50
   const { user, logout } = useAuth()
+
+  const navItems = [
+    { name: 'Home', path: '/home' },
+    { name: 'Explore', path: '/explore' },
+    { name: 'SkyMap', path: '/skymap' },
+    { name: 'Events', path: '/events' },
+    { name: 'News', path: '/news' },
+    { name: 'Gallery', path: '/gallery' },
+    { name: 'MurphAI', path: '/murphai' }
+  ]
+
+  useEffect(() => {
+    setIsMobileMenuOpen(false)
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isMobileMenuOpen])
+
   // Don't render navbar in fullscreen mode
   if (isFullscreen) {
     return null;
@@ -33,15 +60,7 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
           {/* Desktop Navigation */}
           <div className="hidden md:block">
             <div className="ml-10 flex items-baseline space-x-8">
-              {[
-                { name: 'Home', path: '/home' },
-                { name: 'Explore', path: '/explore' },
-                { name: 'SkyMap', path: '/skymap' },
-                { name: 'Events', path: '/events' },
-                { name: 'News', path: '/news' },
-                { name: 'Gallery', path: '/gallery' },
-                { name: 'MurphAI', path: '/murphai' }
-              ].map(({ name, path }) => (
+              {navItems.map(({ name, path }) => (
                 <Link
                   key={name}
                   to={path}
@@ -93,17 +112,17 @@ function Navbar({scrollY, showLoginButton = true, isFullscreen = false}: Extende
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden bg-gray-900/90 backdrop-blur-xl border-b border-space-violet/30 shadow-lg">
+        <div className="md:hidden max-h-[calc(100dvh-4rem)] overflow-y-auto bg-gray-900/95 backdrop-blur-xl border-b border-space-violet/30 shadow-lg">
           <div className="px-2 pt-2 pb-3 space-y-1">
-            {['Home', 'Explore', 'SkyMap', 'Events', 'News', 'Gallery', 'MurphAI'].map((item) => (
-              <a
-                key={item}
-                href={`${item.toLowerCase()}`}
+            {navItems.map(({ name, path }) => (
+              <Link
+                key={name}
+                to={path}
                 className="text-white hover:text-space-blue block px-3 py-2 text-base font-space-mono font-medium transition-colors duration-300"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {item}
-              </a>
+                {name}
+              </Link>
             ))}
             {user ? (
               <>

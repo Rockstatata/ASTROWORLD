@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { apiPostChat } from '../utils/murphaiUtils';
+import { API_BASE } from '../config/api';
 
 // Backend API configuration
-const BACKEND_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-const SKYMAP_API_BASE = `${BACKEND_BASE}/skymap`;
+const SKYMAP_API_BASE = `${API_BASE}/skymap`;
 
 // Helper for authenticated backend requests
 const backendFetch = async (endpoint: string, options?: RequestInit) => {

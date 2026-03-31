@@ -1,8 +1,7 @@
 import axios from 'axios';
+import { API_BASE } from '../../config/api';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-
-axios.defaults.baseURL = API_URL;
+axios.defaults.baseURL = API_BASE;
 
 // Request interceptor to add token
 axios.interceptors.request.use(

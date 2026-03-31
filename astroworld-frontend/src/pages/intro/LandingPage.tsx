@@ -28,7 +28,7 @@ function LandingPage() {
   // Show loading while checking auth
   if (loading) {
     return (
-      <div className="min-h-screen bg-black flex items-center justify-center">
+      <div className="min-h-[100dvh] bg-black flex items-center justify-center">
         <div className="text-white text-xl">Loading...</div>
       </div>
     )
@@ -40,7 +40,7 @@ function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen text-white overflow-x-hidden">
+    <div className="min-h-[100dvh] text-white overflow-x-hidden">
       <Navbar scrollY={scrollY} />
       <Hero scrollY={scrollY} />
       <ImmersiveBreak 

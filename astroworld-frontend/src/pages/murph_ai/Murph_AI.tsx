@@ -102,12 +102,12 @@ const handleRenameSession = useCallback(async (sessionId: string, newTitle: stri
 
   return (
     <Layout>
-      <div className="relative h-screen w-full overflow-hidden">
+      <div className="relative min-h-[100dvh] w-full overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         
         {/* Main Content - positioned above background */}
-        <div className="relative z-10 flex h-screen w-full overflow-hidden text-white">
+        <div className="relative z-10 flex min-h-[100dvh] w-full overflow-hidden text-white">
         <Sidebar 
           sessions={sessions} 
           activeId={activeId} 
@@ -117,14 +117,14 @@ const handleRenameSession = useCallback(async (sessionId: string, newTitle: stri
           onClearAll={clearAllSessions}
           onRename={handleRenameSession}
         />
-        <div className="flex grow flex-col">
+        <div className="flex min-w-0 grow flex-col">
           <Header 
             theme={theme} 
             setTheme={setTheme} 
             onNew={handleNew} 
             onClearActive={handleClearActiveSession}
           />
-          <main ref={scrollRef} className="flex grow flex-col gap-4 overflow-y-auto p-4 md:p-6">
+          <main ref={scrollRef} className="flex grow flex-col gap-4 overflow-y-auto p-3 sm:p-4 md:p-6">
             {active?.messages?.length ? (
               <div className="mx-auto w-full max-w-3xl space-y-4">
                 {active.messages.map((m) => <MessageBubble key={m.id} m={m} />)}

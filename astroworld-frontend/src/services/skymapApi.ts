@@ -1,6 +1,7 @@
 // Skymap API service for interacting with backend skymap endpoints
-const BACKEND_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
-const SKYMAP_API_BASE = `${BACKEND_BASE}/skymap`;
+import { API_BASE } from '../config/api';
+
+const SKYMAP_API_BASE = `${API_BASE}/skymap`;
 
 // Helper for authenticated backend requests
 const backendFetch = async (endpoint: string, options?: RequestInit) => {

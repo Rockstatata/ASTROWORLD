@@ -264,7 +264,7 @@ const NASAImageGallery: React.FC<ImageGalleryProps> = ({ className = '' }) => {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.8, opacity: 0 }}
-              className="bg-gray-900 rounded-xl max-w-4xl max-h-[90vh] overflow-hidden"
+              className="bg-gray-900 rounded-xl max-w-4xl max-h-[90dvh] overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -293,7 +293,7 @@ const NASAImageGallery: React.FC<ImageGalleryProps> = ({ className = '' }) => {
               </div>
 
               {/* Content */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 max-h-[70vh]">
+              <div className="grid grid-cols-1 lg:grid-cols-2 max-h-[70dvh]">
                 {/* Image/Media */}
                 <div className="relative bg-black flex items-center justify-center">
                   {selectedImage.original_url || selectedImage.preview_url ? (

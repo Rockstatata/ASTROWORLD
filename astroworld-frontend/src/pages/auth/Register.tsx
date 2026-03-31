@@ -67,7 +67,7 @@ const Register = () => {
 
   if (success) {
     return (
-      <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
        <video
         autoPlay
         muted
@@ -84,7 +84,7 @@ const Register = () => {
       >
         <source src={Earth_Video} type="video/mp4" />
       </video>
-      <div className="min-h-screen flex items-center justify-center px-4">
+      <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
         <div className="max-w-md w-full bg-gray-800 rounded-lg p-8 text-center">
           <div className="mb-4">
             <svg className="mx-auto h-16 w-16 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -105,7 +105,7 @@ const Register = () => {
   }
 
   return (
-    <div style={{ position: 'relative', height: '100vh', overflow: 'hidden' }}>
+    <div style={{ position: 'relative', height: '100dvh', overflow: 'hidden' }}>
        <video
         autoPlay
         muted
@@ -122,7 +122,7 @@ const Register = () => {
       >
         <source src={Earth_Video} type="video/mp4" />
       </video>
-    <div className="min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-[100dvh] flex items-center justify-center px-4 py-6">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -169,7 +169,7 @@ const Register = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-2">
                   First Name

@@ -33,7 +33,7 @@ const Hero: React.FC = () => (
         Launch Skymap
       </Link>
       <Link
-        to="/murph-ai"
+        to="/murphai"
         className="px-8 py-3 border border-space-violet rounded-xl hover:bg-space-violet/10 transition-all"
       >
         Talk to Murph

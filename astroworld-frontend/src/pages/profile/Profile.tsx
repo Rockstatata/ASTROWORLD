@@ -41,7 +41,7 @@ import { useDeleteCollection } from '../../hooks/useUserCollections';
 import { useDeleteSubscription } from '../../hooks/useUserInteractions';
 import { useFollowing, useFollowers, useMySavedPapers } from '../../hooks/useExplore';
 import { useMessageThreads } from '../../hooks/useMessaging';
-import { useUserContent, useDeleteContent, useUpdateContent } from '../../hooks/useUserContent';
+import { useUserContent, useDeleteContent } from '../../hooks/useUserContent';
 import { useSkyMarkers, useDeleteMarker, type SkyMarker } from '../../hooks/useSkymap';
 import type { ContentType } from '../../services/userInteractions';
 import UserCard from '../../components/explore/UserCard';
@@ -202,7 +202,7 @@ const Profile: React.FC = () => {
 
   return (
     <Layout>
-      <div className="relative min-h-screen text-white overflow-hidden">
+      <div className="relative min-h-[100dvh] text-white overflow-hidden">
         {/* Animated Starry Background */}
         <StarryBackground />
         
@@ -396,7 +396,7 @@ const Profile: React.FC = () => {
 
               {/* Filter (only for saved content) */}
               {activeTab === 'saved' && (
-                <div className="relative min-w-[200px]">
+                <div className="relative w-full md:w-auto md:min-w-[200px]">
                   <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
                   <select
                     value={filterType}
@@ -1417,7 +1417,7 @@ const EditProfileModal: React.FC<{
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-white/10 p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-white/10 p-6 max-w-2xl w-full max-h-[90dvh] overflow-y-auto"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">

@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import { User, BookOpen, Heart, Bell, TrendingUp } from "lucide-react";
+import { API_BASE } from '../../config/api';
 
 interface UserStats {
   id: number;
@@ -29,8 +30,8 @@ const ProfileSummary: React.FC = () => {
   const fetchUserStats = async () => {
     try {
       setLoading(true);
-      const token = localStorage.getItem("accessToken");
-      const response = await fetch(`${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/users/profile/`, {
+      const token = localStorage.getItem('access_token');
+      const response = await fetch(`${API_BASE}/users/profile/`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',

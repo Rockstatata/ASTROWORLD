@@ -231,7 +231,7 @@ const SatelliteTracker: React.FC<SatelliteTrackerProps> = ({ className = '' }) =
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
-            className="bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            className="bg-gray-900 rounded-xl max-w-2xl w-full max-h-[90dvh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

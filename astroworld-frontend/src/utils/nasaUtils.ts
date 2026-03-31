@@ -1,5 +1,5 @@
 // src/utils/nasaUtils.ts
-import type { APOD, NearEarthObject, MarsRoverPhoto, Exoplanet } from '../services/nasa/nasaServices';
+import type { APOD, NearEarthObject } from '../services/nasa/nasaServices';
 
 export const formatDate = (date: string): string => {
   return new Date(date).toLocaleDateString('en-US', {
