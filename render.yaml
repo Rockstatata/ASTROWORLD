@@ -5,8 +5,9 @@ services:
     rootDir: astroworld-backend
     plan: starter
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
-    startCommand: python manage.py migrate && gunicorn astroworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
-    healthCheckPath: /
+    preDeployCommand: python manage.py migrate
+    startCommand: gunicorn astroworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
+    healthCheckPath: /healthz/
     autoDeploy: true
     envVars:
       - key: PYTHON_VERSION

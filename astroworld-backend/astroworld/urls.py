@@ -21,6 +21,7 @@ from . import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.homepage, name='home'),
+    path('healthz/', views.healthz, name='healthz'),
     path('api/users/', include('users.urls')),
     path('api/nasa/', include('nasa_api.urls')),
     path('api/spacex/', include('spacex_api.urls')),
