@@ -3,7 +3,7 @@ services:
     name: astroworld-backend
     runtime: python
     rootDir: astroworld-backend
-    plan: starter
+    plan: free
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
     preDeployCommand: python manage.py migrate
     startCommand: gunicorn astroworld.wsgi:application --bind 0.0.0.0:$PORT --workers 3 --timeout 120
@@ -43,4 +43,4 @@ databases:
   - name: astroworld-postgres
     databaseName: astroworld
     user: astroworld
-    plan: starter
+    plan: free
